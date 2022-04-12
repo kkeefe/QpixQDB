@@ -65,9 +65,7 @@ begin
    process (regData, thisAsicDest)
    begin
       if regData.Dest = '1' then 
-         if (regData.XDest = std_logic_vector(to_unsigned((X_POS_G),regData.XDest'length)) 
-                   and 
-             regData.YDest = std_logic_vector(to_unsigned((Y_POS_G),regData.YDest'length)) )
+         if (regData.XDest = x"1" and regData.YDest = x"1" )
          then
             thisAsicDest <= '1';
          else
