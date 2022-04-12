@@ -70,11 +70,8 @@ begin
    port map(
       clk     => clk,
       rst     => asicRst,
-
       ena     => localDataEna,
-
       testEna => '0',
-
       inPorts => inPorts,
       outData => inData
    );

@@ -6,6 +6,9 @@ use ieee.std_logic_unsigned.all;
 library work;
 use work.QpixPkg.all;
 
+-- std rtl things
+use work.stdrtlpkg.all;
+
 entity QpixDaqCtrl is
    generic (
       MEM_DEPTH : natural := 9;
@@ -19,13 +22,16 @@ entity QpixDaqCtrl is
       daqTx    : out QpixTxRxPortType;
       daqRx    : in  QpixTxRxPortType;
 
-      trg         : in std_logic;
+      trg          : in std_logic;
+      trgTime      : out std_logic_vector(31 downto 0);
+      evt_fin      : out std_logic; 
+      uartBreakCnt : out std_logic_vector(31 downto 0);
+      uartFrameCnt : out std_logic_vector(31 downto 0);
+
       asicReq     : in std_logic;
       asicOpWrite : in std_logic;
       asicData    : in std_logic_vector(15 downto 0);
       asicAddr    : in std_logic_vector(31 downto 0);
-      
-
       asic_mask   : in std_logic_vector(15 downto 0) := (others => '1');
       
       --asicX      : in std_logic_vector(G_POS_BITS-1 downto 0);
@@ -33,13 +39,6 @@ entity QpixDaqCtrl is
       --asicAddr   : in std_logic_vector(G_REG_ADDR_BITS-1 downto 0);
       --qpixReq    : QpixRegReqType;
       
-      trgTime     : out std_logic_vector(31 downto 0);
-
-      evt_fin     : out std_logic; 
-
-      uartBreakCnt : out std_logic_vector(31 downto 0);
-      uartFrameCnt : out std_logic_vector(31 downto 0);
-
       -- event memory ports
       memEvtSize : out std_logic_vector(31 downto 0);
       memAddrRst : in  std_logic;
@@ -47,8 +46,7 @@ entity QpixDaqCtrl is
       memRdReq   : in  std_logic;
       memDataOut : out std_logic_vector(31 downto 0);
       memRdAck   : out std_logic;
-      memFullErr : out std_logic
-      
+      memFullErr : out std_logic   
    );
 end entity QpixDaqCtrl;
 
@@ -68,7 +66,7 @@ architecture behav of QpixDaqCtrl is
    signal daqRxByte       : std_logic_vector (G_DATA_BITS-1 downto 0);
    signal daqRxByteValid  : std_logic := '0';
 
-   signal regData         : QpixRegDataType := QpixRegDataZero_C;
+   -- signal regData         : QpixRegDataType := QpixRegDataZero_C;
 
    signal clkCnt          : std_logic_vector(31 downto 0) := (others => '0');
 
@@ -88,6 +86,8 @@ architecture behav of QpixDaqCtrl is
    signal daqFrameErrCnt : std_logic_vector (31 downto 0) := (others => '0');
    signal daqBreakErrCnt : std_logic_vector (31 downto 0) := (others => '0');
 
+    -- simulation
+    signal r_sig : QpixRegDataType := QpixRegDataZero_C;
 
 begin
 
@@ -137,7 +137,6 @@ begin
       port map (
          clk         => clk,
          sRst        => rst,
-
          txByte      => daqTxByte, 
          txByteValid => daqTxByteValid, 
          txByteReady => daqTxByteReady,
@@ -207,9 +206,10 @@ begin
       memData(31 downto 0)  when b"00",
       memData(63 downto 32) when b"01",
       memData(95 downto 64) when b"10",
-      memData(127 downto 96) when b"11";
+      memData(127 downto 96) when b"11",
+      x"abadda7a" when others;
    
-
+  
    process (clk)
    begin
       if rising_edge (clk) then
@@ -221,10 +221,10 @@ begin
    process (clk)
    begin
       if rising_edge (clk) then
-         if rst or memAddrRst then
+         if rst = '1' or memAddrRst = '1' then
             wrAddr     <= (others => '0');
          else
-            if daqRxByteValid then
+            if daqRxByteValid = '1' then
                wrAddr <= wrAddr + 1;
             end if;
          end if;
@@ -283,7 +283,7 @@ begin
       if rising_edge (clk) then
          r := QpixRegDataZero_C;
          if trg = '1' then
-            r.Addr := x"0001"; 
+            r.Addr := toslv(1, G_REG_ADDR_BITS); 
             r.Data := x"0001";
             r.OpWrite := '1';
             r.OpRead  := '0';
@@ -304,11 +304,11 @@ begin
             r.SrcDaq  := '1';
             daqTxByte      <= fQpixRegToByte(r);
             daqTxByteValid <= '1';
-
             asicReqID <= asicReqID + 1;
          else
             daqTxByteValid <= '0';
          end if;
+         r_sig <= r;
       end if;
    end process;
 

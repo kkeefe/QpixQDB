@@ -21,21 +21,23 @@ entity QpixComm is
       clk            : in std_logic;
       rst            : in std_logic;
 
-      outData_i      : in  QpixDataFormatType;
-      inData         : out QpixDataFormatType;
-
-      regData             : out QpixRegDataType;
-      regResp             : in QpixRegDataType;
-
-      TxReady        : out std_logic;
       -- external ASIC ports
       TxPortsArr     : out QpixTxRxPortsArrType;
-
       RxPortsArr     : in  QpixTxRxPortsArrType;
-
-      qpixConf       : out QpixConfigType;
-      qpixReq        : out QpixRequestType
       
+      -- tx/rx data to QpixRoute
+      outData_i      : in  QpixDataFormatType; -- Tx from QpixRoute
+      inData         : out QpixDataFormatType; -- Rx to QpixRoute
+      TxReady        : out std_logic;          -- Tx-ready to QpixRoute
+
+      -- -- Fixme / TODO?? - These ports do nothing in QpixParser.vhd
+      -- register info to QpixRoute
+      qpixConf       : out QpixConfigType;
+      qpixReq        : out QpixRequestType;  
+
+      -- register information to QpixRegFile
+      regData        : out QpixRegDataType;
+      regResp        : in QpixRegDataType
    );
 end entity QpixComm;
 
@@ -50,18 +52,18 @@ architecture behav of QpixComm is
    -- Signals
    ------------------------------------------------------------
    signal txByteArr        : QpixByteArrType      := (others => (others => '0'));
-   signal txByteValidArr   : std_logic_vector(3 downto 0);
-   signal txByteReadyArr   : std_logic_vector(3 downto 0);
+   signal txByteValidArr   : std_logic_vector(3 downto 0) := (others => '0');
+   signal txByteReadyArr   : std_logic_vector(3 downto 0) := (others => '0');
 
    signal RxByteArr        : QpixByteArrType      := (others => (others => '0'));
-   signal RxByteValidArr   : std_logic_vector(3 downto 0);
+   signal RxByteValidArr   : std_logic_vector(3 downto 0) := (others => '0');
 
    signal RxFifoDoutArr    : QpixByteArrType      := (others => (others => '0'));
-   signal RxFifoREnArr     : std_logic_vector(3 downto 0);
-   signal RxFifoEmptyArr   : std_logic_vector(3 downto 0);
-   signal RxFifoFullArr    : std_logic_vector(3 downto 0);
+   signal RxFifoREnArr     : std_logic_vector(3 downto 0) := (others => '0');
+   signal RxFifoEmptyArr   : std_logic_vector(3 downto 0) := (others => '0');
+   signal RxFifoFullArr    : std_logic_vector(3 downto 0) := (others => '0');
 
-   signal TxReadyOr        : std_logic;
+   signal TxReadyOr        : std_logic := '0';
 
    --signal InData           : QpixDataFormatType := QpixDataZero_C;
 
@@ -213,8 +215,9 @@ begin
       outBytesValidArr  => TxByteValidArr,
       txReady           => TxReady,
 
-      qpixConf          => qpixConf,
-      qpixReq           => qpixReq,
+      -- FixMe / TODO??
+      --qpixConf          => qpixConf,
+      --qpixReq           => qpixReq,
 
       regData           => regData,
       regResp           => regResp

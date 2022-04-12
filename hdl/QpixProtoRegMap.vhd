@@ -33,11 +33,15 @@ entity QpixProtoRegMap is
       daqFrameErrCnt : in std_logic_vector(31 downto 0);
       daqBreakErrCnt : in std_logic_vector(31 downto 0);
 
-      extFifoMax  :   Slv4b2DArray(0 to X_NUM_G-1, 0 to Y_NUM_G-1);
+      -- simulation
+      --extFifoMax  :   Slv4b2DArray(0 to X_NUM_G-1, 0 to Y_NUM_G-1);
+      extFifoMax  :   in Slv4b2DArray;
       
       -- local interfaces
       trgTime     : in std_logic_vector(31 downto 0);
-      hitMask     : out Sl2DArray(0 to X_NUM_G-1, 0 to Y_NUM_G-1);
+      -- simulation
+      --hitMask     : out Sl2DArray(0 to X_NUM_G-1, 0 to Y_NUM_G-1);
+      hitMask     : out Sl2DArray;
       timestamp   : out std_logic_vector(31 downto 0);
       chanMask    : out std_logic_vector(G_N_ANALOG_CHAN-1 downto 0);
    
@@ -82,11 +86,9 @@ begin
          hitMask <= (others => (others => '0'));
          rdata   <= (others => '0');
          memRdReq <= '0';
-
          asicReq <= '0';
 
          -- reg mapping
-         
          if s_addr(21 downto 18) = x"0" then
             ack     <= req;
             v_reg_ind := to_integer(unsigned(a_reg_addr));
@@ -124,7 +126,7 @@ begin
                   end if;
 
                when REGMAP_ASICMASK    =>
-                  if req and wen  then
+                  if req = '1' and wen = '1'  then
                      s_asic_mask <= wdata(15 downto 0);
                   else 
                      rdata <= (others => '0');
@@ -152,7 +154,7 @@ begin
          elsif s_addr(21 downto 18) = x"1" then
             memRdReq <= req;
             ack     <= memRdAck;
-            if req then 
+            if req = '1' then 
                memAddr <= s_addr(G_QPIX_PROTO_MEM_DEPTH-1+2+2 downto 2);
                rdata   <= memData;
             end if;

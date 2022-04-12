@@ -18,24 +18,24 @@ entity QpixRoute is
    port (
       clk             : in std_logic;
       rst             : in std_logic;
-                      
+      
+      -- Register information from QpixRegFile                
       qpixReq         : in  QpixRequestType;
       qpixConf        : in  QpixConfigType;
-                      
-      inData          : in  QpixDataFormatType;
-      localDataEna    : out std_logic;
-                      
+      
+      -- Tx/Rx data to QpixComm          
       txReady         : in  std_logic;
       txData          : out QpixDataFormatType;
-
       rxData          : in  QpixDataFormatType;
-      
-      debug           : out QpixDebugType;
 
-      routeErr        : out routeErrType;
-                      
-      routeStateInt   : out integer
+      -- QpixDataProc data and enable
+      inData          : in  QpixDataFormatType;
+      localDataEna    : out std_logic;     
       
+      -- debug information
+      debug           : out QpixDebugType;
+      routeErr        : out routeErrType;                     
+      routeStateInt   : out integer    
    );
 end entity QpixRoute;
 
@@ -46,8 +46,7 @@ architecture behav of QpixRoute is
    ---------------------------------------------------
    -- Types defenitions
    ---------------------------------------------------
-   
-   type RegType is record
+    type RegType is record
       state      :  RouteStatesType;
       stateCnt   :  std_logic_vector(G_REG_DATA_BITS-1 downto 0);
       clkCnt     :  std_logic_vector(31 downto 0);
@@ -198,7 +197,6 @@ begin
          end if;
       end process;
    ---------------------------------------------------
-
 
 
    ---------------------------------------------------

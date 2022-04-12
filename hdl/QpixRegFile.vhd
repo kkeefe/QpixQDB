@@ -9,6 +9,8 @@ use ieee.std_logic_unsigned.all;
 library work;
 use work.QpixPkg.all;
 
+-- std rtl things
+use work.stdrtlpkg.all;
 
 entity QpixRegFile is
    generic (
@@ -21,12 +23,13 @@ entity QpixRegFile is
       clk      : in std_logic;
       rst      : in std_logic;
 
+      -- Register information from Qpixcomm
       regData  : in QpixRegDataType;
       regResp  : out QpixRegDataType;
       
+      -- Register information to QpixRoute
       qpixConf : out QpixConfigType;
-      qpixReq  : out QpixRequestType
-      
+      qpixReq  : out QpixRequestType 
    );
 end entity QpixRegFile;
 
@@ -47,7 +50,7 @@ begin
    process (clk)
    begin
       if rising_edge (clk) then
-         if rst then
+         if rst = '1' then
             clkCnt <= (others => '0');
          else
             clkCnt <= clkCnt + 1;
@@ -59,12 +62,12 @@ begin
    --------------------------------------------------
    -- check if the register data should be accepted by this specific ASIC
    --------------------------------------------------
-   process (all)
+   process (regData, thisAsicDest)
    begin
       if regData.Dest = '1' then 
          if (regData.XDest = std_logic_vector(to_unsigned((X_POS_G),regData.XDest'length)) 
-             and 
-            regData.YDest = std_logic_vector(to_unsigned((Y_POS_G),regData.YDest'length)) )
+                   and 
+             regData.YDest = std_logic_vector(to_unsigned((Y_POS_G),regData.YDest'length)) )
          then
             thisAsicDest <= '1';
          else
@@ -77,7 +80,6 @@ begin
    --------------------------------------------------
 
    --------------------------------------------------
-   --------------------------------------------------
    process (clk)
    begin
       if rising_edge (clk) then
@@ -86,15 +88,15 @@ begin
             qpixReq_r  <= QpixRequestZero_C;
             regResp_r  <= QpixRegDataZero_C;
          else
-            qpixReq_r       <= QpixRequestZero_C;
+            qpixReq_r         <= QpixRequestZero_C;
             regResp_r.OpWrite <= '0';
             regResp_r.OpRead  <= '0';
-            regResp_r.Valid <= '0';
+            regResp_r.Valid   <= '0';
 
             if regData.Valid = '1' and thisAsicDest = '1' then
                case regData.Addr is
                   -- CMD reg
-                  when x"0001" => 
+                  when toslv(1, G_REG_ADDR_BITS) => 
                      qpixReq_r.Interrogation <= regData.Data(0);
                      qpixReq_r.ResetState    <= regData.Data(1);
                      qpixReq_r.AsicReset     <= regData.Data(2);
@@ -102,7 +104,7 @@ begin
                   --when G_REG_SETPOS  =>
 
                   -- TIMEOUT reg
-                  when x"0002" =>
+                  when toslv(2, G_REG_ADDR_BITS) =>
                      if regData.OpWrite = '1' then
                         qpixConf_r.Timeout <= regData.Data;
                      end if;
@@ -115,7 +117,7 @@ begin
                      end if;
 
                   -- DirMask and Manual routing
-                  when x"0003" =>
+                  when toslv(3, G_REG_ADDR_BITS) =>
                      if regData.OpWrite = '1' then
                         qpixConf_r.DirMask    <= regData.Data(3 downto 0);
                         qpixConf_r.ManRoute   <= regData.Data(4);
@@ -138,10 +140,9 @@ begin
       end if;
    end process;
    --------------------------------------------------
-
+   
    qpixReq <= qpixReq_r;
    qpixConf <= qpixConf_r;
    regResp  <= regResp_r;
-
 
 end behav;

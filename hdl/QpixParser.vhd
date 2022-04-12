@@ -33,8 +33,9 @@ entity QpixParser is
       outBytesValidArr    : out std_logic_vector(3 downto 0);
       txReady             : in  std_logic;
 
-      qpixConf            : out QpixConfigType;
-      qpixReq             : out QpixRequestType;
+-- -- Fixme / TODO?? - These ports do nothing in this module
+--      qpixConf            : out QpixConfigType;
+--      qpixReq             : out QpixRequestType;
 
       regData             : out QpixRegDataType;
       regResp             : in QpixRegDataType
@@ -82,7 +83,6 @@ architecture behav of QpixParser is
 begin
 
 
-   
    ------------------------------------------------------------
    -- mux for input channels
    ------------------------------------------------------------
@@ -111,7 +111,6 @@ begin
       end if;
    end process;
    ------------------------------------------------------------
-
    inFifoREnArr <= fifoRen;
 
 
@@ -146,7 +145,7 @@ begin
             if inBytesMuxValid = '1'  then
                if fQpixGetWordType(inBytesMux) = REGREQ_W then
                   regDataR.Valid    <= '1';
-                  regDataR.Addr     <= inBytesMux(31 downto 16);
+                  regDataR.Addr     <= inBytesMux(31 downto 31 - G_REG_ADDR_BITS + 1);
                   regDataR.Data     <= inBytesMux(15 downto  0);
                   regDataR.XDest    <= inBytesMux(39 downto 36);
                   regDataR.YDest    <= inBytesMux(35 downto 32);
