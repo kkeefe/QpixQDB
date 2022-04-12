@@ -19,13 +19,13 @@ package QpixPkg is
    constant LT : integer := 2;
    constant UP : integer := 3;
 
-   constant G_DATA_BITS        : natural := 64;
-   constant G_POS_BITS         : natural := 4;
    --constant G_REG_ADDR_BITS    : natural := 16;
    constant G_REG_ADDR_BITS    : natural := 12; -- testing 12 for the QDBAsic, which is small
    constant G_REG_DATA_BITS    : natural := 16;
    constant G_TIMESTAMP_BITS   : natural := 32; 
    constant G_N_ANALOG_CHAN    : natural := 16;
+   constant G_DATA_BITS        : natural := 48 + G_REG_ADDR_BITS;
+   constant G_POS_BITS         : natural := 4;
 
    constant G_FIFO_LOC_DEPTH : natural := 9;
    constant G_FIFO_EXT_DEPTH : natural := 8;
@@ -50,7 +50,7 @@ package QpixPkg is
 
    ------------------------------------------------------------------
 
-type QpixByteArrType is array(0 to 3) of std_logic_vector(G_DATA_BITS-1 downto 0);
+  type QpixByteArrType is array(0 to 3) of std_logic_vector(G_DATA_BITS-1 downto 0);
   type Sl2DArray is array(natural range <>, natural range <>) of std_logic;
   type SlvArray is array(natural range <>) of std_logic_vector;
   type Slv2DArray is array(natural range <>, natural range <>) of std_logic_vector;

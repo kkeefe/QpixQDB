@@ -92,7 +92,7 @@ begin
 
     -- LEDs, active LOW
     red_led <= not pulse_rx;
-    blu_led <= '1';
+    blu_led <= not pulse_tx;
     gre_led <= '1';
 
     -- internal oscillator, generate 50 MHz clk
@@ -109,8 +109,8 @@ begin
     --RxPortsArr(0) <= Rx1;
     --Tx2 <= TxPortsArr(1);
     --RxPortsArr(1) <= Rx2;
-    Tx3 <= TxPortsArr(3);
-    RxPortsArr(3) <= Rx3;
+    Tx3 <= TxPortsArr(2);
+    RxPortsArr(2) <= Rx3;
     --Tx4 <= TxPortsArr(3);
     --RxPortsArr(3) <= Rx4;
 
@@ -161,27 +161,44 @@ begin
 
 --  -- create a 1 second pulse width when either Tx or Rx goes high
  pulse : process (clk, Rx3, pulse_rx) is
-     variable pulse_count : integer range 0 to pulse_time := 0;
-     variable start_pulse : std_logic;
+     variable pulse_count_rx : integer range 0 to pulse_time := 0;
+     variable start_pulse_rx : std_logic := '0';
+     variable pulse_count_tx : integer range 0 to pulse_time := 0;
+     variable start_pulse_tx : std_logic := '0';
  begin
      if rising_edge(clk) then
 
+         -- pulse the Rx, Red
          if Rx3 = '1' then
-             start_pulse := '1';
-             pulse_count := 0;
+             start_pulse_rx := '1';
+             pulse_count_rx := 0;
          end if;
-
-         if start_pulse = '1' then
-             pulse_count := pulse_count + 1;
+         if start_pulse_rx = '1' then
+             pulse_count_rx := pulse_count_rx + 1;
              pulse_rx <= '1';
-             if pulse_count >= pulse_time then
-                 pulse_rx    <= '0';
-                 pulse_count := 0;
-                 start_pulse := '0';
+             if pulse_count_rx >= pulse_time then
+                 pulse_rx       <= '0';
+                 pulse_count_rx := 0;
+                 start_pulse_rx := '0';
              end if;
          end if;
 
-		-- simulation only
+         -- pulse the Tx, Blue
+         if TxPortsArr(2) = '1' then
+             start_pulse_tx := '1';
+             pulse_count_tx := 0;
+         end if;
+         if start_pulse_tx = '1' then
+             pulse_count_tx := pulse_count_tx + 1;
+             pulse_tx <= '1';
+             if pulse_count_tx >= pulse_time then
+                 pulse_tx       <= '0';
+                 pulse_count_tx := 0;
+                 start_pulse_tx := '0';
+             end if;
+         end if;
+
+        -- simulation only
         --spulse_count <= pulse_count;
         --sstart_pulse <= start_pulse;
 
