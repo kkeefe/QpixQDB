@@ -9,7 +9,6 @@ use work.QpixPkg.all;
 
 entity QpixAsicTop is
    generic (
-
       X_POS_G        : natural := 0;
       Y_POS_G        : natural := 0;
       TXRX_TYPE      : string  := "ENDEAVOR" -- "DUMMY"/"UART"/"ENDEAVOR"
@@ -23,7 +22,6 @@ entity QpixAsicTop is
 
       State          : out integer;
       debug          : out QpixDebugType;
-
 
       -- TX ports to neighbour ASICs
       TxPortsArr     : out  QpixTxRxPortsArrType;

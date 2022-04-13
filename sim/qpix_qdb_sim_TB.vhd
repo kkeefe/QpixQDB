@@ -22,6 +22,8 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 -- use IEEE.NUMERIC_STD.ALL;
+
+library work;
 use work.UtilityPkg.all;
 use work.QpixPkg.all;
 use work.QpixProtoPkg.all;
@@ -79,9 +81,15 @@ architecture Behavioral of qpix_qdb_sim_TB is
    signal memAddr        : std_logic_vector(G_QPIX_PROTO_MEM_DEPTH-1+2 downto 0);
 
    -- ZybDaq Node
-   signal clk12          : std_logic;
-   signal daqTx        : QpixTxRxPortType;
-   signal daqRx        : QpixTxRxPortType;
+   signal clk12        : std_logic;
+   signal Tx1          : QpixTxRxPortType;
+   signal Rx1          : QpixTxRxPortType;
+   signal Tx2          : QpixTxRxPortType;
+   signal Rx2          : QpixTxRxPortType;
+   signal DaqTx        : QpixTxRxPortType;
+   signal DaqRx        : QpixTxRxPortType;
+   signal Tx4          : QpixTxRxPortType;
+   signal Rx4          : QpixTxRxPortType;
    signal evt_fin      : std_logic;
    signal uartBreakCnt : std_logic_vector(31 downto 0);
    signal uartFrameCnt : std_logic_vector(31 downto 0);
@@ -182,8 +190,14 @@ begin
         -- internal clock
         clk => clk12,
         --rst : in STD_LOGIC;
+        Tx1 => Rx1,
+        Rx1 => Tx1,
+        Tx2 => Rx2,
+        Rx2 => Tx2,
         Tx3 => DaqRx,
         Rx3 => DaqTx,
+        Tx4 => Rx4,
+        Rx4 => Tx4,
         -- outputs
         red_led => red_led,
         blu_led => blu_led,

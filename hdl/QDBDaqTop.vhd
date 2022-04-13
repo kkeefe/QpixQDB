@@ -15,8 +15,7 @@ entity QDBDaqTop is
    BOARD_G : string  := "ZYBO"; -- ZYBO, MINIZED
    TXRX_TYPE : string  := "ENDEAVOR"; -- "DUMMY"/"UART"/"ENDEAVOR"
    X_NUM_G : natural := 3;
-   Y_NUM_G : natural := 3 
-   
+   Y_NUM_G : natural := 3
 );
 port (    
    sysClk    : in std_logic;

@@ -19,8 +19,8 @@ package QpixPkg is
    constant LT : integer := 2;
    constant UP : integer := 3;
 
-   --constant G_REG_ADDR_BITS    : natural := 16;
-   constant G_REG_ADDR_BITS    : natural := 12; -- testing 12 for the QDBAsic, which is small
+   constant G_REG_ADDR_BITS    : natural := 16;
+   --constant G_REG_ADDR_BITS    : natural := 12; -- testing 12 for the QDBAsic, which is small
    constant G_REG_DATA_BITS    : natural := 16;
    constant G_TIMESTAMP_BITS   : natural := 32; 
    constant G_N_ANALOG_CHAN    : natural := 16;
@@ -45,29 +45,11 @@ package QpixPkg is
    constant G_WORD_TYPE_REGREQ : std_logic_vector(3 downto 0) := x"3";
    constant G_WORD_TYPE_REGRSP : std_logic_vector(3 downto 0) := x"4";
    constant G_WORD_TYPE_EVTEND : std_logic_vector(3 downto 0) := x"5";
-
-
-
    ------------------------------------------------------------------
 
-  type QpixByteArrType is array(0 to 3) of std_logic_vector(G_DATA_BITS-1 downto 0);
-  type Sl2DArray is array(natural range <>, natural range <>) of std_logic;
-  type SlvArray is array(natural range <>) of std_logic_vector;
-  type Slv2DArray is array(natural range <>, natural range <>) of std_logic_vector;
-  type Slv4b2DArray is array(natural range <>, natural range <>) of std_logic_vector(31 downto 0);
-  type TimeArray2DType is array(natural range<>, natural range<>) of time;
---   simulation
- --type Sl2DArray is array(0 to 0, 0 to 0) of std_logic;
- -- type SlvArray is array(0 to 0) of std_logic_vector;
- -- type Slv2DArray is array(0 to 0, 0 to 0) of std_logic_vector;
- --type Slv4b2DArray is array(0 to 0, 0 to 0) of std_logic_vector(31 downto 0);
- --type TimeArray2DType is array(0 to 0, 0 to 0) of time;
-
-   ------------------------------------------------------------------
 
    ------------------------------------------------------------------
    -- TXRX
-   ------------------------------------------------------------------
    ------------------------------------------------------------------
    type QpixTransceiverTypes is (DUMMY, UART);
    ------------------------------------------------------------------
@@ -87,13 +69,37 @@ package QpixPkg is
       --Data       => (others => '0')
    --);
 
-   ---
-   type QpixTxRxPortsArrType is array(0 to 3) of QpixTxRxPortType;
-   --type QpixTxRxVarArrType   is array(natural range <>) of QpixTxRxPortType;
+
+   ------------------------------------------------------------------
+   -- Debug record
+   ------------------------------------------------------------------
+   type QpixDebugType is record
+      extFifoCnt : std_logic_vector(31 downto 0);
+      locFifoCnt : std_logic_vector(31 downto 0);
+   end record;
+
+   constant QpixDebugZero_C : QpixDebugType := (
+      extFifoCnt  => (others => '0'),
+      locFifoCnt  => (others => '0')
+   );
+
    ------------------------------------------------------------------
 
-
-
+  type QpixTxRxVarArrType   is array(natural range <>) of QpixTxRxPortType;
+  type QpixByteArrType is array(0 to 3) of std_logic_vector(G_DATA_BITS-1 downto 0);
+-- comment for simulation
+  -- type Sl2DArray is array(natural range <>, natural range <>) of std_logic;
+  -- type SlvArray is array(natural range <>) of std_logic_vector;
+  -- type Slv2DArray is array(natural range <>, natural range <>) of std_logic_vector;
+  -- type Slv4b2DArray is array(natural range <>, natural range <>) of std_logic_vector(31 downto 0);
+  -- type TimeArray2DType is array(natural range<>, natural range<>) of time;
+-- depdenencies
+  type QpixTxRxPortsArrType is array(0 to 3) of QpixTxRxPortType;
+  type QpixDebug2DArrayType is array(natural range <>, natural range<>) of QpixDebugType;
+-- uncomment for simulation
+type Sl2DArray is array(0 to 0, 0 to 0) of std_logic;
+type Slv4b2DArray is array(0 to 0, 0 to 0) of std_logic_vector(31 downto 0);
+type TimeArray2DType is array(0 to 0, 0 to 0) of time;
 
    ------------------------------------------------------------------
    -- Input port from Qpix analog
@@ -104,7 +110,7 @@ package QpixPkg is
       ChanMask   : std_logic_vector(G_N_ANALOG_CHAN-1  downto 0);
    end record;
 
-   --type QpixInPortsArrType is array(natural range <>, natural range <>) of QpixInPortsType;
+type QpixInPortsArrType is array(natural range <>, natural range <>) of QpixInPortsType;
 
    constant QpixInPortsZero_C : QpixInPortsType := (
       Valid      => '0',
@@ -229,21 +235,6 @@ package QpixPkg is
    ------------------------------------------------------------------
 
 
-
-   ------------------------------------------------------------------
-   -- Debug record
-   ------------------------------------------------------------------
-   type QpixDebugType is record
-      extFifoCnt : std_logic_vector(31 downto 0);
-      locFifoCnt : std_logic_vector(31 downto 0);
-   end record;
-
-   constant QpixDebugZero_C : QpixDebugType := (
-      extFifoCnt  => (others => '0'),
-      locFifoCnt  => (others => '0')
-   );
-
-   --type QpixDebug2DArrayType is array(natural range <>, natural range<>) of QpixDebugType;
    ------------------------------------------------------------------
 
 
