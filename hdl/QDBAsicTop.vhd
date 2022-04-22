@@ -24,7 +24,7 @@ entity QDBAsicTop is
     );
 port (
     -- internal clock
-    clk : in STD_LOGIC;
+    --clk : in STD_LOGIC;
     --rst : in STD_LOGIC;
 
     -- Tx/Rx IO
@@ -55,11 +55,12 @@ architecture Behavioral of QDBAsicTop is
   signal fake_trg     : std_logic := '0';
   signal count        : integer range 0 to 50000000;
   signal rst          : std_logic := '0';
-  --signal clk          : std_logic;
+  signal clk          : std_logic;
   signal localCnt     : unsigned (31 downto 0) := (others => '0');
   signal slv_localCnt : std_logic_vector(31 downto 0);
   signal pulse_tx     : std_logic := '0';
   signal pulse_rx     : std_logic := '0';
+  signal pulse_trg    : std_logic := '0';
 
   -- QpixAsicTop copied signals
   signal inData       : QpixDataFormatType := QpixDataZero_C;
@@ -92,16 +93,16 @@ begin
     -- LEDs, active LOW
     red_led <= not pulse_rx;
     blu_led <= not pulse_tx;
-    gre_led <= '1';
+    gre_led <= not pulse_trg;
 
     -- internal oscillator, generate 50 MHz clk
---  u_osc : HSOSC
---  GENERIC MAP(CLKHF_DIV =>"0b11")
---  port map(
---      CLKHFEN  => '1',
---      CLKHFPU  => '1',
---      CLKHF    => clk
---  );
+  u_osc : HSOSC
+  GENERIC MAP(CLKHF_DIV =>"0b11")
+  port map(
+      CLKHFEN  => '1',
+      CLKHFPU  => '1',
+      CLKHF    => clk
+  );
 
     -- connect Tx/Rx to the signals
     Tx1 <= TxPortsArr(0);
@@ -119,6 +120,8 @@ begin
      variable start_pulse_rx : std_logic := '0';
      variable pulse_count_tx : integer range 0 to pulse_time := 0;
      variable start_pulse_tx : std_logic := '0';
+     variable pulse_count_trg : integer range 0 to pulse_time := 0;
+     variable start_pulse_trg : std_logic := '0';
  begin
      if rising_edge(clk) then
 
@@ -138,7 +141,7 @@ begin
          end if;
 
          -- pulse the Tx, Blue
-         if TxPortsArr(2) = '1' then
+         if TxPortsArr(2)/= '0' then
              start_pulse_tx := '1';
              pulse_count_tx := 0;
          end if;
@@ -151,10 +154,24 @@ begin
                  start_pulse_tx := '0';
              end if;
          end if;
+		 
+		 --if fake_trg = '1' then
+             --start_pulse_trg := '1';
+             --pulse_count_trg := 0;
+         --end if;
+         --if start_pulse_trg = '1' then
+             --pulse_count_trg := pulse_count_trg + 1;
+             --pulse_trg <= '1';
+             --if pulse_count_trg >= pulse_time then
+                 --pulse_trg <= '0';
+                 --pulse_count_trg := 0;
+                 --start_pulse_trg := '0';
+             --end if;
+         --end if;
 
         -- simulation only
-        spulse_count <= pulse_count_rx;
-        sstart_pulse <= start_pulse_rx;
+        --spulse_count <= pulse_count_rx;
+        --sstart_pulse <= start_pulse_rx;
 
      end if;
  end process pulse;

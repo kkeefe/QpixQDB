@@ -114,7 +114,8 @@ begin
    ---------------------------------------------------
    -- FIFO for local data
    ---------------------------------------------------
-   FIFO_LOC_U : entity work.fifo_cc
+   -- FIFO_LOC_U : entity work.fifo_cc
+   FIFO_LOC_U : entity work.QDBFifo
    generic map(
       DATA_WIDTH => G_N_ANALOG_CHAN + G_TIMESTAMP_BITS,
       DEPTH      => G_FIFO_LOC_DEPTH,
@@ -144,7 +145,7 @@ begin
    ---------------------------------------------------
    -- FIFO for external data
    ---------------------------------------------------
-   FIFO_EXT_U : entity work.fifo_cc
+   FIFO_EXT_U : entity work.QDBFifo
    generic map(
       DATA_WIDTH => G_DATA_BITS,
       DEPTH      => G_FIFO_EXT_DEPTH,

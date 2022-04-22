@@ -82,17 +82,11 @@ architecture Behavioral of qpix_qdb_sim_TB is
 
    -- ZybDaq Node
    signal clk12        : std_logic;
-   signal Tx1          : QpixTxRxPortType;
-   signal Rx1          : QpixTxRxPortType;
-   signal Tx2          : QpixTxRxPortType;
-   signal Rx2          : QpixTxRxPortType;
    signal DaqTx        : QpixTxRxPortType;
    signal DaqRx        : QpixTxRxPortType;
-   signal Tx4          : QpixTxRxPortType;
-   signal Rx4          : QpixTxRxPortType;
    signal evt_fin      : std_logic;
-   signal uartBreakCnt : std_logic_vector(31 downto 0);
-   signal uartFrameCnt : std_logic_vector(31 downto 0);
+--   signal uartBreakCnt : std_logic_vector(31 downto 0);
+--   signal uartFrameCnt : std_logic_vector(31 downto 0);
    signal memAddrRst   : std_logic;
    -- signal memRdAddr    : std_logic_vector(9-1+2 downto 0);
    -- signal memDataOut   : std_logic_vector(31 downto 0);
@@ -100,12 +94,73 @@ architecture Behavioral of qpix_qdb_sim_TB is
   -- QDBAsic signals
   --signal clk     : std_logic;
   signal asicClk : std_logic;
-  signal red_led : std_logic;
-  signal blu_led : std_logic;
-  signal gre_led : std_logic;
-  signal IO      : std_logic_vector(3 downto 0);
+  signal red_led : std_logic_vector(3 downto 0);
+  signal blu_led : std_logic_vector(3 downto 0);
+  signal gre_led : std_logic_vector(3 downto 0);
+--  type IOports is array (0 to 3) of std_logic_vector(3 downto 0);
+--  signal IO : IOports;
+
+  constant fake_trg_cnt : natural := 200*12;-- try to get ~200 us fake trigger rate;
+   -- all ASIC TxRx ports
+  signal A_Tx1 : std_logic;
+  signal A_Rx1 : std_logic;
+  signal A_Tx2 : std_logic;
+  signal A_Rx2 : std_logic;
+  signal A_Tx3 : std_logic;
+  signal A_Rx3 : std_logic;
+  signal A_Tx4 : std_logic;
+  signal A_Rx4 : std_logic;
+
+  signal B_Tx1 : std_logic;
+  signal B_Rx1 : std_logic;
+  signal B_Tx2 : std_logic;
+  signal B_Rx2 : std_logic;
+  signal B_Tx3 : std_logic;
+  signal B_Rx3 : std_logic;
+  signal B_Tx4 : std_logic;
+  signal B_Rx4 : std_logic;
+
+  signal C_Tx1 : std_logic;
+  signal C_Rx1 : std_logic;
+  signal C_Tx2 : std_logic;
+  signal C_Rx2 : std_logic;
+  signal C_Tx3 : std_logic;
+  signal C_Rx3 : std_logic;
+  signal C_Tx4 : std_logic;
+  signal C_Rx4 : std_logic;
+
+  signal D_Tx1 : std_logic;
+  signal D_Rx1 : std_logic;
+  signal D_Tx2 : std_logic;
+  signal D_Rx2 : std_logic;
+  signal D_Tx3 : std_logic;
+  signal D_Rx3 : std_logic;
+  signal D_Tx4 : std_logic;
+  signal D_Rx4 : std_logic;
 
 begin
+
+  ----------------------
+  -- ASIC Connections --
+  ----------------------
+  -- DaqNode
+  DaqRx <= C_Tx3;
+  C_Rx3 <= DaqTx;
+  -- East West
+  -- AB
+  B_Rx4 <= A_Tx2;
+  A_Rx2 <= B_Tx4;
+  -- CD
+  D_Rx4 <= C_Tx2;
+  C_Rx2 <= D_Tx4;
+  -- North South
+  -- AC
+  A_Rx3 <= C_Tx1;
+  C_Rx1 <= A_Tx3;
+  -- BD
+  B_Rx3 <= D_Tx1;
+  D_Rx1 <= B_Tx3;
+
 
     -- instantiate a portion of the top level here
     U_QpixProtoRegMap : entity work.QpixProtoRegMap
@@ -160,8 +215,8 @@ begin
         trg          => trg,
         trgTime      => trgTime,
         evt_fin      => evt_fin,
-        uartBreakCnt => uartBreakCnt,
-        uartFrameCnt => uartFrameCnt,
+        uartBreakCnt => daqBreakErrCnt,
+        uartFrameCnt => daqFrameErrCnt,
         -- asic inputs from QpixProtoRegMap
         asicReq      => asicReq,
         asicOpWrite  => asicOpWrite,
@@ -179,33 +234,112 @@ begin
       );
       memAddrRst <= trg or asicReq;
 
-    -- instantiate the top level of QDBAsic:
-    U_QDBAsicTop : entity work.QDBAsicTop
+    -- ASIC-A, "main" ASIC that speaks with DaqNode
+    U_QDBAsicA : entity work.QDBAsicTop
     generic map(
-        X_POS_G   => 1,
-        Y_POS_G   => 1,
+       X_POS_G      => 1,
+       Y_POS_G      => 2,
+       pulse_time  => 2,
+       fake_trg_cnt => fake_trg_cnt,
+       TXRX_TYPE    => "ENDEAVOR"       -- "DUMMY"/"UART"/"ENDEAVOR"
+    )
+    port map(
+        -- internal clock
+        clk     => clk12,
+        --rst : in STD_LOGIC;
+        Tx1     => A_Tx1,
+        Rx1     => A_Rx1,
+        Tx2     => A_Tx2,
+        Rx2     => A_Rx2,
+        Tx3     => A_Tx3,
+        Rx3     => A_Rx3,
+        Tx4     => A_Tx4,
+        Rx4     => A_Rx4,
+        -- outputs
+        red_led => red_led(0),
+        blu_led => blu_led(0),
+        gre_led => gre_led(0)
+    );
+
+    -- ASIC-B
+    U_QDBAsicB : entity work.QDBAsicTop
+    generic map(
+       X_POS_G      => 2,
+       Y_POS_G      => 2,
+       pulse_time  => 2,
+       fake_trg_cnt => fake_trg_cnt,
+       TXRX_TYPE    => "ENDEAVOR"       -- "DUMMY"/"UART"/"ENDEAVOR"
+    )
+    port map(
+        -- internal clock
+        clk => clk12,
+        --rst : in STD_LOGIC;
+        Tx1 => B_Tx1,
+        Rx1 => B_Rx1,
+        Tx2 => B_Tx2,
+        Rx2 => B_Rx2,
+        Tx3 => B_Tx3,
+        Rx3 => B_Rx3,
+        Tx4 => B_Tx4,
+        Rx4 => B_Rx4,
+        -- outputs
+        red_led => red_led(1),
+        blu_led => blu_led(1),
+        gre_led => gre_led(1)
+    );
+
+    -- ASIC-C, "main" ASIC that speaks with DaqNode
+    U_QDBAsicC : entity work.QDBAsicTop
+    generic map(
+        X_POS_G      => 1,
+        Y_POS_G      => 1,
+        pulse_time   => 2,
+        fake_trg_cnt => fake_trg_cnt,
         TXRX_TYPE => "ENDEAVOR" -- "DUMMY"/"UART"/"ENDEAVOR"
     )
     port map(
         -- internal clock
         clk => clk12,
         --rst : in STD_LOGIC;
-        Tx1 => Rx1,
-        Rx1 => Tx1,
-        Tx2 => Rx2,
-        Rx2 => Tx2,
-        Tx3 => DaqRx,
-        Rx3 => DaqTx,
-        Tx4 => Rx4,
-        Rx4 => Tx4,
+        Tx1 => C_Tx1,
+        Rx1 => C_Rx1,
+        Tx2 => C_Tx2,
+        Rx2 => C_Rx2,
+        Tx3 => C_Tx3,
+        Rx3 => C_Rx3,
+        Tx4 => C_Tx4,
+        Rx4 => C_Rx4,
         -- outputs
-        red_led => red_led,
-        blu_led => blu_led,
-        gre_led => gre_led,
-        -- extra IO
-        IO => IO
-        -- 'fake'
-        -- asicClk    => asicClk
+        red_led => red_led(2),
+        blu_led => blu_led(2),
+        gre_led => gre_led(2)
+    );
+
+    -- ASIC-D
+    U_QDBAsicD : entity work.QDBAsicTop
+    generic map(
+        X_POS_G   => 2,
+        Y_POS_G   => 1,
+        pulse_time  => 2,
+        fake_trg_cnt => fake_trg_cnt,
+        TXRX_TYPE => "ENDEAVOR" -- "DUMMY"/"UART"/"ENDEAVOR"
+    )
+    port map(
+        -- internal clock
+        clk => clk12,
+        --rst : in STD_LOGIC;
+        Tx1 => D_Tx1,
+        Rx1 => D_Rx1,
+        Tx2 => D_Tx2,
+        Rx2 => D_Rx2,
+        Tx3 => D_Tx3,
+        Rx3 => D_Rx3,
+        Tx4 => D_Tx4,
+        Rx4 => D_Rx4,
+        -- outputs
+        red_led => red_led(3),
+        blu_led => blu_led(3),
+        gre_led => gre_led(3)
     );
 
    --
@@ -250,6 +384,7 @@ begin
    stim_proc : process
 
    begin
+      -- TODO
       -------------------------------------------------
       -- Initialize the clock phases and frequencies --
       -------------------------------------------------
@@ -259,56 +394,65 @@ begin
       --------------------------
       wait for 2.0 ns;
         status   <= x"beefcafe";
-        addr     <= x"000" & x"c" & x"0000"; -- unused & asic reg-request & asicAddr
+        addr     <= (others => '0');
         wdata    <= 0x"1234abcd";
-        IO <= (others => '0');
         trg <= '0';
         rst <= '0';
-      
-      -- initial request
-        wen <= '1';
+        -- turn off reception from un-connected directions
+        A_Rx1 <= '0';
+        A_Rx4 <= '0';
+        -- B
+        B_Rx1 <= '0';
+        B_Rx2 <= '0';
+        -- C only doesn't connect WEST
+        C_Rx4 <= '0';
+        -- D - Doesn't  east / south
+        D_Rx2 <= '0';
+        D_Rx3 <= '0';
+        wen <= '0';
         req <= '0';
-      wait for 100 ns;      
-        req <= '1';
+        
+        
+      -- initial proto reg map request to set ack, read STATUS
+      wait for 200 us;
+        addr <= x"000" & x"c" & x"0000"; -- unused & asic reg-request & asicAddr
+--        wen  <= '1'; -- not required for reading status?
+        req  <= '1';   -- required to set ack ..
+      wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
+          req <= '0';
+        
+      -- initial ASIC request
+      wait for 200 us;   
+        -- everything is bit shit 2...
+        addr <= x"000" & x"0" & x"0004"; -- reads status 
+        wen  <= '1';
+        req  <= '1';
       wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
         req <= '0';
         wen <= '0';
 
-      -- IO triggers - 1,2,3
-      wait for 10 us;      
-         IO <= (others => '1');
-      wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
-         IO <= (others => '0');
-      wait for 5 us;      
-         IO <= (others => '1');
-      wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
-         IO <= (others => '0');
-      wait for 5 us;      
-         IO <= (others => '1');
-      wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
-         IO <= (others => '0');
-
+      -- Wait for Self-Pulse on ASICs
       -- local fifo interrogations
-      wait for 500 us;
+      wait for 200 us;
         req   <= '1';
         wdata <= x"00000001";             -- set interrogation
         wen <= '0';                       -- opRead
-        addr  <= x"000" & x"c" & x"0124"; -- C for remote, 012 for X/Y, 1 for interrogation
+        addr  <= x"000" & x"c" & x"0124"; -- C for remote, 012 for X/Y, 4=1<<2 for interrogation
       wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
         trg <= '0';
         req <= '0';
 
       -- Read EvtSize -> Should get 8 since that's how many events are in DaqCtrl BRAM
-      wait for 2 ms;
-        addr  <= x"00000010"; -- read the event size
+      wait for 1 ms;
+        addr  <= x"00000010"; -- read the event size from the DAQ buffer
         req   <= '1';
       wait for Asic_CLK_PERIOD_NOMINAL_C * 2; 
         req <= '0';
 
       -- try to read in from the event memory 
-      wait for 50 us;
+      wait for 200 us;
       ----------   unused & evtMmem &  addr  & mux  & unused
-          addr  <= x"000" &   x"4"  & x"001" & "00" & "00";
+          addr  <= x"000" &   x"4"  & x"001" & "01" & "00";
           req   <= '1';
       wait for Asic_CLK_PERIOD_NOMINAL_C * 10;              
           req <= '0';

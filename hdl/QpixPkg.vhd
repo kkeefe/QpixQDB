@@ -20,17 +20,15 @@ package QpixPkg is
    constant UP : integer := 3;
 
    constant G_REG_ADDR_BITS    : natural := 16;
---   constant G_REG_ADDR_BITS    : natural := 12; -- testing 12 for the QDBAsic, which is small
    constant G_REG_DATA_BITS    : natural := 16;
    constant G_TIMESTAMP_BITS   : natural := 32; 
    constant G_N_ANALOG_CHAN    : natural := 16;
    constant G_DATA_BITS        : natural := 64;
    constant G_POS_BITS         : natural := 4;
    
-   constant G_FIFO_LOC_DEPTH : natural := 9;
+-- constant G_FIFO_LOC_DEPTH : natural := 9;
+   constant G_FIFO_LOC_DEPTH : natural := 8;
    constant G_FIFO_EXT_DEPTH : natural := 8;
---   constant G_FIFO_LOC_DEPTH : natural := 5;
---   constant G_FIFO_EXT_DEPTH : natural := 4;
    constant G_FIFO_MUX_DEPTH : natural := 3;
 
    --constant DirUp    : std_logic_vector(3 downto 0) := b"1000";
