@@ -18,7 +18,7 @@ entity QDBAsicTop is
    generic (
       X_POS_G      : natural := 0;
       Y_POS_G      : natural := 0;
-      pulse_time   : natural := 11_999_999;
+      pulse_time   : natural :=  2_999_999;
       fake_trg_cnt : natural := 49_999_999;
       TXRX_TYPE    : string  := "ENDEAVOR" -- "DUMMY"/"UART"/"ENDEAVOR"
     );
@@ -38,7 +38,7 @@ port (
     Rx4 : in STD_LOGIC;
 
     -- extra IO, hardcode IO for now
-    IO : in STD_LOGIC_VECTOR(3 downto 0);
+    --IO : in STD_LOGIC_VECTOR(3 downto 0);
 
     -- outputs
     red_led : out STD_LOGIC;
@@ -53,14 +53,13 @@ architecture Behavioral of QDBAsicTop is
 
   -- timestamp and QDBAsic specifics
   signal fake_trg     : std_logic := '0';
-  signal count            : integer range 0 to 50000000;
+  signal count        : integer range 0 to 50000000;
   signal rst          : std_logic := '0';
-  -- signal clk            : std_logic;
-  signal localCnt     : integer range 0 to 2147483647 := 0;
+  --signal clk          : std_logic;
+  signal localCnt     : unsigned (31 downto 0) := (others => '0');
   signal slv_localCnt : std_logic_vector(31 downto 0);
   signal pulse_tx     : std_logic := '0';
   signal pulse_rx     : std_logic := '0';
-  constant Ndiv : natural := 4;
 
   -- QpixAsicTop copied signals
   signal inData       : QpixDataFormatType := QpixDataZero_C;
@@ -114,53 +113,8 @@ begin
     Tx4 <= TxPortsArr(3);
     RxPortsArr(3) <= Rx4;
 
-    -- clk divider for the Tx/Rx IO
-    --process(clk)
-        --variable width : integer range 0 to Ndiv - 1; -- divide by Ndiv, ~12 MHz
-        --begin
-        --if rising_edge(clk) then
-            --width := width + 1;
-        --end if;
-        --if width = Ndiv - 1 then
-            --div_clk <= not div_clk;
-        --end if;
-    --end process;
-
-    -- connect external IO to QpixDataProc
-    slv_localCnt <= toslv(localCnt, 32);
-    process (clk)
-      begin
-         if rising_edge (clk) then
-            -- if IO /= x"0" then
-            if fake_trg = '1' then
-               inPorts.Valid <= '1';
-               inPorts.TimeStamp <= slv_localCnt;
-               inPorts.ChanMask  <=  x"ffff";
-            else
-               inPorts.Valid <= '0';
-               inPorts.TimeStamp <= (others => '0');
-               inPorts.ChanMask  <= (others => '0');
-              end if;
-            end if;
-         end process;
-
-    -- fake trigger every few seconds
- counter: process (clk) is
- begin
-     if clk'event and clk = '1' then     -- rising clock edge
-         count <= count + 1;
-         localCnt <= localCnt + 1;
-     if count >= fake_trg_cnt then
-         fake_trg <= '1';
-         count <= 0;
-     else
-         fake_trg <= '0';
-     end if;
-   end if;
- end process counter;
-
 --  -- create a 1 second pulse width when either Tx or Rx goes high
- pulse : process (clk, Rx3, pulse_rx) is
+ pulse : process (clk, Rx3, pulse_rx, TxPortsArr(2)) is
      variable pulse_count_rx : integer range 0 to pulse_time := 0;
      variable start_pulse_rx : std_logic := '0';
      variable pulse_count_tx : integer range 0 to pulse_time := 0;
@@ -199,8 +153,8 @@ begin
          end if;
 
         -- simulation only
-        --spulse_count <= pulse_count;
-        --sstart_pulse <= start_pulse;
+        spulse_count <= pulse_count_rx;
+        sstart_pulse <= start_pulse_rx;
 
      end if;
  end process pulse;
@@ -208,18 +162,49 @@ begin
    -------------------------------------------------
    -- Process ASIC internal data with defined format
    -------------------------------------------------
-   QpixDataProc_U : entity work.QpixDataProc
-   generic map(
-      X_POS_G => X_POS_G,
-      Y_POS_G => Y_POS_G)
-   port map(
-      clk     => clk,
-      rst     => rst,
-      ena     => localDataEna,
-      testEna => '0',
-      inPorts => inPorts,
-      outData => inData);
-   -----------------------------------------------
+   --QpixDataProc_U : entity work.QpixDataProc
+   --generic map(
+      --X_POS_G => X_POS_G,
+      --Y_POS_G => Y_POS_G)
+   --port map(
+      --clk     => clk,
+      --rst     => rst,
+      --ena     => localDataEna,
+      --testEna => '0',
+      --inPorts => inPorts,
+      --outData => inData);
+	  
+	-- connect external IO to QpixDataProc
+    slv_localCnt <= std_logic_vector(localCnt);
+	process (clk)
+      begin
+         if rising_edge (clk) then
+            if fake_trg = '1' then
+               inData.DataValid <= '1';
+               inData.TimeStamp <= slv_localCnt;
+               inData.ChanMask  <=  x"ffff";
+            else
+               inData.DataValid <= '0';
+               inData.TimeStamp <= (others => '0');
+               inData.ChanMask  <= (others => '0');
+              end if;
+            end if;
+         end process;
+
+	counter: process (clk) is
+	begin
+		if clk'event and clk = '1' then     -- rising clock edge
+			count <= count + 1;
+			localCnt <= localCnt + 1;
+		  if count >= fake_trg_cnt then
+			fake_trg <= '1';
+			count <= 0;
+		  else
+			fake_trg <= '0';
+		  end if;
+		end if;
+	end process counter;
+   ---------------------------------------------
 
    -- Q-Pix data tranceiver
    -- data parsing / physical layer

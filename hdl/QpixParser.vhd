@@ -145,8 +145,8 @@ begin
             if inBytesMuxValid = '1'  then
                if fQpixGetWordType(inBytesMux) = REGREQ_W then
                   regDataR.Valid    <= '1';
-                  --regDataR.Addr     <= inBytesMux(31 downto 31 - G_REG_ADDR_BITS + 1);
-                  regDataR.Addr     <= inBytesMux(31 downto 16);
+                  regDataR.Addr     <= inBytesMux(31 downto 31 - G_REG_ADDR_BITS + 1);
+                  --regDataR.Addr     <= inBytesMux(31 downto 16);
                   regDataR.Data     <= inBytesMux(15 downto  0);
                   regDataR.XDest    <= inBytesMux(39 downto 36);
                   regDataR.YDest    <= inBytesMux(35 downto 32);

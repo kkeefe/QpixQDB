@@ -153,7 +153,7 @@ begin
 		 -- event memory
          elsif s_addr(21 downto 18) = x"1" then
             memRdReq <= req;
-            ack     <= memRdAck;
+            ack      <= memRdAck;
             if req = '1' then 
                memAddr <= s_addr(G_QPIX_PROTO_MEM_DEPTH-1+2+2 downto 2);
                rdata   <= memData;

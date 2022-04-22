@@ -20,15 +20,17 @@ package QpixPkg is
    constant UP : integer := 3;
 
    constant G_REG_ADDR_BITS    : natural := 16;
-   --constant G_REG_ADDR_BITS    : natural := 12; -- testing 12 for the QDBAsic, which is small
+--   constant G_REG_ADDR_BITS    : natural := 12; -- testing 12 for the QDBAsic, which is small
    constant G_REG_DATA_BITS    : natural := 16;
    constant G_TIMESTAMP_BITS   : natural := 32; 
    constant G_N_ANALOG_CHAN    : natural := 16;
-   constant G_DATA_BITS        : natural := 48 + G_REG_ADDR_BITS;
+   constant G_DATA_BITS        : natural := 64;
    constant G_POS_BITS         : natural := 4;
-
+   
    constant G_FIFO_LOC_DEPTH : natural := 9;
    constant G_FIFO_EXT_DEPTH : natural := 8;
+--   constant G_FIFO_LOC_DEPTH : natural := 5;
+--   constant G_FIFO_EXT_DEPTH : natural := 4;
    constant G_FIFO_MUX_DEPTH : natural := 3;
 
    --constant DirUp    : std_logic_vector(3 downto 0) := b"1000";
@@ -88,18 +90,18 @@ package QpixPkg is
   type QpixTxRxVarArrType   is array(natural range <>) of QpixTxRxPortType;
   type QpixByteArrType is array(0 to 3) of std_logic_vector(G_DATA_BITS-1 downto 0);
 -- comment for simulation
-  -- type Sl2DArray is array(natural range <>, natural range <>) of std_logic;
-  -- type SlvArray is array(natural range <>) of std_logic_vector;
-  -- type Slv2DArray is array(natural range <>, natural range <>) of std_logic_vector;
-  -- type Slv4b2DArray is array(natural range <>, natural range <>) of std_logic_vector(31 downto 0);
-  -- type TimeArray2DType is array(natural range<>, natural range<>) of time;
+   type Sl2DArray is array(natural range <>, natural range <>) of std_logic;
+   type SlvArray is array(natural range <>) of std_logic_vector;
+   type Slv2DArray is array(natural range <>, natural range <>) of std_logic_vector;
+   type Slv4b2DArray is array(natural range <>, natural range <>) of std_logic_vector(31 downto 0);
+   type TimeArray2DType is array(natural range<>, natural range<>) of time;
 -- depdenencies
   type QpixTxRxPortsArrType is array(0 to 3) of QpixTxRxPortType;
   type QpixDebug2DArrayType is array(natural range <>, natural range<>) of QpixDebugType;
 -- uncomment for simulation
-type Sl2DArray is array(0 to 0, 0 to 0) of std_logic;
-type Slv4b2DArray is array(0 to 0, 0 to 0) of std_logic_vector(31 downto 0);
-type TimeArray2DType is array(0 to 0, 0 to 0) of time;
+--type Sl2DArray is array(0 to 0, 0 to 0) of std_logic;
+--type Slv4b2DArray is array(0 to 0, 0 to 0) of std_logic_vector(31 downto 0);
+--type TimeArray2DType is array(0 to 0, 0 to 0) of time;
 
    ------------------------------------------------------------------
    -- Input port from Qpix analog
@@ -354,7 +356,7 @@ package body QpixPkg is
       x(47 downto 40) := (others => '0');  
       x(39 downto 36) := d.XDest;           -- x
       x(35 downto 32) := d.YDest;           -- y
-      x(31 downto 16) := d.Addr; 
+      x(31 downto 32 - G_REG_ADDR_BITS) := d.Addr; 
       x(15 downto 0 ) := d.Data; 
 
       return x;
