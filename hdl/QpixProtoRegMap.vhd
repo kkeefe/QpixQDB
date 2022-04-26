@@ -178,7 +178,7 @@ begin
                asicAddr(9 downto 0)  <= s_addr(11 downto 2);
             end if;
          else
-            rdata <= x"0BAD_ADD0";
+            rdata <= x"0BAD_ADD1";
             ack <= req;
          end if;
          

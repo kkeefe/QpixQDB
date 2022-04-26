@@ -25,8 +25,7 @@ entity QpixEndeavorTop is
       txByteValid : in  std_logic := '0';
       txByteReady : out std_logic;
       -- external ports
-      Rx          : in  std_logic;
-      Tx          : out std_logic
+      Rx          : in  std_logic; Tx          : out std_logic
    );
 
 end QpixEndeavorTop;
@@ -75,4 +74,3 @@ begin
       );
 
 end Behavioral;
-

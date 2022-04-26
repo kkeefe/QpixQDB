@@ -46,7 +46,7 @@ architecture behav of QpixComm is
    ------------------------------------------------------------
    -- Type defenitions
    ------------------------------------------------------------
-   type   QpixDataArrType is array (0 to 3) of QpixDataFormatType;
+   type QpixDataArrType is array (0 to 3) of QpixDataFormatType;
 
    ------------------------------------------------------------
    -- Signals
@@ -148,15 +148,18 @@ begin
                clk         => clk,
                sRst        => rst,
 
+               -- inputs
                --txValid     => TxPortsArr(i).Valid,
                txByte      => TxByteArr(i), 
                txByteValid => TxByteValidArr(i), 
                txByteReady => TxByteReadyArr(i),
 
+               -- outputs
                --rxValid     => RxPortsArr(i).Valid,
                rxByte      => RxByteArr(i),
                rxByteValid => RxByteValidArr(i),
 
+               -- external ports
                Rx          => RxPortsArr(i),
                Tx          => TxPortsArr(i)
             );
@@ -221,13 +224,7 @@ begin
 
       regData           => regData,
       regResp           => regResp
-
    );
    ------------------------------------------------------------
 
-  
-
 end behav;
-
-
-

@@ -24,7 +24,7 @@ entity QDBAsicTop is
     );
 port (
     -- internal clock
-    --clk : in STD_LOGIC;
+    clk : in STD_LOGIC;
     --rst : in STD_LOGIC;
 
     -- Tx/Rx IO
@@ -55,7 +55,7 @@ architecture Behavioral of QDBAsicTop is
   signal fake_trg     : std_logic := '0';
   signal count        : integer range 0 to 50000000;
   signal rst          : std_logic := '0';
-  signal clk          : std_logic;
+  --signal clk          : std_logic;
   signal localCnt     : unsigned (31 downto 0) := (others => '0');
   signal slv_localCnt : std_logic_vector(31 downto 0);
   signal pulse_tx     : std_logic := '0';
@@ -95,14 +95,14 @@ begin
     blu_led <= not pulse_tx;
     gre_led <= not pulse_trg;
 
-    -- internal oscillator, generate 50 MHz clk
-  u_osc : HSOSC
-  GENERIC MAP(CLKHF_DIV =>"0b11")
-  port map(
-      CLKHFEN  => '1',
-      CLKHFPU  => '1',
-      CLKHF    => clk
-  );
+--    -- internal oscillator, generate 50 MHz clk
+--  u_osc : HSOSC
+--  GENERIC MAP(CLKHF_DIV =>"0b11")
+--  port map(
+--      CLKHFEN  => '1',
+--      CLKHFPU  => '1',
+--      CLKHF    => clk
+--  );
 
     -- connect Tx/Rx to the signals
     Tx1 <= TxPortsArr(0);
@@ -154,8 +154,8 @@ begin
                  start_pulse_tx := '0';
              end if;
          end if;
-		 
-		 --if fake_trg = '1' then
+
+         --if fake_trg = '1' then
              --start_pulse_trg := '1';
              --pulse_count_trg := 0;
          --end if;
@@ -190,10 +190,10 @@ begin
       --testEna => '0',
       --inPorts => inPorts,
       --outData => inData);
-	  
-	-- connect external IO to QpixDataProc
+
+    -- connect external IO to QpixDataProc
     slv_localCnt <= std_logic_vector(localCnt);
-	process (clk)
+    process (clk)
       begin
          if rising_edge (clk) then
             if fake_trg = '1' then
@@ -208,19 +208,19 @@ begin
             end if;
          end process;
 
-	counter: process (clk) is
-	begin
-		if clk'event and clk = '1' then     -- rising clock edge
-			count <= count + 1;
-			localCnt <= localCnt + 1;
-		  if count >= fake_trg_cnt then
-			fake_trg <= '1';
-			count <= 0;
-		  else
-			fake_trg <= '0';
-		  end if;
-		end if;
-	end process counter;
+    counter: process (clk) is
+    begin
+        if clk'event and clk = '1' then     -- rising clock edge
+            count <= count + 1;
+            localCnt <= localCnt + 1;
+          if count >= fake_trg_cnt then
+            fake_trg <= '1';
+            count <= 0;
+          else
+            fake_trg <= '0';
+          end if;
+        end if;
+    end process counter;
    ---------------------------------------------
 
    -- Q-Pix data tranceiver
@@ -234,15 +234,19 @@ begin
    port map(
       clk            => clk,
       rst            => rst,
-      outData_i      => txData,
-      inData         => rxData,
-      TxReady        => TxReady,
-      TxPortsArr     => TxPortsArr,
-      RxPortsArr     => RxPortsArr,
+      -- route <-> parser
+      outData_i      => txData,  -- input to parser
+      inData         => rxData,  -- output from parser
+      TxReady        => TxReady,    -- ready signal to route
+      -- physical connectiosn
+      TxPortsArr     => TxPortsArr, -- output to physical
+      RxPortsArr     => RxPortsArr, -- input form physical
+      -- unused
       QpixConf       => open,
       QpixReq        => open,
-      regData        => regData,
-      regResp        => regResp);
+      -- reg file connections
+      regData        => regData,  -- output from parser
+      regResp        => regResp); -- input from parser
    -----------------------------------------------
 
    -- Registers file
@@ -254,8 +258,10 @@ begin
    port map(
       clk      => clk,
       rst      => rst,
+      -- comm connectiosn
       regData  => regData,
       regResp  => regResp,
+      -- route connections
       QpixConf => QpixConf,
       QpixReq  => QpixReq
       );
@@ -271,13 +277,17 @@ begin
    port map(
       clk           => clk,
       rst           => rst,
+      -- reg file connections
       qpixReq       => QpixReq,
       qpixConf      => QpixConf,
+      -- analog ASIC trigger connections
       inData        => inData,
       localDataEna  => localDataEna,
-      txReady       => TxReady,
-      txData        => txData,
-      rxData        => rxData,
+      -- comm connections
+      txReady       => TxReady, -- ready signal from comm
+      txData        => txData,  -- record output to parser
+      rxData        => rxData,  -- record input from parser
+      -- unused
       debug         => open,
       routeStateInt => open);
    -----------------------------------------------

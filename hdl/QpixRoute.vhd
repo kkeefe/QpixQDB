@@ -114,8 +114,7 @@ begin
    ---------------------------------------------------
    -- FIFO for local data
    ---------------------------------------------------
-   -- FIFO_LOC_U : entity work.fifo_cc
-   FIFO_LOC_U : entity work.QDBFifo
+   FIFO_LOC_U : entity work.fifo_cc
    generic map(
       DATA_WIDTH => G_N_ANALOG_CHAN + G_TIMESTAMP_BITS,
       DEPTH      => G_FIFO_LOC_DEPTH,
@@ -145,7 +144,7 @@ begin
    ---------------------------------------------------
    -- FIFO for external data
    ---------------------------------------------------
-   FIFO_EXT_U : entity work.QDBFifo
+   FIFO_EXT_U : entity work.fifo_cc
    generic map(
       DATA_WIDTH => G_DATA_BITS,
       DEPTH      => G_FIFO_EXT_DEPTH,
@@ -203,7 +202,7 @@ begin
    ---------------------------------------------------
    -- Combinational logic
    ---------------------------------------------------
-   process(all) begin
+   process(curReg, nxtReg, inData, rxData, qpixReq, extFifoEmpty, extFifoDout, txReady, locFifoEmpty) begin
       nxtReg <= curReg;
       nxtReg.txData.DataValid <= '0';
       nxtReg.clkCnt <= curReg.clkCnt + 1;
@@ -254,8 +253,8 @@ begin
                if txReady = '1' then
                   if curReg.extFifoRen = '0' and curReg.stateCnt(1) = '1' then
                      nxtReg.txData.DataValid <= '1';
-                     nxtReg.txData.WordType <= G_WORD_TYPE_REGRSP;
-                     nxtReg.txData.Data <= extFifoDout;
+                     nxtReg.txData.WordType  <= G_WORD_TYPE_REGRSP;
+                     nxtReg.txData.Data      <= extFifoDout;
                      nxtReg.txData.DirMask   <= nxtReg.respDir;
                      nxtReg.extFifoRen <= '1';
                   end if;
@@ -344,7 +343,6 @@ begin
    end process;
    ---------------------------------------------------
 
-
    ---------------------------------------------------
    -- Synchronous logic
    ---------------------------------------------------
@@ -360,12 +358,15 @@ begin
    end process;
    ---------------------------------------------------
 
-   
+
+   -- register to ports at top level
    txData     <= curReg.txData;
+   -- debug information
    stateInt   <= RouteStatesType'pos(curReg.state);
    debug      <= curReg.debug;
 
 
+   -- debug information
    process(all)
    begin
       if stateInt /= 2 then
@@ -380,6 +381,4 @@ begin
    end process;
 
 
-
 end behav;
-

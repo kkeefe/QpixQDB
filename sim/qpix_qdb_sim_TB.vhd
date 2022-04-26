@@ -100,7 +100,7 @@ architecture Behavioral of qpix_qdb_sim_TB is
 --  type IOports is array (0 to 3) of std_logic_vector(3 downto 0);
 --  signal IO : IOports;
 
-  constant fake_trg_cnt : natural := 200*12;-- try to get ~200 us fake trigger rate;
+  constant fake_trg_cnt : natural := 300*12;-- try to get ~300 us fake trigger rate;
    -- all ASIC TxRx ports
   signal A_Tx1 : std_logic;
   signal A_Rx1 : std_logic;
@@ -237,8 +237,8 @@ begin
     -- ASIC-A, "main" ASIC that speaks with DaqNode
     U_QDBAsicA : entity work.QDBAsicTop
     generic map(
-       X_POS_G      => 1,
-       Y_POS_G      => 2,
+       X_POS_G      => 0,
+       Y_POS_G      => 1,
        pulse_time  => 2,
        fake_trg_cnt => fake_trg_cnt,
        TXRX_TYPE    => "ENDEAVOR"       -- "DUMMY"/"UART"/"ENDEAVOR"
@@ -264,8 +264,8 @@ begin
     -- ASIC-B
     U_QDBAsicB : entity work.QDBAsicTop
     generic map(
-       X_POS_G      => 2,
-       Y_POS_G      => 2,
+       X_POS_G      => 1,
+       Y_POS_G      => 1,
        pulse_time  => 2,
        fake_trg_cnt => fake_trg_cnt,
        TXRX_TYPE    => "ENDEAVOR"       -- "DUMMY"/"UART"/"ENDEAVOR"
@@ -291,8 +291,8 @@ begin
     -- ASIC-C, "main" ASIC that speaks with DaqNode
     U_QDBAsicC : entity work.QDBAsicTop
     generic map(
-        X_POS_G      => 1,
-        Y_POS_G      => 1,
+        X_POS_G      => 0,
+        Y_POS_G      => 0,
         pulse_time   => 2,
         fake_trg_cnt => fake_trg_cnt,
         TXRX_TYPE => "ENDEAVOR" -- "DUMMY"/"UART"/"ENDEAVOR"
@@ -318,8 +318,8 @@ begin
     -- ASIC-D
     U_QDBAsicD : entity work.QDBAsicTop
     generic map(
-        X_POS_G   => 2,
-        Y_POS_G   => 1,
+        X_POS_G   => 1,
+        Y_POS_G   => 0,
         pulse_time  => 2,
         fake_trg_cnt => fake_trg_cnt,
         TXRX_TYPE => "ENDEAVOR" -- "DUMMY"/"UART"/"ENDEAVOR"
@@ -412,45 +412,64 @@ begin
         wen <= '0';
         req <= '0';
         
+      -- RegMapping Read 0, should be able to read beef_cafe  
+      -- initial proto reg map request to set ack, read STATUS (check)
+--      wait for 200 us;   
+--        -- everything is bit shit 2..
+--        addr <= x"000" & x"0" & x"0004";
+--        wen  <= '1';
+--        req  <= '1';
+--      wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
+--        req <= '0';
+--        wen <= '0';    
         
-      -- initial proto reg map request to set ack, read STATUS
+      -- Asic_Reg_Request Read 3, look for DaqNode to receive something back          
+      -- initial ASIC request, read aaaa_bbbb (check)
+--      wait for 200 us;
+--        addr <= x"000" & x"c" & x"0000"; -- unused & asic reg-request & asicAddr
+--        req  <= '1';   -- required to set ack ..
+--      wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
+--        req <= '0';
+
+      -- TODO manually route ASICs to tell the "furthest left" to send down
+      -- send asic dir mask!
       wait for 200 us;
-        addr <= x"000" & x"c" & x"0000"; -- unused & asic reg-request & asicAddr
---        wen  <= '1'; -- not required for reading status?
-        req  <= '1';   -- required to set ack ..
-      wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
-          req <= '0';
-        
-      -- initial ASIC request
-      wait for 200 us;   
-        -- everything is bit shit 2...
-        addr <= x"000" & x"0" & x"0004"; -- reads status 
-        wen  <= '1';
-        req  <= '1';
+        req   <= '1';
+        wdata <= x"0000001" & b"0100";    -- set ManRoute '1' and DirMask "DirDown" from QPixPkg.vhd 
+        wen <= '1';                       -- opWrite
+        addr  <= x"000" & x"c" & x"000c"; -- C for remote, 000 for X/Y, c=3<<2 for dir mask
       wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
         req <= '0';
-        wen <= '0';
-
-      -- Wait for Self-Pulse on ASICs
+      wait for 200 us;
+          req   <= '1';
+          wdata <= x"0000001" & b"0100";    -- set ManRoute '1' and DirMask "DirDown" from QPixPkg.vhd 
+          wen <= '1';                       -- opWrite
+          addr  <= x"000" & x"c" & x"002c"; -- C for remote, 002 for X/Y, c=3<<2 for dir mask
+        wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
+          req <= '0';
+   
+      -- interrogate fifos after setting the dirMask
       -- local fifo interrogations
       wait for 200 us;
         req   <= '1';
         wdata <= x"00000001";             -- set interrogation
         wen <= '0';                       -- opRead
-        addr  <= x"000" & x"c" & x"0124"; -- C for remote, 012 for X/Y, 4=1<<2 for interrogation
+        addr  <= x"000" & x"c" & x"0004"; -- C for remote, 012 for X/Y, 4=1<<2 for interrogation
       wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
         trg <= '0';
         req <= '0';
 
+      -- Fifo_Counters Read 2
       -- Read EvtSize -> Should get 8 since that's how many events are in DaqCtrl BRAM
-      wait for 1 ms;
+      wait for 3 ms;
         addr  <= x"00000010"; -- read the event size from the DAQ buffer
         req   <= '1';
       wait for Asic_CLK_PERIOD_NOMINAL_C * 2; 
         req <= '0';
 
+      -- Event_Memory Read 1
       -- try to read in from the event memory 
-      wait for 200 us;
+      wait for 1 ms;
       ----------   unused & evtMmem &  addr  & mux  & unused
           addr  <= x"000" &   x"4"  & x"001" & "01" & "00";
           req   <= '1';
