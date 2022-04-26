@@ -15,6 +15,7 @@ entity QpixComm is
       GATE_DELAY_G   : time    := 1 ns;
       X_POS_G        : natural := 0;
       Y_POS_G        : natural := 0;
+      RAM_TYPE       : string  := "Lattice"; -- lattice hardcodes BRAM for lattice, or distributed / block
       TXRX_TYPE      : string  := "UART" -- "DUMMY"/"UART"/"ENDEAVOR"
    );
    port (
@@ -32,8 +33,8 @@ entity QpixComm is
 
       -- -- Fixme / TODO?? - These ports do nothing in QpixParser.vhd
       -- register info to QpixRoute
-      qpixConf       : out QpixConfigType;
-      qpixReq        : out QpixRequestType;  
+--      qpixConf       : out QpixConfigType;
+--      qpixReq        : out QpixRequestType;  
 
       -- register information to QpixRegFile
       regData        : out QpixRegDataType;
@@ -147,28 +148,27 @@ begin
             port map (
                clk         => clk,
                sRst        => rst,
-
                -- inputs
                --txValid     => TxPortsArr(i).Valid,
                txByte      => TxByteArr(i), 
                txByteValid => TxByteValidArr(i), 
                txByteReady => TxByteReadyArr(i),
-
                -- outputs
                --rxValid     => RxPortsArr(i).Valid,
                rxByte      => RxByteArr(i),
                rxByteValid => RxByteValidArr(i),
-
                -- external ports
                Rx          => RxPortsArr(i),
                Tx          => TxPortsArr(i)
             );
 
-            FIFO_U : entity work.fifo_cc
+         -- select the correct RAM_TYPE
+         gen_qdb_fifo: if (RAM_TYPE = "Lattice") generate
+            FIFO_U : entity work.QDBFifo
             generic map(
                DATA_WIDTH => NUM_BITS_G,
                DEPTH      => G_FIFO_MUX_DEPTH,
-               RAM_TYPE   => "distributed"
+               RAM_TYPE   => RAM_TYPE
             )
             port map(
                clk   => clk,
@@ -176,11 +176,30 @@ begin
                din   => RxByteArr(i),
                wen   => RxByteValidArr(i),
                ren   => RxFifoREnArr(i),
-               dout  => RxFifoDoutArr(i), 
+               dout  => RxFifoDoutArr(i),
                empty => RxFifoEmptyArr(i),
                full  => RxFifoFullArr(i)
             );
---         end generate;
+         end generate;
+         gen_fifo_cc: if (RAM_TYPE /= "Lattice") generate
+            FIFO_U : entity work.fifo_cc
+            generic map(
+               DATA_WIDTH => NUM_BITS_G,
+               DEPTH      => G_FIFO_MUX_DEPTH,
+               RAM_TYPE   => RAM_TYPE
+            )
+            port map(
+               clk   => clk,
+               rst   => rst,
+               din   => RxByteArr(i),
+               wen   => RxByteValidArr(i),
+               ren   => RxFifoREnArr(i),
+               dout  => RxFifoDoutArr(i),
+               empty => RxFifoEmptyArr(i),
+               full  => RxFifoFullArr(i)
+            );
+         end generate;
+
       --end generate ENDEAROV_GEN;
 
    end generate GEN_TXRX;

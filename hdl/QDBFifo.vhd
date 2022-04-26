@@ -65,12 +65,12 @@ GENERIC(
 PORT(
     wdata : in std_logic_vector(15 downto 0);
     mask  : in std_logic_vector(15 downto 0);
-    waddr : in std_logic_vector(15 downto 0);
+    waddr : in std_logic_vector(DEPTH-1 downto 0);
     we    : in std_logic;
     wclke : in std_logic;
     wclk  : in std_logic;
     rdata : out std_logic_vector(15 downto 0);
-    raddr : in std_logic_vector(15 downto 0);
+    raddr : in std_logic_vector(DEPTH-1 downto 0);
     rclke : in std_logic;
     rclk  : in std_logic;
     re    : in std_logic
@@ -87,14 +87,14 @@ begin
         write_mode => write_mode)
        port map(
          -- write
-         wdata => din(DATA_WIDTH - 1 - (BRAM_WIDTH-x)*16 downto x*16),
+         wdata => din(x*16+15 downto x*16),
          mask  => (others => '0'),
          waddr => i_waddr,
          we    => wen,
          wclke => '1',
          wclk  => clk,
          -- read
-         rdata => dout(DATA_WIDTH - 1 - (BRAM_WIDTH-x)*16 downto x*16),
+         rdata => dout(x*16+15 downto x*16),
          raddr => i_raddr,
          rclke => '1',
          rclk  => clk,

@@ -19,7 +19,8 @@ entity QDBAsicTop is
       X_POS_G      : natural := 0;
       Y_POS_G      : natural := 0;
       pulse_time   : natural :=  2_999_999;
-      fake_trg_cnt : natural := 49_999_999;
+      fake_trg_cnt : natural := 36_999_999;
+      RAM_TYPE     : string  := "block"; -- lattice hardcodes BRAM for lattice, or distributed / block
       TXRX_TYPE    : string  := "ENDEAVOR" -- "DUMMY"/"UART"/"ENDEAVOR"
     );
 port (
@@ -90,12 +91,12 @@ END COMPONENT;
 
 begin
 
-    -- LEDs, active LOW
+    -- LEDs, active LOW (on when value is '0')
     red_led <= not pulse_rx;
     blu_led <= not pulse_tx;
     gre_led <= not pulse_trg;
 
---    -- internal oscillator, generate 50 MHz clk
+    -- internal oscillator, generate 50 MHz clk
 --  u_osc : HSOSC
 --  GENERIC MAP(CLKHF_DIV =>"0b11")
 --  port map(
@@ -141,7 +142,7 @@ begin
          end if;
 
          -- pulse the Tx, Blue
-         if TxPortsArr(2)/= '0' then
+         if TxPortsArr(2) = '1' then
              start_pulse_tx := '1';
              pulse_count_tx := 0;
          end if;
@@ -155,19 +156,19 @@ begin
              end if;
          end if;
 
-         --if fake_trg = '1' then
-             --start_pulse_trg := '1';
-             --pulse_count_trg := 0;
-         --end if;
-         --if start_pulse_trg = '1' then
-             --pulse_count_trg := pulse_count_trg + 1;
-             --pulse_trg <= '1';
-             --if pulse_count_trg >= pulse_time then
-                 --pulse_trg <= '0';
-                 --pulse_count_trg := 0;
-                 --start_pulse_trg := '0';
-             --end if;
-         --end if;
+         if fake_trg = '1' then
+             start_pulse_trg := '1';
+             pulse_count_trg := 0;
+         end if;
+         if start_pulse_trg = '1' then
+             pulse_count_trg := pulse_count_trg + 1;
+             pulse_trg <= '1';
+             if pulse_count_trg >= pulse_time then
+                 pulse_trg <= '0';
+                 pulse_count_trg := 0;
+                 start_pulse_trg := '0';
+             end if;
+         end if;
 
         -- simulation only
         --spulse_count <= pulse_count_rx;
@@ -228,6 +229,7 @@ begin
    -------------------------------------------------
    QpixComm_U : entity work.QpixComm
    generic map(
+      RAM_TYPE      => RAM_TYPE,
       TXRX_TYPE     => TXRX_TYPE,
       X_POS_G       => X_POS_G,
       Y_POS_G       => Y_POS_G)
@@ -242,8 +244,8 @@ begin
       TxPortsArr     => TxPortsArr, -- output to physical
       RxPortsArr     => RxPortsArr, -- input form physical
       -- unused
-      QpixConf       => open,
-      QpixReq        => open,
+--      QpixConf       => open,
+--      QpixReq        => open,
       -- reg file connections
       regData        => regData,  -- output from parser
       regResp        => regResp); -- input from parser
@@ -272,6 +274,7 @@ begin
    -------------------------------------------------
    QpixRoute_U : entity work.QpixRoute
    generic map(
+      RAM_TYPE      => RAM_TYPE,
       X_POS_G       => X_POS_G,
       Y_POS_G       => Y_POS_G)
    port map(
@@ -288,6 +291,7 @@ begin
       txData        => txData,  -- record output to parser
       rxData        => rxData,  -- record input from parser
       -- unused
+      routeErr      => open,                     
       debug         => open,
       routeStateInt => open);
    -----------------------------------------------

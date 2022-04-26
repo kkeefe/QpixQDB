@@ -12,6 +12,7 @@ use work.QpixPkg.all;
 entity QpixRoute is
    generic (
       GATE_DELAY_G    : time    := 1 ns;
+      RAM_TYPE        : string  := "block"; -- lattice hardcodes BRAM for lattice, or distributed / block
       X_POS_G         : natural := 0;
       Y_POS_G         : natural := 0
    );
@@ -114,22 +115,42 @@ begin
    ---------------------------------------------------
    -- FIFO for local data
    ---------------------------------------------------
-   FIFO_LOC_U : entity work.fifo_cc
-   generic map(
-      DATA_WIDTH => G_N_ANALOG_CHAN + G_TIMESTAMP_BITS,
-      DEPTH      => G_FIFO_LOC_DEPTH,
-      RAM_TYPE   => "block"
-   )
-   port map(
-      clk   => clk,
-      rst   => rst,
-      din   => locFifoDin,
-      wen   => inData.DataValid,
-      ren   => curReg.locFifoRen,
-      dout  => locFifoDout, 
-      empty => locFifoEmpty,
-      full  => locFifoFull
-   );
+   gen_qdb_fifo_loc: if (RAM_TYPE = "Lattice") generate
+      FIFO_LOC_U : entity work.QDBFifo
+      generic map(
+         DATA_WIDTH => G_N_ANALOG_CHAN + G_TIMESTAMP_BITS,
+         DEPTH      => G_FIFO_LOC_DEPTH,
+         RAM_TYPE   => RAM_TYPE
+      )
+      port map(
+         clk   => clk,
+         rst   => rst,
+         din   => locFifoDin,
+         wen   => inData.DataValid,
+         ren   => curReg.locFifoRen,
+         dout  => locFifoDout,
+         empty => locFifoEmpty,
+         full  => locFifoFull
+      );
+   end generate;
+   gen_fifo_loc: if (RAM_TYPE /= "Lattice") generate
+      FIFO_LOC_U : entity work.fifo_cc
+      generic map(
+         DATA_WIDTH => G_N_ANALOG_CHAN + G_TIMESTAMP_BITS,
+         DEPTH      => G_FIFO_LOC_DEPTH,
+         RAM_TYPE   => "block"
+      )
+      port map(
+         clk   => clk,
+         rst   => rst,
+         din   => locFifoDin,
+         wen   => inData.DataValid,
+         ren   => curReg.locFifoRen,
+         dout  => locFifoDout,
+         empty => locFifoEmpty,
+         full  => locFifoFull
+      );
+   end generate;
    locFifoDin <= inData.ChanMask & inData.Timestamp;
    ---------------------------------------------------
 
@@ -144,6 +165,25 @@ begin
    ---------------------------------------------------
    -- FIFO for external data
    ---------------------------------------------------
+   gen_qdb_fifo_ext: if (RAM_TYPE = "Lattice") generate
+      FIFO_EXT_U : entity work.QDBFifo
+      generic map(
+         DATA_WIDTH => G_DATA_BITS,
+         DEPTH      => G_FIFO_EXT_DEPTH,
+         RAM_TYPE   => RAM_TYPE
+      )
+      port map(
+         clk   => clk,
+         rst   => rst,
+         din   => rxData.Data,
+         wen   => rxData.DataValid,
+         ren   => curReg.extFifoRen,
+         dout  => extFifoDout,
+         empty => extFifoEmpty,
+         full  => extFifoFull
+      );
+   end generate;
+   gen_fifo_ext: if (RAM_TYPE /= "Lattice") generate
    FIFO_EXT_U : entity work.fifo_cc
    generic map(
       DATA_WIDTH => G_DATA_BITS,
@@ -160,6 +200,7 @@ begin
       empty => extFifoEmpty,
       full  => extFifoFull
    );
+   end generate;
    ---------------------------------------------------
 
    extFifoFullEdgeDet_U : entity work.EdgeDetector 
@@ -202,7 +243,7 @@ begin
    ---------------------------------------------------
    -- Combinational logic
    ---------------------------------------------------
-   process(curReg, nxtReg, inData, rxData, qpixReq, extFifoEmpty, extFifoDout, txReady, locFifoEmpty) begin
+   process(curReg, nxtReg, inData, rxData, qpixReq, extFifoEmpty, extFifoDout, txReady, locFifoEmpty, qpixConf, locFifoDout) begin
       nxtReg <= curReg;
       nxtReg.txData.DataValid <= '0';
       nxtReg.clkCnt <= curReg.clkCnt + 1;
