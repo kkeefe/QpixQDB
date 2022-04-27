@@ -1,0 +1,9 @@
+* notes
+** Register notes
+- AXI_reads in
+  - 0x RegMap
+  - 1x Event_Memory
+  - 2x fifo_counters
+  - 3x asic_reg_request
+
+- asic_reads_in
