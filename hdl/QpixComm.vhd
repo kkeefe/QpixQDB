@@ -23,8 +23,8 @@ entity QpixComm is
       rst            : in std_logic;
 
       -- external ASIC ports
-      TxPortsArr     : out QpixTxRxPortsArrType;
-      RxPortsArr     : in  QpixTxRxPortsArrType;
+      TxPortsArr     : out std_logic_vector(3 downto 0);
+      RxPortsArr     : in  std_logic_vector(3 downto 0);
       
       -- tx/rx data to QpixRoute
       outData_i      : in  QpixDataFormatType; -- Tx from QpixRoute
@@ -154,6 +154,8 @@ begin
                txByteValid => TxByteValidArr(i), 
                txByteReady => TxByteReadyArr(i),
                -- outputs
+               rxFrameErr  => open,
+               rxBreakErr  => open,
                --rxValid     => RxPortsArr(i).Valid,
                rxByte      => RxByteArr(i),
                rxByteValid => RxByteValidArr(i),

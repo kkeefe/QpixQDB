@@ -50,7 +50,7 @@ architecture behav of QpixParser is
    signal inDataR          : QpixDataFormatType := QpixDataZero_C;
 
    signal thisReqID        : std_logic_vector(regDataR.ReqID'range) := (others => '0');
-   signal thisReqDaq       : std_logic := '0';
+   -- signal thisReqDaq       : std_logic := '0';
 
    signal inBytesMux       : std_logic_vector(G_DATA_BITS-1 downto 0) := (others => '0');
    signal inBytesMuxValid  : std_logic                    := '0';

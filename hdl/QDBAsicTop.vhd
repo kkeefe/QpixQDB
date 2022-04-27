@@ -11,14 +11,14 @@ use work.QpixPkg.all;
 use work.stdrtlpkg.all;
 
 -- ice things
-library ice;
-use ice.all;
+--library ice;
+--use ice.all;
 
 entity QDBAsicTop is
    generic (
       X_POS_G      : natural := 0;
       Y_POS_G      : natural := 0;
-      pulse_time   : natural :=  2_999_999;
+      pulse_time   : natural :=  1_999_999;
       fake_trg_cnt : natural := 36_999_999;
       RAM_TYPE     : string  := "Lattice"; -- lattice hardcodes BRAM for lattice, or distributed / block
       TXRX_TYPE    : string  := "ENDEAVOR" -- "DUMMY"/"UART"/"ENDEAVOR"
@@ -80,13 +80,13 @@ architecture Behavioral of QDBAsicTop is
   signal qpixReq      : QpixRequestType    := QpixRequestZero_C;
   signal TxReady      : std_logic          := '0';
   signal localDataEna : std_logic := '0';
-  signal inPorts      :  QpixInPortsType;
-  signal TxPortsArr   :  QpixTxRxPortsArrType;
-  signal RxPortsArr   :  QpixTxRxPortsArrType;
+  -- signal inPorts      :  QpixInPortsType;
+  signal TxPortsArr   :  std_logic_vector(3 downto 0);
+  signal RxPortsArr   :  std_logic_vector(3 downto 0);
 
   -- simulation monitor
-  signal spulse_count : integer range 0 to pulse_time := 0;
-  signal sstart_pulse : std_logic;
+  -- signal spulse_count : integer range 0 to pulse_time := 0;
+  -- signal sstart_pulse : std_logic;
 
 component HSOSC
 GENERIC( CLKHF_DIV :string :="0b00");
@@ -102,7 +102,8 @@ begin
     red_led <= not pulse_rx;
     blu_led <= not pulse_tx;
     gre_led <= not spi_input;
-    spi_input <= si or sck;
+    spi_input <= si;
+    rst <= '0';
 
     -- internal oscillator, generate 50 MHz clk
   u_osc : HSOSC
@@ -124,7 +125,7 @@ begin
     RxPortsArr(3) <= Rx4;
 
 --  -- create a 1 second pulse width when either Tx or Rx goes high
- pulse : process (clk, Rx3, pulse_rx, TxPortsArr(2)) is
+ pulse : process (clk, Rx3, pulse_rx, TxPortsArr(2), fake_trg) is
      variable pulse_count_rx : integer range 0 to pulse_time := 0;
      variable start_pulse_rx : std_logic := '0';
      variable pulse_count_tx : integer range 0 to pulse_time := 0;
@@ -208,7 +209,7 @@ begin
             if fake_trg = '1' then
                inData.DataValid <= '1';
                inData.TimeStamp <= slv_localCnt;
-               inData.ChanMask  <=  x"ffff";
+               inData.ChanMask  <=  (others => '1');
             else
                inData.DataValid <= '0';
                inData.TimeStamp <= (others => '0');
@@ -216,6 +217,11 @@ begin
               end if;
             end if;
          end process;
+    inData.xpos <= x"0";
+    inData.ypos <= x"0";
+    inData.data <= (others => '1');
+    inData.wordtype <= (others => '0');
+    inData.dirMask <= DirDown;
 
     counter: process (clk) is
     begin
@@ -247,7 +253,7 @@ begin
       -- route <-> parser
       outData_i      => txData,  -- input to parser
       inData         => rxData,  -- output from parser
-      TxReady        => TxReady,    -- ready signal to route
+      TxReady        => TxReady, -- ready signal to route
       -- physical connectiosn
       TxPortsArr     => TxPortsArr, -- output to physical
       RxPortsArr     => RxPortsArr, -- input form physical
@@ -268,7 +274,7 @@ begin
    port map(
       clk      => clk,
       rst      => rst,
-      -- comm connectiosn
+      -- comm connections
       regData  => regData,
       regResp  => regResp,
       -- route connections
@@ -289,10 +295,10 @@ begin
       clk           => clk,
       rst           => rst,
       -- reg file connections
-      qpixReq       => QpixReq,
-      qpixConf      => QpixConf,
+      qpixReq       => QpixReq,  -- input register from reg file
+      qpixConf      => QpixConf, -- input register from reg file
       -- analog ASIC trigger connections
-      inData        => inData,
+      inData        => inData,   -- Data from Process, NOT inData to comm
       localDataEna  => localDataEna,
       -- comm connections
       txReady       => TxReady, -- ready signal from comm

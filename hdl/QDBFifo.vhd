@@ -44,7 +44,7 @@ architecture Behavioral of QDBFifo is
    signal i_ren       : std_logic;
    signal i_full      : std_logic;
    signal i_empty     : std_logic;
-   signal i_empty_r   : std_logic;
+   -- signal i_empty_r   : std_logic;
    signal i_waddr     : std_logic_vector(DEPTH-1 downto 0) := (others => '0');
    signal i_raddr     : std_logic_vector(DEPTH-1 downto 0) := (others => '0');
    signal i_cnt       : std_logic_vector(DEPTH-1 downto 0) := (others => '0');
