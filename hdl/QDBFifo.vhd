@@ -17,8 +17,8 @@ use ice.all;
 entity QDBFifo is
 
   generic (
-    read_mode  : std_logic := '0';
-    write_mode : std_logic := '0';
+    read_mode  : std_ulogic := '0';
+    write_mode : std_ulogic := '0';
     RAM_TYPE   : string := "block";
     DATA_WIDTH : natural := 16;
     DEPTH      : natural := G_FIFO_LOC_DEPTH

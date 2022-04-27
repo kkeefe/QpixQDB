@@ -20,12 +20,12 @@ entity QDBAsicTop is
       Y_POS_G      : natural := 0;
       pulse_time   : natural :=  2_999_999;
       fake_trg_cnt : natural := 36_999_999;
-      RAM_TYPE     : string  := "block"; -- lattice hardcodes BRAM for lattice, or distributed / block
+      RAM_TYPE     : string  := "Lattice"; -- lattice hardcodes BRAM for lattice, or distributed / block
       TXRX_TYPE    : string  := "ENDEAVOR" -- "DUMMY"/"UART"/"ENDEAVOR"
     );
 port (
     -- internal clock
-    clk : in STD_LOGIC;
+    --clk : in STD_LOGIC;
     --rst : in STD_LOGIC;
 
     -- Tx/Rx IO
@@ -40,6 +40,12 @@ port (
 
     -- extra IO, hardcode IO for now
     --IO : in STD_LOGIC_VECTOR(3 downto 0);
+
+    -- optional ss pins -- south Top
+    ss  : in std_logic; -- south 8   /  north 6
+    so  : in std_logic; -- south 6   /  north 4
+    si  : in std_logic; -- south 4   /  north 2
+    sck : in std_logic; -- south 2   /  north 8
 
     -- outputs
     red_led : out STD_LOGIC;
@@ -56,12 +62,13 @@ architecture Behavioral of QDBAsicTop is
   signal fake_trg     : std_logic := '0';
   signal count        : integer range 0 to 50000000;
   signal rst          : std_logic := '0';
-  --signal clk          : std_logic;
+  signal clk          : std_logic;
   signal localCnt     : unsigned (31 downto 0) := (others => '0');
   signal slv_localCnt : std_logic_vector(31 downto 0);
   signal pulse_tx     : std_logic := '0';
   signal pulse_rx     : std_logic := '0';
   signal pulse_trg    : std_logic := '0';
+  signal spi_input    : std_logic := '0';
 
   -- QpixAsicTop copied signals
   signal inData       : QpixDataFormatType := QpixDataZero_C;
@@ -94,16 +101,17 @@ begin
     -- LEDs, active LOW (on when value is '0')
     red_led <= not pulse_rx;
     blu_led <= not pulse_tx;
-    gre_led <= not pulse_trg;
+    gre_led <= not spi_input;
+    spi_input <= si or sck;
 
     -- internal oscillator, generate 50 MHz clk
---  u_osc : HSOSC
---  GENERIC MAP(CLKHF_DIV =>"0b11")
---  port map(
---      CLKHFEN  => '1',
---      CLKHFPU  => '1',
---      CLKHF    => clk
---  );
+  u_osc : HSOSC
+  GENERIC MAP(CLKHF_DIV =>"0b11")
+  port map(
+      CLKHFEN  => '1',
+      CLKHFPU  => '1',
+      CLKHF    => clk
+  );
 
     -- connect Tx/Rx to the signals
     Tx1 <= TxPortsArr(0);
