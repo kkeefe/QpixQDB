@@ -9,14 +9,14 @@ ldc_set_location -site {E3} [get_ports Tx4]; # West  - Pin 3, Male
 ldc_set_location -site {B1} [get_ports Rx4]; # West  - Pin 1, Male
 
 ## using ldc_set_port
-ldc_set_port -iobuf {IO_TYPE=LVCMOS33} -site {E5} [get_ports Tx1]; # North - Pin 1, Male
-ldc_set_port -iobuf {IO_TYPE=LVCMOS33} -site {D5} [get_ports Rx1]; # North - Pin 3, Male
-ldc_set_port -iobuf {IO_TYPE=LVCMOS33} -site {F5} [get_ports Tx2]; # East  - Pin 1, Female
-ldc_set_port -iobuf {IO_TYPE=LVCMOS33} -site {E4} [get_ports Rx2]; # East  - Pin 3, Female
-ldc_set_port -iobuf {IO_TYPE=LVCMOS33} -site {C3} [get_ports Tx3]; # South - Pin 3, Female
-ldc_set_port -iobuf {IO_TYPE=LVCMOS33} -site {F4} [get_ports Rx3]; # South - Pin 1, Female
-ldc_set_port -iobuf {IO_TYPE=LVCMOS33} -site {E3} [get_ports Tx4]; # West  - Pin 3, Male
-ldc_set_port -iobuf {IO_TYPE=LVCMOS33} -site {B1} [get_ports Rx4]; # West  - Pin 1, Male
+#ldc_set_port -iobuf {IO_TYPE=LVCMOS33} -site {E5} [get_ports Tx1]; # North - Pin 1, Male
+#ldc_set_port -iobuf {IO_TYPE=LVCMOS33} -site {D5} [get_ports Rx1]; # North - Pin 3, Male
+#ldc_set_port -iobuf {IO_TYPE=LVCMOS33} -site {F5} [get_ports Tx2]; # East  - Pin 1, Female
+#ldc_set_port -iobuf {IO_TYPE=LVCMOS33} -site {E4} [get_ports Rx2]; # East  - Pin 3, Female
+#ldc_set_port -iobuf {IO_TYPE=LVCMOS33} -site {C3} [get_ports Tx3]; # South - Pin 3, Female
+#ldc_set_port -iobuf {IO_TYPE=LVCMOS33} -site {F4} [get_ports Rx3]; # South - Pin 1, Female
+#ldc_set_port -iobuf {IO_TYPE=LVCMOS33} -site {E3} [get_ports Tx4]; # West  - Pin 3, Male
+#ldc_set_port -iobuf {IO_TYPE=LVCMOS33} -site {B1} [get_ports Rx4]; # West  - Pin 1, Male
 
 # done and rest
 # ldc_set_location -site {D3} [get_ports CDONE];
@@ -29,10 +29,10 @@ ldc_set_port -iobuf {IO_TYPE=LVCMOS33} -site {B1} [get_ports Rx4]; # West  - Pin
 #ldc_set_location -site {A4} [get_ports {IO[3]}];
 
 # ice_spi pins North/South
-ldc_set_location -site {C1} [get_ports ss];  # ss
-ldc_set_location -site {F1} [get_ports so];  # so
+#ldc_set_location -site {C1} [get_ports ss];  # ss
+#ldc_set_location -site {F1} [get_ports so];  # so
 ldc_set_location -site {E1} [get_ports si];  # si
-ldc_set_location -site {D1} [get_ports sck]; # sck
+#ldc_set_location -site {D1} [get_ports sck]; # sck
 
 # LEDs
 ldc_set_location -site {A5} [get_ports blu_led];

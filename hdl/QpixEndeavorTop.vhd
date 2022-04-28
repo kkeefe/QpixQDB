@@ -52,6 +52,8 @@ begin
          -- Error statuses out
          bitError    => rxFrameErr,
          lenError    => rxBreakErr,
+         
+         gapError    => open,
 
          Rx          => Rx
       );

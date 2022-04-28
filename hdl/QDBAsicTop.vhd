@@ -42,10 +42,10 @@ port (
     --IO : in STD_LOGIC_VECTOR(3 downto 0);
 
     -- optional ss pins -- south Top
-    ss  : in std_logic; -- south 8   /  north 6
-    so  : in std_logic; -- south 6   /  north 4
+    --ss  : in std_logic; -- south 8   /  north 6
+    --so  : in std_logic; -- south 6   /  north 4
     si  : in std_logic; -- south 4   /  north 2
-    sck : in std_logic; -- south 2   /  north 8
+    --sck : in std_logic; -- south 2   /  north 8
 
     -- outputs
     red_led : out STD_LOGIC;
@@ -217,11 +217,11 @@ begin
               end if;
             end if;
          end process;
-    inData.xpos <= x"0";
-    inData.ypos <= x"0";
-    inData.data <= (others => '1');
+    inData.xpos     <= toslv(X_POS_G, 4);
+    inData.ypos     <= toslv(Y_POS_G, 4);
+    inData.data     <= (others => '1');
     inData.wordtype <= (others => '0');
-    inData.dirMask <= DirDown;
+    inData.dirMask  <= DirDown;
 
     counter: process (clk) is
     begin
@@ -254,7 +254,7 @@ begin
       outData_i      => txData,  -- input to parser
       inData         => rxData,  -- output from parser
       TxReady        => TxReady, -- ready signal to route
-      -- physical connectiosn
+      -- physical connections
       TxPortsArr     => TxPortsArr, -- output to physical
       RxPortsArr     => RxPortsArr, -- input form physical
       -- unused

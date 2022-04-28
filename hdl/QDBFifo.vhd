@@ -21,7 +21,7 @@ entity QDBFifo is
     write_mode : std_ulogic := '0';
     RAM_TYPE   : string := "block";
     DATA_WIDTH : natural := 16;
-    DEPTH      : natural := G_FIFO_LOC_DEPTH
+    DEPTH      : natural := 8
     );
 
   port (
@@ -44,7 +44,6 @@ architecture Behavioral of QDBFifo is
    signal i_ren       : std_logic;
    signal i_full      : std_logic;
    signal i_empty     : std_logic;
-   -- signal i_empty_r   : std_logic;
    signal i_waddr     : std_logic_vector(DEPTH-1 downto 0) := (others => '0');
    signal i_raddr     : std_logic_vector(DEPTH-1 downto 0) := (others => '0');
    signal i_cnt       : std_logic_vector(DEPTH-1 downto 0) := (others => '0');
@@ -57,48 +56,40 @@ architecture Behavioral of QDBFifo is
    constant BRAM_WIDTH : natural := DATA_WIDTH / 16;
    constant BRAM_DEPTH : natural := DEPTH / 256;
 
-component SB_RAM256x16
-GENERIC(
-    read_mode  : std_logic;
-    write_mode : std_logic
-);
-PORT(
-    wdata : in std_logic_vector(15 downto 0);
-    mask  : in std_logic_vector(15 downto 0);
-    waddr : in std_logic_vector(DEPTH-1 downto 0);
-    we    : in std_logic;
-    wclke : in std_logic;
-    wclk  : in std_logic;
-    rdata : out std_logic_vector(15 downto 0);
-    raddr : in std_logic_vector(DEPTH-1 downto 0);
-    rclke : in std_logic;
-    rclk  : in std_logic;
-    re    : in std_logic
-);
-END COMPONENT;
+component sdp_ram is
+    port(
+        wr_clk_i: in std_logic;
+        rd_clk_i: in std_logic;
+        rst_i: in std_logic;
+        wr_clk_en_i: in std_logic;
+        rd_en_i: in std_logic;
+        rd_clk_en_i: in std_logic;
+        wr_en_i: in std_logic;
+        wr_data_i: in std_logic_vector(15 downto 0);
+        wr_addr_i: in std_logic_vector(7 downto 0);
+        rd_addr_i: in std_logic_vector(7 downto 0);
+        rd_data_o: out std_logic_vector(15 downto 0)
+    );
+end component;
 
 begin
 
    -- Use the Lattice RAM
    p_ram: for x in 0 to BRAM_WIDTH - 1 generate
-     ram40_4kinst_physical : SB_RAM256x16
-       generic map(
-        read_mode  => read_mode,
-        write_mode => write_mode)
-       port map(
-         -- write
-         wdata => din(x*16+15 downto x*16),
-         mask  => (others => '0'),
-         waddr => i_waddr,
-         we    => wen,
-         wclke => '1',
-         wclk  => clk,
-         -- read
-         rdata => dout(x*16+15 downto x*16),
-         raddr => i_raddr,
-         rclke => '1',
-         rclk  => clk,
-         re    => i_ren);
+     ram_ip : sdp_ram 
+		port map(
+			wr_clk_i=> clk,
+			rd_clk_i=> clk,
+			rst_i=> '0',
+			wr_clk_en_i=> '1',
+			rd_en_i=> i_ren,
+			rd_clk_en_i=> '1',
+			wr_en_i=> wen,
+			wr_data_i=> din(x*16+15 downto x*16),
+			wr_addr_i=> i_waddr,
+			rd_addr_i=> i_raddr,
+			rd_data_o=> dout(x*16+15 downto x*16)
+		);       
    end generate p_ram;
    ---------------------------------------------------
 
@@ -106,8 +97,8 @@ begin
    i_full   <= '1' when i_cnt = MAX_ADDR  else '0';
    i_empty  <= '1' when i_cnt = ZERO_ADDR else '0';
    full     <= i_full;
-   empty    <= i_empty or i_empty_r;
-   i_ren <= ren;
+   empty    <= i_empty;
+   i_ren    <= ren;
 
    ---- count number of words in FIFO
    FIFO_CNT_PROC : process(clk)
