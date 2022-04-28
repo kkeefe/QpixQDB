@@ -65,7 +65,7 @@ begin
    process (regData, thisAsicDest)
    begin
       if regData.Dest = '1' then 
-         if (regData.XDest = toslv(X_POS_G, 4) and regData.YDest = toslv(Y_POS_G, 4))
+		 if (regData.XDest = toslv(X_POS_G, 4) and regData.YDest = toslv(Y_POS_G, 4))
          then
             thisAsicDest <= '1';
          else

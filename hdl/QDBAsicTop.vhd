@@ -18,7 +18,7 @@ entity QDBAsicTop is
    generic (
       X_POS_G      : natural := 0;
       Y_POS_G      : natural := 0;
-      pulse_time   : natural :=  1_999_999;
+      pulse_time   : natural :=  0_999_999;
       fake_trg_cnt : natural := 36_999_999;
       RAM_TYPE     : string  := "Lattice"; -- lattice hardcodes BRAM for lattice, or distributed / block
       TXRX_TYPE    : string  := "ENDEAVOR" -- "DUMMY"/"UART"/"ENDEAVOR"
@@ -35,8 +35,8 @@ port (
     Rx2 : in STD_LOGIC;
     Tx3 : out STD_LOGIC; -- South
     Rx3 : in STD_LOGIC;
-    Tx4 : out STD_LOGIC; -- West
-    Rx4 : in STD_LOGIC;
+    --Tx4 : out STD_LOGIC; -- West
+    --Rx4 : in STD_LOGIC;
 
     -- extra IO, hardcode IO for now
     --IO : in STD_LOGIC_VECTOR(3 downto 0);
@@ -44,7 +44,7 @@ port (
     -- optional ss pins -- south Top
     --ss  : in std_logic; -- south 8   /  north 6
     --so  : in std_logic; -- south 6   /  north 4
-    si  : in std_logic; -- south 4   /  north 2
+    --si  : in std_logic; -- south 4   /  north 2
     --sck : in std_logic; -- south 2   /  north 8
 
     -- outputs
@@ -79,7 +79,7 @@ architecture Behavioral of QDBAsicTop is
   signal qpixConf     : QpixConfigType     := QpixConfigDef_C;
   signal qpixReq      : QpixRequestType    := QpixRequestZero_C;
   signal TxReady      : std_logic          := '0';
-  signal localDataEna : std_logic := '0';
+  -- signal localDataEna : std_logic := '0';
   -- signal inPorts      :  QpixInPortsType;
   signal TxPortsArr   :  std_logic_vector(3 downto 0);
   signal RxPortsArr   :  std_logic_vector(3 downto 0);
@@ -101,8 +101,8 @@ begin
     -- LEDs, active LOW (on when value is '0')
     red_led <= not pulse_rx;
     blu_led <= not pulse_tx;
-    gre_led <= not spi_input;
-    spi_input <= si;
+    gre_led <= not pulse_trg;
+    --spi_input <= si;
     rst <= '0';
 
     -- internal oscillator, generate 50 MHz clk
@@ -121,8 +121,8 @@ begin
     RxPortsArr(1) <= Rx2;
     Tx3 <= TxPortsArr(2);
     RxPortsArr(2) <= Rx3;
-    Tx4 <= TxPortsArr(3);
-    RxPortsArr(3) <= Rx4;
+    --Tx4 <= TxPortsArr(3);
+    --RxPortsArr(3) <= Rx4;
 
 --  -- create a 1 second pulse width when either Tx or Rx goes high
  pulse : process (clk, Rx3, pulse_rx, TxPortsArr(2), fake_trg) is
@@ -179,7 +179,7 @@ begin
              end if;
          end if;
 
-        -- simulation only
+         --simulation only
         --spulse_count <= pulse_count_rx;
         --sstart_pulse <= start_pulse_rx;
 
@@ -209,15 +209,15 @@ begin
             if fake_trg = '1' then
                inData.DataValid <= '1';
                inData.TimeStamp <= slv_localCnt;
-               inData.ChanMask  <=  (others => '1');
+
             else
                inData.DataValid <= '0';
                inData.TimeStamp <= (others => '0');
-               inData.ChanMask  <= (others => '0');
               end if;
             end if;
          end process;
-    inData.xpos     <= toslv(X_POS_G, 4);
+    inData.ChanMask <=  (others => '1');
+	inData.xpos     <= toslv(X_POS_G, 4);
     inData.ypos     <= toslv(Y_POS_G, 4);
     inData.data     <= (others => '1');
     inData.wordtype <= (others => '0');
@@ -251,15 +251,15 @@ begin
       clk            => clk,
       rst            => rst,
       -- route <-> parser
-      outData_i      => txData,  -- input to parser
-      inData         => rxData,  -- output from parser
-      TxReady        => TxReady, -- ready signal to route
+      outData_i      => txData,  -- record input to parser from route
+      inData         => rxData,  -- record output from parser to route
+      TxReady        => TxReady, -- sl ready signal to route
       -- physical connections
-      TxPortsArr     => TxPortsArr, -- output to physical
-      RxPortsArr     => RxPortsArr, -- input form physical
-      -- unused
---      QpixConf       => open,
---      QpixReq        => open,
+      TxPortsArr     => TxPortsArr, -- slv output to physical
+      RxPortsArr     => RxPortsArr, -- slv input form physical
+      -- unused / changed
+      QpixConf       => QpixConf, -- record input
+--    QpixReq        => open,
       -- reg file connections
       regData        => regData,  -- output from parser
       regResp        => regResp); -- input from parser
@@ -275,11 +275,11 @@ begin
       clk      => clk,
       rst      => rst,
       -- comm connections
-      regData  => regData,
-      regResp  => regResp,
+      regData  => regData,  -- record regData type
+      regResp  => regResp,  -- record regData type
       -- route connections
-      QpixConf => QpixConf,
-      QpixReq  => QpixReq
+      QpixConf => QpixConf, -- record qpixConfigType
+      QpixReq  => QpixReq   -- record qpixRequestType
       );
    -----------------------------------------------
 
@@ -299,7 +299,7 @@ begin
       qpixConf      => QpixConf, -- input register from reg file
       -- analog ASIC trigger connections
       inData        => inData,   -- Data from Process, NOT inData to comm
-      localDataEna  => localDataEna,
+      localDataEna  => open,
       -- comm connections
       txReady       => TxReady, -- ready signal from comm
       txData        => txData,  -- record output to parser

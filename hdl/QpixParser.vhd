@@ -34,12 +34,11 @@ entity QpixParser is
       txReady             : in  std_logic;
 
 -- -- Fixme / TODO?? - These ports do nothing in this module
---      qpixConf            : out QpixConfigType;
---      qpixReq             : out QpixRequestType;
+      qpixConf            : in QpixConfigType;
+--    qpixReq             : out QpixRequestType;
 
       regData             : out QpixRegDataType;
       regResp             : in QpixRegDataType
-      
    );
 end entity QpixParser;
 
@@ -62,7 +61,7 @@ architecture behav of QpixParser is
 
    signal txReadyR         : std_logic  := '1';
    signal fifoRenOrR       : std_logic  := '0';
-   signal fifoRenOrRR       : std_logic := '0';
+   signal fifoRenOrRR      : std_logic := '0';
 
    type MuxStatesType is (IDLE_S, READ_S, WAIT_S);
    signal muxState : MuxStatesType := IDLE_S;
@@ -79,9 +78,7 @@ architecture behav of QpixParser is
       return pos;
    end function;
    
-
 begin
-
 
    ------------------------------------------------------------
    -- mux for input channels
@@ -113,7 +110,6 @@ begin
    ------------------------------------------------------------
    inFifoREnArr <= fifoRen;
 
-
    ------------------------------------------------------------
    -- RX parsing
    ------------------------------------------------------------
@@ -128,7 +124,8 @@ begin
       --end if;
    --end process;
 
-   regDirResp <= fQpixGetDirectionMask(X_POS_G, Y_POS_G); -- FIXME shoud be from qpixConf
+   -- FIXED?
+   regDirResp <= qpixConf.DirMask; -- FIXME shoud be from qpixConf / DONE?
 
    process (clk)
    begin

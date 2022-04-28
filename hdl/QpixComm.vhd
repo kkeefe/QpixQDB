@@ -33,7 +33,7 @@ entity QpixComm is
 
       -- -- Fixme / TODO?? - These ports do nothing in QpixParser.vhd
       -- register info to QpixRoute
---      qpixConf       : out QpixConfigType;
+      qpixConf       : in QpixConfigType;
 --      qpixReq        : out QpixRequestType;  
 
       -- register information to QpixRegFile
@@ -75,9 +75,9 @@ begin
    ------------------------------------------------------------
    GEN_TXRX : for i in 0 to 3 generate
          QpixTXRx_U : entity work.QpixEndeavorTop
-		  generic map (
-			NUM_BITS_G => NUM_BITS_G
-			)
+        generic map (
+         NUM_BITS_G => NUM_BITS_G
+         )
           port map (
                clk         => clk,
                sRst        => rst,
@@ -91,35 +91,35 @@ begin
                rxByte      => RxByteArr(i),
                rxByteValid => RxByteValidArr(i),
                -- external ports
-               Rx          => RxPortsArr(i),
-               Tx          => TxPortsArr(i)
-			);
+               Rx          => RxPortsArr(i),  -- input
+               Tx          => TxPortsArr(i)   -- output
+         );
 
          -- select the correct RAM_TYPE
-         gen_qdb_fifo: if (RAM_TYPE = "Lattice") generate
-            FIFO_U : entity work.QDBFifo
-            generic map(
-               DATA_WIDTH => NUM_BITS_G,
-               DEPTH      => 8,
-               RAM_TYPE   => RAM_TYPE
-            )
-            port map(
-               clk   => clk,
-               rst   => rst,
-               din   => RxByteArr(i),
-               wen   => RxByteValidArr(i),
-               ren   => RxFifoREnArr(i),
-               dout  => RxFifoDoutArr(i),
-               empty => RxFifoEmptyArr(i),
-               full  => RxFifoFullArr(i)
-            );
-         end generate;
-         gen_fifo_cc: if (RAM_TYPE /= "Lattice") generate
+         --gen_qdb_fifo: if (RAM_TYPE = "Lattice") generate
+            --FIFO_U : entity work.QDBFifo
+            --generic map(
+               --DATA_WIDTH => NUM_BITS_G,
+               --DEPTH      => G_FIFO_MUX_DEPTH,
+               --RAM_TYPE   => RAM_TYPE
+            --)
+            --port map(
+               --clk   => clk,
+               --rst   => rst,
+               --din   => RxByteArr(i),
+               --wen   => RxByteValidArr(i),
+               --ren   => RxFifoREnArr(i),
+               --dout  => RxFifoDoutArr(i),
+               --empty => RxFifoEmptyArr(i),
+               --full  => RxFifoFullArr(i)
+            --);
+         --end generate;
+         --gen_fifo_cc: if (RAM_TYPE /= "Lattice") generate
             FIFO_U : entity work.fifo_cc
             generic map(
                DATA_WIDTH => NUM_BITS_G,
-               DEPTH      => G_FIFO_MUX_DEPTH,
-               RAM_TYPE   => RAM_TYPE
+               DEPTH      => 1,
+               RAM_TYPE   => "distributed"
             )
             port map(
                clk   => clk,
@@ -131,11 +131,19 @@ begin
                empty => RxFifoEmptyArr(i),
                full  => RxFifoFullArr(i)
             );
-         end generate;
+         --end generate;
 
    end generate GEN_TXRX;
    ------------------------------------------------------------
 
+   --TxReadyOr <= and TxByteReadyArr;
+   --RxByteArr(3) <= (others => '0');
+   --RxByteValidArr(3) <= '0';
+   --RxFifoREnArr(3) <= '0';
+   --RxFifoEmptyArr(3) <= '0';
+   --RxFifoFullArr(3) <= '0';
+   --TxPortsArr(3) <= '0';
+   --TxByteReadyArr(3) <= '1';
    TxReadyOr <= '1' when TxByteReadyArr = "1111" else '0';
    TxReady   <= TxReadyOr;
 
@@ -162,7 +170,7 @@ begin
       txReady           => TxReady,
 
       -- FixMe / TODO??
-      --qpixConf          => qpixConf,
+      qpixConf          => qpixConf,
       --qpixReq           => qpixReq,
 
       regData           => regData,
