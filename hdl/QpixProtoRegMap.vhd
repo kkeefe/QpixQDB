@@ -74,6 +74,9 @@ architecture behav of QpixProtoRegMap is
    signal s_chanMask   : std_logic_vector (G_N_ANALOG_CHAN-1 downto 0)  := (others => '0');
    signal s_asic_mask  : std_logic_vector (15 downto 0) := (others => '1');
    signal test_word_out : std_logic_vector(63 downto 0);
+   
+   -- sctach
+   signal scratch_word : std_logic_vector(31 downto 0) := 0x"10101010";
 
 begin
 
@@ -101,6 +104,13 @@ begin
             v_reg_ind := to_integer(unsigned(a_reg_addr));
             case a_reg_addr is 
                
+               when 0x"00" =>
+                if wen = '1' and req = '1' then
+                  scratch_word <= wdata;
+                else
+                  rdata <= scratch_word;
+                end if;
+                                    
                when REGMAP_CMD     =>
                   if wen = '1' and req = '1' and ack = '0' then
                      trg <= wdata(0);
@@ -175,7 +185,7 @@ begin
                   rdata <= trgTime;
 
                when others => 
-                  rdata <= x"0BAD_ADD0";
+                  rdata <= x"0BAD_ADD5";
 
             end case;
          -- event memory
