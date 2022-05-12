@@ -33,11 +33,11 @@ entity QpixProtoRegMap is
       daqFrameErrCnt : in std_logic_vector(31 downto 0);
       daqBreakErrCnt : in std_logic_vector(31 downto 0);
 
-      extFifoMax  :   Slv4b2DArray(0 to X_NUM_G-1, 0 to Y_NUM_G-1);
+      extFifoMax : in Slv4b2DArray;
       
       -- local interfaces
       trgTime     : in std_logic_vector(31 downto 0);
-      hitMask     : out Sl2DArray(0 to X_NUM_G-1, 0 to Y_NUM_G-1);
+      hitMask     : out Sl2DArray;
       timestamp   : out std_logic_vector(31 downto 0);
       chanMask    : out std_logic_vector(G_N_ANALOG_CHAN-1 downto 0);
    

@@ -93,7 +93,7 @@ architecture Behavioral of QDBDaqTop is
 --   signal daqTx       : QpixTxRxPortType := QpixTxRxPortZero_C;
 --   signal daqRx       : QpixTxRxPortType := QpixTxRxPortZero_C;
 
-   signal hitMask     : Sl2DArray(0 to X_NUM_G-1, 0 to Y_NUM_G-1) := (others => (others => '0')) ;
+   signal hitMask     : Sl2DArray ;
 
    signal trg         : std_logic := '0';
    signal asicAddr    : std_logic_vector(31 downto 0) := (others => '0');
@@ -118,7 +118,7 @@ architecture Behavioral of QDBDaqTop is
 
    signal qpixDebugArr : QpixDebug2DArrayType(0 to X_NUM_G-1, 0 to Y_NUM_G-1);
 
-   signal extFifoMaxArr : Slv4b2DArray(0 to X_NUM_G-1, 0 to Y_NUM_G-1);
+   signal extFifoMaxArr : Slv4b2DArray;
 
    signal status      : std_logic_vector(31 downto 0) := (others => '0');
 
@@ -354,10 +354,10 @@ begin
      variable pulse_count_tx : integer range 0 to pulse_time := 0;
      variable start_pulse_tx : std_logic := '0';
  begin
-     if rising_edge(clk) then
+     if rising_edge(fclk) then
 
          -- pulse the Rx, Red
-         if s_daqTx = '1' then
+         if s_daqRx = '1' then
              start_pulse_rx := '1';
              pulse_count_rx := 0;
          end if;
@@ -372,7 +372,7 @@ begin
          end if;
 
          -- pulse the Tx, Blue
-         if s_daqRx = '1' then
+         if s_daqTx = '1' then
              start_pulse_tx := '1';
              pulse_count_tx := 0;
          end if;
