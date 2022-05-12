@@ -9,7 +9,7 @@ use work.QpixPkg.all;
 
 entity QpixAsicDummyTop is
    port (
-      -- clk            : in std_logic;
+      --clk            : in std_logic;
       -- rst            : in std_logic;
       
       -- Tx/Rx ports to neighbour ASICs
@@ -38,7 +38,7 @@ architecture behav of QpixAsicDummyTop is
    signal RxByteValid : std_logic := '0';
 
    -- clk / rst
-   signal clk : std_logic;
+--   signal clk : std_logic;
    signal rst : std_logic := '0';
    signal tx : std_logic := '0';
    signal rx : std_logic := '0';
@@ -46,13 +46,13 @@ architecture behav of QpixAsicDummyTop is
    type States is (RX_S, TX_S);
    signal state : States := RX_S;
 
-component HSOSC
-GENERIC( CLKHF_DIV :string :="0b00");
-PORT(
-        CLKHFEN : IN  STD_LOGIC;
-        CLKHFPU : IN  STD_LOGIC;
-        CLKHF   : OUT STD_LOGIC);
-END COMPONENT;
+--component HSOSC
+--GENERIC( CLKHF_DIV :string :="0b00");
+--PORT(
+--        CLKHFEN : IN  STD_LOGIC;
+--        CLKHFPU : IN  STD_LOGIC;
+--        CLKHF   : OUT STD_LOGIC);
+--END COMPONENT;
 
 begin
 
@@ -64,14 +64,14 @@ begin
   Tx3 <= tx;
   rx <= Rx3;
 
-   -- internal oscillator, generate 50 MHz clk
-  u_osc : HSOSC
-  GENERIC MAP(CLKHF_DIV =>"0b11")
-  port map(
-      CLKHFEN  => '1',
-      CLKHFPU  => '1',
-      CLKHF    => clk
-  );
+--   -- internal oscillator, generate 50 MHz clk
+--  u_osc : HSOSC
+--  GENERIC MAP(CLKHF_DIV =>"0b11")
+--  port map(
+--      CLKHFEN  => '1',
+--      CLKHFPU  => '1',
+--      CLKHF    => clk
+--  );
 
   -- pulsing
  pulse : process (clk, Rx3, Tx) is

@@ -33,15 +33,11 @@ entity QpixProtoRegMap is
       daqFrameErrCnt : in std_logic_vector(31 downto 0);
       daqBreakErrCnt : in std_logic_vector(31 downto 0);
 
-      -- simulation
-      --extFifoMax  :   Slv4b2DArray(0 to X_NUM_G-1, 0 to Y_NUM_G-1);
-      extFifoMax  :   in Slv4b2DArray;
+      extFifoMax  :   Slv4b2DArray(0 to X_NUM_G-1, 0 to Y_NUM_G-1);
       
       -- local interfaces
       trgTime     : in std_logic_vector(31 downto 0);
-      -- simulation
-      --hitMask     : out Sl2DArray(0 to X_NUM_G-1, 0 to Y_NUM_G-1);
-      hitMask     : out Sl2DArray;
+      hitMask     : out Sl2DArray(0 to X_NUM_G-1, 0 to Y_NUM_G-1);
       timestamp   : out std_logic_vector(31 downto 0);
       chanMask    : out std_logic_vector(G_N_ANALOG_CHAN-1 downto 0);
    
@@ -52,10 +48,18 @@ entity QpixProtoRegMap is
       asicData    : out std_logic_vector(15 downto 0);
       asicReq     : out std_logic;
       
+
+      
       memRdReq    : out std_logic;
       memRdAck    : in  std_logic;
       memData     : in  std_logic_vector(31 downto 0);
-      memAddr     : out std_logic_vector(G_QPIX_PROTO_MEM_DEPTH-1+2 downto 0));
+      memAddr     : out std_logic_vector(G_QPIX_PROTO_MEM_DEPTH-1+2 downto 0);
+
+      daqTestWordIn  : in std_logic_vector(G_DATA_BITS-1 downto 0) := (others => '0');
+      daqTestWordOut : out  std_logic_vector(G_DATA_BITS-1 downto 0)
+
+
+   );
 end entity QpixProtoRegMap;
 
 architecture behav of QpixProtoRegMap is
@@ -69,6 +73,7 @@ architecture behav of QpixProtoRegMap is
    signal s_timestamp  : std_logic_vector (G_TIMESTAMP_BITS-1 downto 0) := (others => '0');
    signal s_chanMask   : std_logic_vector (G_N_ANALOG_CHAN-1 downto 0)  := (others => '0');
    signal s_asic_mask  : std_logic_vector (15 downto 0) := (others => '1');
+   signal test_word_out : std_logic_vector(63 downto 0);
 
 begin
 
@@ -86,9 +91,11 @@ begin
          hitMask <= (others => (others => '0'));
          rdata   <= (others => '0');
          memRdReq <= '0';
+
          asicReq <= '0';
 
          -- reg mapping
+         
          if s_addr(21 downto 18) = x"0" then
             ack     <= req;
             v_reg_ind := to_integer(unsigned(a_reg_addr));
@@ -126,18 +133,40 @@ begin
                   end if;
 
                when REGMAP_ASICMASK    =>
-                  if req = '1' and wen = '1'  then
+                  if req and wen  then
                      s_asic_mask <= wdata(15 downto 0);
                   else 
                      rdata <= (others => '0');
                      rdata(15 downto 0) <= s_asic_mask;
                   end if;
 
+               when REGMAP_TESTOUT_H    =>
+                  if req and wen  then
+                     test_word_out(63 downto 32) <= wdata(31 downto 0);
+                  else 
+                     rdata <= (others => '0');
+                     rdata(31 downto 0) <= test_word_out(63 downto 32);
+                  end if;
+
+               when REGMAP_TESTOUT_L    =>
+                  if req and wen  then
+                     test_word_out(31 downto 0) <= wdata(31 downto 0);
+                  else 
+                     rdata <= (others => '0');
+                     rdata(31 downto 0) <= test_word_out(31 downto 0);
+                  end if;
+
+               when REGMAP_TESTIN_H     =>
+                  rdata <= daqTestWordIn(63 downto 32);
+
+               when REGMAP_TESTIN_L     =>
+                  rdata <= daqTestWordIn(31 downto 0);
+
                when REGMAP_FRAMEERR    =>
                      rdata <= daqFrameErrCnt;
 
                when REGMAP_BREAKERR    =>
-                     rdata <= daqBreakErrCnt;
+                     rdata <= daqFrameErrCnt;
 
                when REGMAP_EVTSIZE =>
                   rdata <= evtSize;
@@ -146,26 +175,23 @@ begin
                   rdata <= trgTime;
 
                when others => 
-                  rdata <= x"ABAD_ADD0";
+                  rdata <= x"0BAD_ADD0";
 
             end case;
-		 
-		 -- event memory
+         -- event memory
          elsif s_addr(21 downto 18) = x"1" then
             memRdReq <= req;
-            ack      <= memRdAck;
-            if req = '1' then 
+            ack     <= memRdAck;
+            if req then 
                memAddr <= s_addr(G_QPIX_PROTO_MEM_DEPTH-1+2+2 downto 2);
                rdata   <= memData;
             end if;
-         
          -- fifo counters
          elsif s_addr(21 downto 18) = x"2" then
             ack <= req;
             iX := to_integer(unsigned(a_reg_addr(3 downto 0)));
             iY := to_integer(unsigned(a_reg_addr(7 downto 4)));
             rdata <= extFifoMax(iX,iY);
-         
          -- asic reg request
          elsif s_addr(21 downto 18) = x"3" then
             ack         <= req;
@@ -178,15 +204,19 @@ begin
                asicAddr(9 downto 0)  <= s_addr(11 downto 2);
             end if;
          else
-            rdata <= x"0BAD_ADD1";
+            rdata <= x"0BAD_ADD0";
             ack <= req;
+
          end if;
          
       end if;
    end process;
 
+   daqTestWordOut <= test_word_out;
+
    timestamp <= s_timestamp;
    chanMask  <= s_chanMask;
    asic_mask <= s_asic_mask;
+
 
 end behav;

@@ -1,4 +1,4 @@
-library IEEE;
+library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use ieee.std_logic_unsigned.all;
@@ -7,56 +7,52 @@ library work;
 use work.QpixPkg.all;
 use work.QpixProtoPkg.all;
 
---library UNISIM;
---use UNISIM.VComponents.all;
-
-entity QDBDaqTop is
+entity QpixTxRxTestTop is
    generic (
-   BOARD_G : string  := "ZYBO"; -- ZYBO, MINIZED
-   TXRX_TYPE : string  := "ENDEAVOR"; -- "DUMMY"/"UART"/"ENDEAVOR"
-   X_NUM_G : natural := 3;
-   Y_NUM_G : natural := 3
-);
-port (    
-   sysClk    : in std_logic;
-   led       : out std_logic_vector(3 downto 0);
-   sw        : in std_logic_vector(3 downto 0);
-   
-   -- I/O ports
-   je : out STD_LOGIC_VECTOR(1 downto 0);
-   DaqTx : out STD_LOGIC;
-   DaqRx : in STD_LOGIC;
+      BOARD_G : string  := "ZYBO"; -- ZYBO, MINIZED, PYNQ
+      TXRX_TYPE : string  := "ENDEAVOR"; -- "DUMMY"/"UART"/"ENDEAVOR"
+      X_NUM_G : natural := 3;
+      Y_NUM_G : natural := 3 
+      
+   );
+   port (
+      sysClk    : in std_logic;
+      led       : out std_logic_vector(3 downto 0);
+      sw        : in  std_logic_vector(3 downto 0);
+      je        : out std_logic_vector(1 downto 0);
+      DaqTx     : out std_logic;
+      DaqRx     : in  std_logic;
 
-   -- PS ports
-   DDR_addr : inout STD_LOGIC_VECTOR ( 14 downto 0 );
-   DDR_ba : inout STD_LOGIC_VECTOR ( 2 downto 0 );
-   DDR_cas_n : inout STD_LOGIC;
-   DDR_ck_n : inout STD_LOGIC;
-   DDR_ck_p : inout STD_LOGIC;
-   DDR_cke : inout STD_LOGIC;
-   DDR_cs_n : inout STD_LOGIC;
-   DDR_dm : inout STD_LOGIC_VECTOR ( 3 downto 0 );
-   DDR_dq : inout STD_LOGIC_VECTOR ( 31 downto 0 );
-   DDR_dqs_n : inout STD_LOGIC_VECTOR ( 3 downto 0 );
-   DDR_dqs_p : inout STD_LOGIC_VECTOR ( 3 downto 0 );
-   DDR_odt : inout STD_LOGIC;
-   DDR_ras_n : inout STD_LOGIC;
-   DDR_reset_n : inout STD_LOGIC;
-   DDR_we_n : inout STD_LOGIC;
-   FIXED_IO_ddr_vrn : inout STD_LOGIC;
-   FIXED_IO_ddr_vrp : inout STD_LOGIC;
-   FIXED_IO_mio : inout STD_LOGIC_VECTOR ( 53 downto 0 );
-   FIXED_IO_ps_clk : inout STD_LOGIC;
-   FIXED_IO_ps_porb : inout STD_LOGIC;
-   FIXED_IO_ps_srstb : inout STD_LOGIC 
-);
-end QDBDaqTop;
+      -- PS ports
+      DDR_addr : inout STD_LOGIC_VECTOR ( 14 downto 0 );
+      DDR_ba : inout STD_LOGIC_VECTOR ( 2 downto 0 );
+      DDR_cas_n : inout STD_LOGIC;
+      DDR_ck_n : inout STD_LOGIC;
+      DDR_ck_p : inout STD_LOGIC;
+      DDR_cke : inout STD_LOGIC;
+      DDR_cs_n : inout STD_LOGIC;
+      DDR_dm : inout STD_LOGIC_VECTOR ( 3 downto 0 );
+      DDR_dq : inout STD_LOGIC_VECTOR ( 31 downto 0 );
+      DDR_dqs_n : inout STD_LOGIC_VECTOR ( 3 downto 0 );
+      DDR_dqs_p : inout STD_LOGIC_VECTOR ( 3 downto 0 );
+      DDR_odt : inout STD_LOGIC;
+      DDR_ras_n : inout STD_LOGIC;
+      DDR_reset_n : inout STD_LOGIC;
+      DDR_we_n : inout STD_LOGIC;
+      FIXED_IO_ddr_vrn : inout STD_LOGIC;
+      FIXED_IO_ddr_vrp : inout STD_LOGIC;
+      FIXED_IO_mio : inout STD_LOGIC_VECTOR ( 53 downto 0 );
+      FIXED_IO_ps_clk : inout STD_LOGIC;
+      FIXED_IO_ps_porb : inout STD_LOGIC;
+      FIXED_IO_ps_srstb : inout STD_LOGIC
+      
+   );
+end entity QpixTxRxTestTop;
 
-architecture Behavioral of QDBDaqTop is
+architecture behav of QpixTxRxTestTop is
 
    signal fclk : std_logic;
    signal clk  : std_logic := '0';
-   signal clk_12Mhz : std_logic := '0';
    signal rst  : std_logic := '0';
 
     -- ps-pl axi
@@ -88,10 +84,11 @@ architecture Behavioral of QDBDaqTop is
    signal reg_wen     : std_logic := '0';
    signal reg_ack     : std_logic := '0';
 
-   signal inPortsArr  : QpixInPortsArrType(0 to X_NUM_G-1, 0 to Y_NUM_G-1);
+   --signal daqTx       : QpixTxRxPortType := QpixTxRxPortZero_C;
+   --signal daqRx       : QpixTxRxPortType := QpixTxRxPortZero_C;
 
---   signal daqTx       : QpixTxRxPortType := QpixTxRxPortZero_C;
---   signal daqRx       : QpixTxRxPortType := QpixTxRxPortZero_C;
+   signal TxPortsArr  : QpixTxRxPortsArrType;
+   signal RxPortsArr  : QpixTxRxPortsArrType;
 
    signal hitMask     : Sl2DArray(0 to X_NUM_G-1, 0 to Y_NUM_G-1) := (others => (others => '0')) ;
 
@@ -124,52 +121,23 @@ architecture Behavioral of QDBDaqTop is
 
    signal asic_mask   : std_logic_vector (15 downto 0) ;
 
+   signal qClk        : std_logic := '0';
+
    signal daqFrameErrCnt : std_logic_vector (31 downto 0) := (others => '0');
    signal daqBreakErrCnt : std_logic_vector (31 downto 0) := (others => '0');
-   
-   signal counter_led : std_logic := '0';
-   -- buffer daqTx / daqRx
-   signal s_daqTx : std_logic := '0';
-   signal s_daqRx : std_logic := '0';
-   signal pulse_tx : std_logic := '0';
-   signal pulse_rx : std_logic := '0';
-   constant pulse_time : integer := 2_999_999; -- fclk_freq / pulse_time = pulse's width
+
+   signal daqTestWordOut : std_logic_vector(G_DATA_BITS-1 downto 0);
+   signal daqTestWordIn  : std_logic_vector(G_DATA_BITS-1 downto 0);
 
 begin
 
-    -- connect the switches to the LEDs
-    --led <= sw;
-    je(0) <= sw(0);
-    je(1) <= sw(1);    
-    assgn: for i in 0 to 3 generate
-        led(i) <= sw(i) and counter_led;
-    end generate;
-    
-    counter: process(clk, rst) is
-        constant count : natural := 12000000;
-        variable hz : natural range 0 to count := 0;
-    begin
-        if rising_edge(clk_12Mhz) then
-            hz := hz + 1;
-            if hz >= count - 1 then
-                hz := 0;
-                counter_led <= not counter_led;
-            end if;
-        end if; 
-    end process counter;
-
-   ---------------------------------------------------
-   -- 125 MHz clock
-   ---------------------------------------------------
-   --bufg_u : BUFG 
-      --port map ( I => sysClk, O => clk);
-   --clk <= fclk;
-   ---------------------------------------------------
+led <= sw;
+je  <= sw(1 downto 0);
 
    ---------------------------------------------------
    -- Processing system
    ---------------------------------------------------
-   design_1_U : entity work.design_1_wrapper
+      design_1_U : entity work.design_1_wrapper
          port map (
             -- PS ports
             DDR_addr(14 downto 0)     => DDR_addr(14 downto 0),
@@ -221,11 +189,10 @@ begin
             -- CLK Wizard
             reset_rtl_0               => '0',
             sys_clock                 => sysClk,
-            clk_out1_0                => clk,
-            clk_out2_0                => clk_12Mhz,
+            clk_out1_0                => open,            
+            clk_out2_0                => clk,
             locked_0                  => open
          );
-
 
    ---------------------------------------------------
    -- AXI Lite interface
@@ -262,6 +229,7 @@ begin
          wen                   => reg_wen,
          ack                   => reg_ack
       );
+   ---------------------------------------------------
 
    ---------------------------------------------------
    ---------------------------------------------------
@@ -271,8 +239,7 @@ begin
       Y_NUM_G => Y_NUM_G
    )
    port map(
-      --clk          => fclk,
-      clk          => clk_12Mhz,
+      clk          => fclk,
       rst          => rst,
                    
       addr         => reg_addr,
@@ -305,88 +272,44 @@ begin
       memRdReq     => memRdReq,
       memRdAck     => memRdAck,
       memData      => memDataOut,
-      memAddr      => memRdAddr
-   );
+      memAddr      => memRdAddr,
 
+      daqTestWordOut => daqTestWordOut,
+      daqTestWordIn  => daqTestWordIn
+   );
    ---------------------------------------------------
-   -- DAQ node
-   ---------------------------------------------------
-   QpixDaqCtrl_U : entity work.QpixDaqCtrl
-   generic map(
-      TXRX_TYPE  => TXRX_TYPE,
-      MEM_DEPTH  => G_QPIX_PROTO_MEM_DEPTH
-   )
+
+   -----------------------------------------------------
+   ---- DAQ node
+   -----------------------------------------------------
+   QpixDaqCtrl_U : entity work.QpixDaqCtrlDummy
    port map(
-      --clk         => fclk,
-      clk         => clk_12Mhz,
+      clk         => fclk,
       rst         => rst,
                   
-      daqTx       => s_daqTx,
-      daqRx       => s_daqRx,
+      daqTx       => daqTx,
+      daqRx       => daqRx,
+
+      sndWord     => daqTestWordOut,
+      recWord     => daqTestWordIn,
 
       trg         => trg,
-      asicReq     => asicReq,
-      asicOpWrite => asicOpWrite,
-      asicData    => asicData,
-      asicAddr    => asicAddr,
-
-      trgTime     => trgTime,
-      evt_fin     => status(0),
-
-      uartFrameCnt => daqFrameErrCnt,
-      uartBreakCnt => daqBreakErrCnt,
-
-      -- event memory ports
-      memAddrRst  => memAddrRst,
-      memRdAddr   => memRdAddr,
-      memDataOut  => memDataOut, 
-      memRdReq    => memRdReq,
-      memRdAck    => memRdAck,
-      memEvtSize  => evtSize,
-      memFullErr  => open);
-      
+      busy        => status(0)
+   );
    memAddrRst <= trg or asicReq;
+   ---------------------------------------------------
 
- 
- pulse : process (fclk, s_daqRx, s_daqTx) is
-     variable pulse_count_rx : integer range 0 to pulse_time := 0;
-     variable start_pulse_rx : std_logic := '0';
-     variable pulse_count_tx : integer range 0 to pulse_time := 0;
-     variable start_pulse_tx : std_logic := '0';
- begin
-     if rising_edge(clk) then
+   --RxPortsArr(0) <= daqTx;
+   --daqRx <= TxPortsArr(0);
 
-         -- pulse the Rx, Red
-         if s_daqTx = '1' then
-             start_pulse_rx := '1';
-             pulse_count_rx := 0;
-         end if;
-         if start_pulse_rx = '1' then
-             pulse_count_rx := pulse_count_rx + 1;
-             pulse_rx <= '1';
-             if pulse_count_rx >= pulse_time then
-                 pulse_rx       <= '0';
-                 pulse_count_rx := 0;
-                 start_pulse_rx := '0';
-             end if;
-         end if;
-
-         -- pulse the Tx, Blue
-         if s_daqRx = '1' then
-             start_pulse_tx := '1';
-             pulse_count_tx := 0;
-         end if;
-         if start_pulse_tx = '1' then
-             pulse_count_tx := pulse_count_tx + 1;
-             pulse_tx <= '1';
-             if pulse_count_tx >= pulse_time then
-                 pulse_tx       <= '0';
-                 pulse_count_tx := 0;
-                 start_pulse_tx := '0';
-             end if;
-         end if;
-
-     end if;
- end process pulse;
-
-end Behavioral;
+   --QpixAsicDummyTop_u1 : entity work.QpixAsicDummyTop
+   --port map (
+      --clk             => fclk,
+      --rst             => '0',
+      ---- TX ports to neighbour ASICs
+      --Tx      => TxPortsArr(0),
+      ---- RX ports to neighbour ASICs
+      --Rx      => RxPortsArr(0)
+   --);
+   
+end behav;

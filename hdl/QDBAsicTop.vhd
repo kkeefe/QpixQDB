@@ -25,7 +25,7 @@ entity QDBAsicTop is
     );
 port (
     -- internal clock
-    --clk : in STD_LOGIC;
+    clk : in STD_LOGIC;
     --rst : in STD_LOGIC;
 
     -- Tx/Rx IO
@@ -35,8 +35,8 @@ port (
     Rx2 : in STD_LOGIC;
     Tx3 : out STD_LOGIC; -- South
     Rx3 : in STD_LOGIC;
-    --Tx4 : out STD_LOGIC; -- West
-    --Rx4 : in STD_LOGIC;
+    Tx4 : out STD_LOGIC; -- West
+    Rx4 : in STD_LOGIC;
 
     -- extra IO, hardcode IO for now
     --IO : in STD_LOGIC_VECTOR(3 downto 0);
@@ -62,7 +62,7 @@ architecture Behavioral of QDBAsicTop is
   signal fake_trg     : std_logic := '0';
   signal count        : integer range 0 to 50000000;
   signal rst          : std_logic := '0';
-  signal clk          : std_logic;
+--  signal clk          : std_logic;
   signal localCnt     : unsigned (31 downto 0) := (others => '0');
   signal slv_localCnt : std_logic_vector(31 downto 0);
   signal pulse_tx     : std_logic := '0';
@@ -88,13 +88,13 @@ architecture Behavioral of QDBAsicTop is
   -- signal spulse_count : integer range 0 to pulse_time := 0;
   -- signal sstart_pulse : std_logic;
 
-component HSOSC
-GENERIC( CLKHF_DIV :string :="0b00");
-PORT(
-        CLKHFEN : IN  STD_LOGIC;
-        CLKHFPU : IN  STD_LOGIC;
-        CLKHF   : OUT STD_LOGIC);
-END COMPONENT;
+--component HSOSC
+--GENERIC( CLKHF_DIV :string :="0b00");
+--PORT(
+--        CLKHFEN : IN  STD_LOGIC;
+--        CLKHFPU : IN  STD_LOGIC;
+--        CLKHF   : OUT STD_LOGIC);
+--END COMPONENT;
 
 begin
 
@@ -106,13 +106,13 @@ begin
     rst <= '0';
 
     -- internal oscillator, generate 50 MHz clk
-  u_osc : HSOSC
-  GENERIC MAP(CLKHF_DIV =>"0b11")
-  port map(
-      CLKHFEN  => '1',
-      CLKHFPU  => '1',
-      CLKHF    => clk
-  );
+--  u_osc : HSOSC
+--  GENERIC MAP(CLKHF_DIV =>"0b11")
+--  port map(
+--      CLKHFEN  => '1',
+--      CLKHFPU  => '1',
+--      CLKHF    => clk
+--  );
 
     -- connect Tx/Rx to the signals
     Tx1 <= TxPortsArr(0);

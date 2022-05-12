@@ -83,18 +83,18 @@ package QpixPkg is
   type QpixTxRxVarArrType is array(natural range <>) of QpixTxRxPortType;
   type QpixByteArrType is array(0 to 3) of std_logic_vector(G_DATA_BITS-1 downto 0);
 -- comment for simulation
-   type Sl2DArray is array(natural range <>, natural range <>) of std_logic;
-   type SlvArray is array(natural range <>) of std_logic_vector;
-   type Slv2DArray is array(natural range <>, natural range <>) of std_logic_vector;
-   type Slv4b2DArray is array(natural range <>, natural range <>) of std_logic_vector(31 downto 0);
-   type TimeArray2DType is array(natural range<>, natural range<>) of time;
+--   type Sl2DArray is array(natural range <>, natural range <>) of std_logic;
+--   type SlvArray is array(natural range <>) of std_logic_vector;
+--   type Slv2DArray is array(natural range <>, natural range <>) of std_logic_vector;
+--   type Slv4b2DArray is array(natural range <>, natural range <>) of std_logic_vector(31 downto 0);
+--   type TimeArray2DType is array(natural range<>, natural range<>) of time;
 -- depdenencies
   type QpixTxRxPortsArrType is array(0 to 3) of QpixTxRxPortType;
   type QpixDebug2DArrayType is array(natural range <>, natural range<>) of QpixDebugType;
 -- uncomment for simulation
---type Sl2DArray is array(0 to 3, 0 to 3) of std_logic;
---type Slv4b2DArray is array(0 to 3, 0 to 3) of std_logic_vector(31 downto 0);
---type TimeArray2DType is array(0 to 3, 0 to 3) of time;
+type Sl2DArray is array(0 to 3, 0 to 3) of std_logic;
+type Slv4b2DArray is array(0 to 3, 0 to 3) of std_logic_vector(31 downto 0);
+type TimeArray2DType is array(0 to 3, 0 to 3) of time;
 
    ------------------------------------------------------------------
    -- Input port from Qpix analog
