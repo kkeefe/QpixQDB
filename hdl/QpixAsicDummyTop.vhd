@@ -9,7 +9,7 @@ use work.QpixPkg.all;
 
 entity QpixAsicDummyTop is
    port (
-      --clk            : in std_logic;
+      clk            : in std_logic;
       -- rst            : in std_logic;
       
       -- Tx/Rx ports to neighbour ASICs
@@ -29,6 +29,7 @@ architecture behav of QpixAsicDummyTop is
   constant pulse_time : integer := 1_999_999;
   signal pulse_tx     : std_logic := '0';
   signal pulse_rx     : std_logic := '0';
+  signal pulse_cnt     : std_logic := '0';
 
    signal TxByte      : std_logic_vector(G_DATA_BITS-1 downto 0) := (others => '0');
    signal RxByte      : std_logic_vector(G_DATA_BITS-1 downto 0) := (others => '0');
@@ -42,6 +43,7 @@ architecture behav of QpixAsicDummyTop is
    signal rst : std_logic := '0';
    signal tx : std_logic := '0';
    signal rx : std_logic := '0';
+   signal cnt : std_logic := '0';
 
    type States is (RX_S, TX_S);
    signal state : States := RX_S;
@@ -57,11 +59,11 @@ architecture behav of QpixAsicDummyTop is
 begin
 
   -- LEDs, active LOW (on when value is '0')
-  red_led <= not pulse_rx;
-  blu_led <= not pulse_tx;
-  gre_led <= '1';
+  red_led <= '1';
+  blu_led <= not pulse_cnt;
+  gre_led <= not pulse_rx;
   rst <= '0';
-  Tx3 <= tx;
+  Tx3 <= tx xor pulse_cnt;
   rx <= Rx3;
 
 --   -- internal oscillator, generate 50 MHz clk
@@ -72,6 +74,20 @@ begin
 --      CLKHFPU  => '1',
 --      CLKHF    => clk
 --  );
+  
+  -- counter
+  process(clk, cnt) is
+   variable counter : integer range 0 to 11_999_999 := 0;
+  begin
+    if rising_edge(clk) then
+		counter := counter + 1;
+		cnt <= '0';
+		if counter >= 11_999_998 then
+			counter := 0;
+			cnt <= '1';
+		end if;
+	end if;
+  end process;
 
   -- pulsing
  pulse : process (clk, Rx3, Tx) is
@@ -79,8 +95,25 @@ begin
      variable start_pulse_rx : std_logic := '0';
      variable pulse_count_tx : integer range 0 to pulse_time := 0;
      variable start_pulse_tx : std_logic := '0';
+	 variable pulse_count_cnt : integer range 0 to pulse_time := 0;
+     variable start_pulse_cnt: std_logic := '0';
  begin
      if rising_edge(clk) then
+
+         -- pulse the Rx, Red
+         if cnt = '1' then
+             start_pulse_cnt := '1';
+             pulse_count_cnt := 0;
+         end if;
+         if start_pulse_cnt = '1' then
+             pulse_count_cnt := pulse_count_cnt + 1;
+             pulse_cnt <= '1';
+             if pulse_count_cnt >= pulse_time then
+                 pulse_cnt       <= '0';
+                 pulse_count_cnt := 0;
+                 start_pulse_cnt := '0';
+             end if;
+         end if;
 
          -- pulse the Rx, Red
          if Rx3 = '1' then
@@ -126,6 +159,9 @@ begin
       txByte      => RxByteR, 
       txByteValid => TxByteValid, 
       txByteReady => TxByteReady,
+	  
+	  rxFrameErr  => open, -- No valid stop bit found
+      rxBreakErr  => open, -- Line low for longer than a character time
 
       rxByte      => RxByte,
       rxByteValid => RxByteValid,
@@ -157,4 +193,3 @@ begin
 
 
 end behav;
-

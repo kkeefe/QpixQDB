@@ -212,50 +212,47 @@ begin
         -- turn off reception from un-connected directions
         wen <= '0';
         req <= '0';
-        
-      -- manually route ASICs to tell the "furthest left" to send down
-      -- send asic dir mask!
-      wait for 200 us; -- (sets C manual routing, successfully)
+
+
+      wait for 10 us; -- (sets C manual routing, successfully)
         req   <= '1';
-        wdata <= x"0000001" & b"0100";    -- set ManRoute '1' and DirMask "DirDown" from QPixPkg.vhd 
+        wdata <= x"0000000" & b"0000";    -- set ManRoute '1' and DirMask "DirDown" from QPixPkg.vhd 
         wen <= '1';                       -- opWrite
         addr  <= x"000" & x"c" & x"080c"; -- C for remote, 100 for dest & X/Y, c=3<<2 for dir mask
       wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
         req <= '0';
-      wait for 500 us; -- (sets A manual routing, successfully)
-          req   <= '1';
-          wdata <= x"0000001" & b"0100";    -- set ManRoute '1' and DirMask "DirDown" from QPixPkg.vhd 
-          wen <= '1';                       -- opWrite
-          addr  <= x"000" & x"c" & x"082c"; -- C for remote, 002 for X/Y, c=3<<2 for dir mask
-        wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
-          req <= '0';
-   
-      -- interrogate fifos after setting the dirMask with trigger
-      wait for 500 us;
-          req   <= '1';
-          wdata <= x"00000001";             -- set interrogation
-          wen <= '1';                       -- opRead
-          addr  <= x"000" & x"0" & x"0028"; -- default trigger here
-        wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
-          req <= '0';
-          wen <= '0';
 
-      -- Fifo_Counters Read 2
-      -- Read EvtSize -> Should get 8 since that's how many events are in DaqCtrl BRAM
-      wait for 5 ms;
-        addr  <= x"00000010"; -- read the event size from the DAQ buffer
+    -- write the top high word
+      wait for 20 us; -- (sets C manual routing, successfully)
         req   <= '1';
-      wait for Asic_CLK_PERIOD_NOMINAL_C * 2; 
+        wdata <= x"ffff_ffff"; 
+        wen <= '1';                       -- opWrite
+        addr  <= x"0000_002c";
+      wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
         req <= '0';
 
-      -- Event_Memory Read 1
-      -- try to read in from the event memory 
---      wait for 1 ms;
---      ----------   unused & evtMmem &  addr  & mux  & unused
---          addr  <= x"000" &   x"4"  & x"003" & "00" & "00";
---          req   <= '1';
---      wait for Asic_CLK_PERIOD_NOMINAL_C * 10;              
---          req <= '0';
+    -- verified sends trigger
+    -- send the trigger to 0x0a << 2 = 0x28
+      wait for 100 us; -- (sets C manual routing, successfully)
+        req   <= '1';
+        wdata <= x"aaaa_aaaf"; 
+        wen <= '1';                       -- opWrite
+        addr  <= x"0000_0028";
+      wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
+        req <= '0';
+
+    -- repeat send the trigger 1 ms later..
+    -- send the trigger to 0x0a << 2 = 0x28
+      wait for 1 ms; -- (sets C manual routing, successfully)
+        req   <= '1';
+        wdata <= x"0000_0001"; 
+        wen <= '1';                       -- opWrite
+        addr  <= x"0000_0028";
+      wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
+        req <= '0';
+
+
+
      
       -- End simulation stimulus by waiting forever
       wait;
