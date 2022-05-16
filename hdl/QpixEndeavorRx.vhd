@@ -68,7 +68,7 @@ architecture Behavioral of QpixEndeavorRx is
    signal curReg : RegType := REG_INIT_C;
    signal nxtReg : RegType := REG_INIT_C;
 
-   signal rx_q : std_logic_vector(3 downto 0);
+   signal rx_q : std_logic_vector(3 downto 0) := (others => '0');
    signal rx_r : std_logic := '0';
 
    attribute shreg_extract : string;
@@ -136,11 +136,8 @@ begin
                nxtReg.bitError <= '1';
                nxtReg.state  <= IDLE_S;
             end if;
-
-            nxtReg.byteCount <= curReg.byteCount + 1;
-            
+            nxtReg.byteCount <= curReg.byteCount + 1;        
             nxtReg.highCnt <= (others => '0');
-
 
          when GAP_S =>
 
@@ -165,7 +162,8 @@ begin
                nxtReg.lenError  <= '1';
             end if;
             nxtReg.state <= IDLE_S;
-         when others  =>
+         
+		 when others  =>
             nxtReg.state <= IDLE_S;
 
       end case;         

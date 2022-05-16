@@ -33,7 +33,6 @@ architecture behav of QpixAsicDummyTop is
 
    signal TxByte      : std_logic_vector(G_DATA_BITS-1 downto 0) := (others => '0');
    signal RxByte      : std_logic_vector(G_DATA_BITS-1 downto 0) := (others => '0');
-   signal RxByteR     : std_logic_vector(G_DATA_BITS-1 downto 0) := (others => '0');
    signal TxByteValid : std_logic := '0';
    signal TxByteReady : std_logic := '0';
    signal RxByteValid : std_logic := '0';
@@ -44,6 +43,10 @@ architecture behav of QpixAsicDummyTop is
    signal tx : std_logic := '0';
    signal rx : std_logic := '0';
    signal cnt : std_logic := '0';
+   
+   signal bitError : std_logic := '0';
+   signal lenError : std_logic := '0';
+   signal gapError : std_logic := '0';
 
    type States is (RX_S, TX_S);
    signal state : States := RX_S;
@@ -59,14 +62,14 @@ architecture behav of QpixAsicDummyTop is
 begin
 
   -- LEDs, active LOW (on when value is '0')
-  red_led <= '1';
-  blu_led <= not pulse_cnt;
+  red_led <= not pulse_cnt;
+  blu_led <= not pulse_tx;
   gre_led <= not pulse_rx;
   rst <= '0';
-  Tx3 <= tx xor pulse_cnt;
+  Tx3 <= tx;
   rx <= Rx3;
 
---   -- internal oscillator, generate 50 MHz clk
+-- internal oscillator, generate 50 MHz clk
 --  u_osc : HSOSC
 --  GENERIC MAP(CLKHF_DIV =>"0b11")
 --  port map(
@@ -100,8 +103,8 @@ begin
  begin
      if rising_edge(clk) then
 
-         -- pulse the Rx, Red
-         if cnt = '1' then
+		 -- Red
+         if lenError = '1' then
              start_pulse_cnt := '1';
              pulse_count_cnt := 0;
          end if;
@@ -115,8 +118,8 @@ begin
              end if;
          end if;
 
-         -- pulse the Rx, Red
-         if Rx3 = '1' then
+		 -- Green
+         if gapError = '1' then
              start_pulse_rx := '1';
              pulse_count_rx := 0;
          end if;
@@ -130,8 +133,8 @@ begin
              end if;
          end if;
 
-         -- pulse the Tx, Blue
-         if Tx = '1' then
+		 -- Blue
+         if bitError = '1' then
              start_pulse_tx := '1';
              pulse_count_tx := 0;
          end if;
@@ -156,32 +159,34 @@ begin
       clk         => clk,
       sRst        => rst,
 
-      txByte      => RxByteR, 
-      txByteValid => TxByteValid, 
-      txByteReady => TxByteReady,
+      txByte      => TxByte,      -- input
+      txByteValid => TxByteValid, -- input
+      txByteReady => TxByteReady, -- output
 	  
-	  rxFrameErr  => open, -- No valid stop bit found
-      rxBreakErr  => open, -- Line low for longer than a character time
+	  rxFrameErr  => bitError,
+      rxBreakErr  => lenError,
+	  rxGapErr    => gapError,
 
-      rxByte      => RxByte,
-      rxByteValid => RxByteValid,
+      rxByte      => RxByte,      -- output
+      rxByteValid => RxByteValid, -- output
 
-      Rx          => Rx,
-      Tx          => Tx
+      Rx          => Rx, -- input
+      Tx          => Tx  -- output
    );
 
-   process (clk)
+   process (clk, state, TxByteValid, TxByteReady, TxByte, RxByteValid, RxByte)
    begin
       if rising_edge(clk) then
       case state is
          when RX_S => 
             TxByteValid <= '0';
+			-- if we receive a valid RxByte, echo word into Txbyte
             if RxByteValid = '1' then
-               RxByteR <= RxByte;
-               state <= TX_S;
+               TxByte <= RxByte;
+               state  <= TX_S;
             end if;
          when TX_S =>
-            if TxByteReady = '1' then
+            if TxByteValid = '1' then
                TxByteValid <= '1';
                state <= RX_S;
             end if;
