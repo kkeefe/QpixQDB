@@ -125,7 +125,10 @@ begin
             end if;
 
          when BIT_S  =>
-            if curReg.highCnt >= N_ZER_MIN_G and curReg.highCnt <= N_ZER_MAX_G then
+            nxtReg.byteCount <= curReg.byteCount + 1;        
+            nxtReg.highCnt <= (others => '0');
+            
+			if curReg.highCnt >= N_ZER_MIN_G and curReg.highCnt <= N_ZER_MAX_G then
                nxtReg.byte(to_integer(curReg.byteCount)) <= '0';
                nxtReg.state  <= GAP_S;
             elsif curReg.highCnt >= N_ONE_MIN_G and curReg.highCnt <= N_ONE_MAX_G then
@@ -136,8 +139,7 @@ begin
                nxtReg.bitError <= '1';
                nxtReg.state  <= IDLE_S;
             end if;
-            nxtReg.byteCount <= curReg.byteCount + 1;        
-            nxtReg.highCnt <= (others => '0');
+
 
          when GAP_S =>
 

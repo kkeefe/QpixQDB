@@ -20,8 +20,12 @@ entity QpixTxRxTestTop is
       led       : out std_logic_vector(3 downto 0);
       sw        : in  std_logic_vector(3 downto 0);
       je        : out std_logic_vector(1 downto 0);
-      DaqTx     : out std_logic;
-      DaqRx     : in  std_logic;
+--      DaqTx     : out std_logic;
+--      DaqRx     : in  std_logic;
+      -- led_5
+      led5_r : out std_logic;
+      led5_b : out std_logic;
+      led5_g : out std_logic;
 
       -- PS ports
       DDR_addr : inout STD_LOGIC_VECTOR ( 14 downto 0 );
@@ -90,7 +94,7 @@ architecture behav of QpixTxRxTestTop is
    signal TxPortsArr  : QpixTxRxPortsArrType;
    signal RxPortsArr  : QpixTxRxPortsArrType;
 
-   signal hitMask     : Sl2DArray(0 to X_NUM_G-1, 0 to Y_NUM_G-1) := (others => (others => '0')) ;
+   signal hitMask     : Sl2DArray := (others => (others => '0')) ;
 
    signal trg         : std_logic := '0';
    signal asicAddr    : std_logic_vector(31 downto 0) := (others => '0');
@@ -115,7 +119,7 @@ architecture behav of QpixTxRxTestTop is
 
    signal qpixDebugArr : QpixDebug2DArrayType(0 to X_NUM_G-1, 0 to Y_NUM_G-1);
 
-   signal extFifoMaxArr : Slv4b2DArray(0 to X_NUM_G-1, 0 to Y_NUM_G-1);
+   signal extFifoMaxArr : Slv4b2DArray;
 
    signal status      : std_logic_vector(31 downto 0) := (others => '0');
 
@@ -128,11 +132,29 @@ architecture behav of QpixTxRxTestTop is
 
    signal daqTestWordOut : std_logic_vector(G_DATA_BITS-1 downto 0);
    signal daqTestWordIn  : std_logic_vector(G_DATA_BITS-1 downto 0);
+   
+   -- buffer daqTx / daqRx
+   signal s_daqTx : std_logic := '0';
+   signal s_daqRx : std_logic := '0';
+   signal pulse_tx : std_logic := '0';
+   signal pulse_rx : std_logic := '0';
+   constant pulse_time : integer := 12_999_999; -- fclk_freq / pulse_time = pulse's width
+
+    signal red_led : std_logic := '0';
+    signal blu_led : std_logic := '0';
+    signal gre_led : std_logic := '0';
+
 
 begin
 
-led <= sw;
+led(1 downto 0) <= sw(1 downto 0);
 je  <= sw(1 downto 0);
+--s_daqRx <= daqRx;
+--daqTx <= s_daqTx;
+led(3 downto 2) <= pulse_tx & pulse_rx;
+led5_r <= not red_led;
+led5_b <= not blu_led;
+led5_g <= not gre_led;
 
    ---------------------------------------------------
    -- Processing system
@@ -287,8 +309,8 @@ je  <= sw(1 downto 0);
       clk         => fclk,
       rst         => rst,
                   
-      daqTx       => daqTx,
-      daqRx       => daqRx,
+      daqTx       => s_daqTx, -- output
+      daqRx       => s_daqRx, -- input
 
       sndWord     => daqTestWordOut,
       recWord     => daqTestWordIn,
@@ -299,17 +321,63 @@ je  <= sw(1 downto 0);
    memAddrRst <= trg or asicReq;
    ---------------------------------------------------
 
-   --RxPortsArr(0) <= daqTx;
-   --daqRx <= TxPortsArr(0);
+ pulse : process (fclk, s_daqRx, s_daqTx) is
+     variable pulse_count_rx : integer range 0 to pulse_time := 0;
+     variable start_pulse_rx : std_logic := '0';
+     variable pulse_count_tx : integer range 0 to pulse_time := 0;
+     variable start_pulse_tx : std_logic := '0';
+ begin
+     if rising_edge(fclk) then
 
-   --QpixAsicDummyTop_u1 : entity work.QpixAsicDummyTop
-   --port map (
-      --clk             => fclk,
-      --rst             => '0',
-      ---- TX ports to neighbour ASICs
-      --Tx      => TxPortsArr(0),
-      ---- RX ports to neighbour ASICs
-      --Rx      => RxPortsArr(0)
-   --);
+         -- pulse LED 2
+         if s_daqRx = '1' then
+             start_pulse_rx := '1';
+             pulse_count_rx := 0;
+         end if;
+         if start_pulse_rx = '1' then
+             pulse_count_rx := pulse_count_rx + 1;
+             pulse_rx <= '1';
+             if pulse_count_rx >= pulse_time then
+                 pulse_rx       <= '0';
+                 pulse_count_rx := 0;
+                 start_pulse_rx := '0';
+             end if;
+         end if;
+         
+
+         -- pulse LED 3
+         if s_daqTx = '1' then
+             start_pulse_tx := '1';
+             pulse_count_tx := 0;
+         end if;
+         if start_pulse_tx = '1' then
+             pulse_count_tx := pulse_count_tx + 1;
+             pulse_tx <= '1';
+             if pulse_count_tx >= pulse_time then
+                 pulse_tx       <= '0';
+                 pulse_count_tx := 0;
+                 start_pulse_tx := '0';
+             end if;
+         end if;
+
+     end if;
+ end process pulse;
+
+--   RxPortsArr(0) <= daqTx;
+--   daqRx <= TxPortsArr(0);
+
+   QpixAsicDummyTop_u1 : entity work.QpixAsicDummyTop
+   port map (
+      clk             => fclk,
+--      rst             => '0',
+      -- TX ports to neighbour ASICs
+      Tx3      => s_daqRx,
+      -- RX ports to neighbour ASICs
+      Rx3      => s_daqTx,
+      -- leds
+      red_led => red_led,
+      gre_led => gre_led,
+      blu_led => blu_led
+   );
    
 end behav;
