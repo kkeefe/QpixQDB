@@ -7,3 +7,4 @@
   - 3x asic_reg_request
 
 - asic_reads_in
+- more notes to test
