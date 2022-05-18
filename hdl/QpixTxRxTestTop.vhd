@@ -27,6 +27,11 @@ entity QpixTxRxTestTop is
       led5_b : out std_logic;
       led5_g : out std_logic;
 
+      -- led_6
+      led6_r : out std_logic;
+      led6_b : out std_logic;
+      led6_g : out std_logic;
+
       -- PS ports
       DDR_addr : inout STD_LOGIC_VECTOR ( 14 downto 0 );
       DDR_ba : inout STD_LOGIC_VECTOR ( 2 downto 0 );
@@ -139,10 +144,18 @@ architecture behav of QpixTxRxTestTop is
    signal pulse_tx : std_logic := '0';
    signal pulse_rx : std_logic := '0';
    constant pulse_time : integer := 12_999_999; -- fclk_freq / pulse_time = pulse's width
+   
+   signal pulse_state : std_logic := '0';
+   signal pulse_rxbv : std_logic := '0';
+   signal pulse_txbv : std_logic := '0';
 
     signal red_led : std_logic := '0';
     signal blu_led : std_logic := '0';
     signal gre_led : std_logic := '0';
+    
+    signal state_o : std_logic := '0';
+    signal txByteValid_o : std_logic := '0';
+    signal rxByteValid_o : std_logic := '0';
 
 
 begin
@@ -155,6 +168,10 @@ led(3 downto 2) <= pulse_tx & pulse_rx;
 led5_r <= not red_led;
 led5_b <= not blu_led;
 led5_g <= not gre_led;
+led6_r <= pulse_state;
+led6_b <= pulse_rxbv;
+led6_g <= pulse_txbv;
+
 
    ---------------------------------------------------
    -- Processing system
@@ -321,11 +338,20 @@ led5_g <= not gre_led;
    memAddrRst <= trg or asicReq;
    ---------------------------------------------------
 
- pulse : process (fclk, s_daqRx, s_daqTx) is
+ pulse : process (fclk, s_daqRx, s_daqTx, state_o, txByteValid_o, rxByteValid_o) is
      variable pulse_count_rx : integer range 0 to pulse_time := 0;
      variable start_pulse_rx : std_logic := '0';
      variable pulse_count_tx : integer range 0 to pulse_time := 0;
      variable start_pulse_tx : std_logic := '0';
+     -- state_o
+     variable pulse_count_state : integer range 0 to pulse_time := 0;
+     variable start_pulse_state : std_logic := '0';
+     -- rxByteValid
+     variable pulse_count_rxbv : integer range 0 to pulse_time := 0;
+     variable start_pulse_rxbv : std_logic := '0';
+     -- txByteValid
+     variable pulse_count_txbv : integer range 0 to pulse_time := 0;
+     variable start_pulse_txbv : std_logic := '0';
  begin
      if rising_edge(fclk) then
 
@@ -344,7 +370,6 @@ led5_g <= not gre_led;
              end if;
          end if;
          
-
          -- pulse LED 3
          if s_daqTx = '1' then
              start_pulse_tx := '1';
@@ -360,6 +385,51 @@ led5_g <= not gre_led;
              end if;
          end if;
 
+        -- pulse state
+         if state_o = '1' then
+            start_pulse_state := '1';
+            pulse_count_state := 0;
+        end if;
+        if start_pulse_state = '1' then
+            pulse_count_state := pulse_count_tx + 1;
+            pulse_state <= '1';
+            if pulse_count_state >= pulse_time then
+                pulse_tx       <= '0';
+                pulse_count_state := 0;
+                start_pulse_state := '0';
+            end if;
+        end if;
+        
+        -- pulse txByteValid
+         if txByteValid_o = '1' then
+            start_pulse_txbv := '1';
+            pulse_count_txbv := 0;
+        end if;
+        if start_pulse_txbv = '1' then
+            pulse_count_txbv := pulse_count_tx + 1;
+            pulse_txbv <= '1';
+            if pulse_count_txbv >= pulse_time then
+                pulse_txbv       <= '0';
+                pulse_count_txbv := 0;
+                start_pulse_txbv := '0';
+            end if;
+        end if;        
+        
+        -- pulse rxByteValid
+         if rxByteValid_o = '1' then
+            start_pulse_rxbv := '1';
+            pulse_count_rxbv := 0;
+        end if;
+        if start_pulse_rxbv = '1' then
+            pulse_count_rxbv := pulse_count_tx + 1;
+            pulse_tx <= '1';
+            if pulse_count_rxbv >= pulse_time then
+                pulse_tx       <= '0';
+                pulse_count_rxbv := 0;
+                start_pulse_rxbv := '0';
+            end if;
+        end if;        
+
      end if;
  end process pulse;
 
@@ -368,16 +438,20 @@ led5_g <= not gre_led;
 
    QpixAsicDummyTop_u1 : entity work.QpixAsicDummyTop
    port map (
-      clk             => fclk,
+      clk      => fclk,
 --      rst             => '0',
       -- TX ports to neighbour ASICs
       Tx3      => s_daqRx,
       -- RX ports to neighbour ASICs
       Rx3      => s_daqTx,
+      -- outputs
+      state_o       => state_o, -- which state is the machine in
+      rxByteValid_o => rxByteValid_o,
+      txByteValid_o => txByteValid_o,
       -- leds
-      red_led => red_led,
-      gre_led => gre_led,
-      blu_led => blu_led
+      red_led => red_led, -- lenError
+      gre_led => gre_led, -- GapError
+      blu_led => blu_led  -- bitError
    );
    
 end behav;

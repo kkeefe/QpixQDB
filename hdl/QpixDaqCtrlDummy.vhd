@@ -109,6 +109,7 @@ begin
    end process;
 
    process (clk)
+    variable timeout : integer range 0 to 2_000_000 := 0;
    begin
       if rising_edge(clk) then
          if rst = '1' then 
@@ -128,11 +129,18 @@ begin
                   if daqTxByteReady = '1' then
                      daqTxByteValid <= '1';
                      evt_state <= RECEIVE_S;
+                     timeout := 0;
                   end if;
                when RECEIVE_S => 
+                  timeout := timeout + 1;
                   if daqRxByteValid = '1' then
                      recWord   <= daqRxByte;
                      evt_state <= IDLE_S;
+                  end if;                  
+                  -- timeout here if we don't receive something within some clock cycle count
+                  if timeout >= 1_999_999 then
+                    evt_state <= IDLE_S;
+                    timeout := 0;
                   end if;
             end case;
          end if;

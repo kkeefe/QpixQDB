@@ -33,7 +33,7 @@ entity QpixProtoRegMap is
       daqFrameErrCnt : in std_logic_vector(31 downto 0);
       daqBreakErrCnt : in std_logic_vector(31 downto 0);
 
-      extFifoMax : in Slv4b2DArray;
+      extFifoMax  : in Slv4b2DArray;
       
       -- local interfaces
       trgTime     : in std_logic_vector(31 downto 0);
@@ -75,8 +75,7 @@ architecture behav of QpixProtoRegMap is
    signal s_asic_mask  : std_logic_vector (15 downto 0) := (others => '1');
    signal test_word_out : std_logic_vector(63 downto 0);
    
-   -- sctach
-   signal scratch_word : std_logic_vector(31 downto 0) := 0x"10101010";
+   signal scratch_word : std_logic_vector(31 downto 0) := 0x"0a0a0a0a";
 
 begin
 
@@ -104,13 +103,13 @@ begin
             v_reg_ind := to_integer(unsigned(a_reg_addr));
             case a_reg_addr is 
                
-               when 0x"00" =>
+               when x"00" =>
                 if wen = '1' and req = '1' then
-                  scratch_word <= wdata;
+                    scratch_word <= wdata;
                 else
-                  rdata <= scratch_word;
+                    rdata <= scratch_word;           
                 end if;
-                                    
+               
                when REGMAP_CMD     =>
                   if wen = '1' and req = '1' and ack = '0' then
                      trg <= wdata(0);
@@ -143,7 +142,7 @@ begin
                   end if;
 
                when REGMAP_ASICMASK    =>
-                  if req and wen  then
+                  if req = '1' and wen = '1'  then
                      s_asic_mask <= wdata(15 downto 0);
                   else 
                      rdata <= (others => '0');
@@ -151,7 +150,7 @@ begin
                   end if;
 
                when REGMAP_TESTOUT_H    =>
-                  if req and wen  then
+                  if req = '1' and wen = '1'  then
                      test_word_out(63 downto 32) <= wdata(31 downto 0);
                   else 
                      rdata <= (others => '0');
@@ -159,7 +158,7 @@ begin
                   end if;
 
                when REGMAP_TESTOUT_L    =>
-                  if req and wen  then
+                  if req = '1' and wen = '1'  then
                      test_word_out(31 downto 0) <= wdata(31 downto 0);
                   else 
                      rdata <= (others => '0');
@@ -185,14 +184,14 @@ begin
                   rdata <= trgTime;
 
                when others => 
-                  rdata <= x"0BAD_ADD5";
+                  rdata <= x"0BAD_ADD0";
 
             end case;
          -- event memory
          elsif s_addr(21 downto 18) = x"1" then
             memRdReq <= req;
             ack     <= memRdAck;
-            if req then 
+            if req = '1' then 
                memAddr <= s_addr(G_QPIX_PROTO_MEM_DEPTH-1+2+2 downto 2);
                rdata   <= memData;
             end if;
