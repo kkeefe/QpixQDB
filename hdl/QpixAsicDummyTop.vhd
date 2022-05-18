@@ -15,6 +15,11 @@ entity QpixAsicDummyTop is
       -- Tx/Rx ports to neighbour ASICs
       Tx3 : out std_logic;
       Rx3 : in  std_logic;
+      
+      -- other logic
+      rxByteValid_o : out std_logic;
+      txByteValid_o : out std_logic;
+      state_o       : out std_logic;
 
       -- outputs
       red_led : out STD_LOGIC;
@@ -68,6 +73,13 @@ begin
   rst <= '0';
   Tx3 <= tx;
   rx <= Rx3;
+  
+  -- extra LED outputs
+  rxByteValid_o <= rxByteValid;
+  txByteValid_o <= txByteValid;
+  with state select state_o <=
+    '0' when RX_S,
+    '1' when TX_S;
 
 -- internal oscillator, generate 50 MHz clk
 --  u_osc : HSOSC
