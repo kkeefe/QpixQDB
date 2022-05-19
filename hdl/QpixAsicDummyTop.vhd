@@ -198,7 +198,7 @@ begin
                state  <= TX_S;
             end if;
          when TX_S =>
-            if TxByteValid = '1' then
+            if TxByteReady = '1' then
                TxByteValid <= '1';
                state <= RX_S;
             end if;
