@@ -9010,7 +9010,7 @@
       <spirit:parameters>
         <spirit:parameter>
           <spirit:name>FREQ_HZ</spirit:name>
-          <spirit:value spirit:format="float" spirit:resolve="dependent" spirit:id="BUSIFPARAM_VALUE.FCLK_CLK1.FREQ_HZ" spirit:dependency="(spirit:decode(id(PARAM_VALUE.PCW_CLK1_FREQ)))" spirit:minimum="100000" spirit:maximum="333000000">1e+07</spirit:value>
+          <spirit:value spirit:format="float" spirit:resolve="dependent" spirit:id="BUSIFPARAM_VALUE.FCLK_CLK1.FREQ_HZ" spirit:dependency="(spirit:decode(id(PARAM_VALUE.PCW_CLK1_FREQ)))" spirit:minimum="100000" spirit:maximum="333000000">10000000</spirit:value>
         </spirit:parameter>
         <spirit:parameter>
           <spirit:name>PHASE</spirit:name>
@@ -9075,7 +9075,7 @@
       <spirit:parameters>
         <spirit:parameter>
           <spirit:name>FREQ_HZ</spirit:name>
-          <spirit:value spirit:format="float" spirit:resolve="dependent" spirit:id="BUSIFPARAM_VALUE.FCLK_CLK2.FREQ_HZ" spirit:dependency="(spirit:decode(id(PARAM_VALUE.PCW_CLK2_FREQ)))" spirit:minimum="100000" spirit:maximum="333000000">1e+07</spirit:value>
+          <spirit:value spirit:format="float" spirit:resolve="dependent" spirit:id="BUSIFPARAM_VALUE.FCLK_CLK2.FREQ_HZ" spirit:dependency="(spirit:decode(id(PARAM_VALUE.PCW_CLK2_FREQ)))" spirit:minimum="100000" spirit:maximum="333000000">10000000</spirit:value>
         </spirit:parameter>
         <spirit:parameter>
           <spirit:name>PHASE</spirit:name>
@@ -9140,7 +9140,7 @@
       <spirit:parameters>
         <spirit:parameter>
           <spirit:name>FREQ_HZ</spirit:name>
-          <spirit:value spirit:format="float" spirit:resolve="dependent" spirit:id="BUSIFPARAM_VALUE.FCLK_CLK3.FREQ_HZ" spirit:dependency="(spirit:decode(id(PARAM_VALUE.PCW_CLK3_FREQ)))" spirit:minimum="100000" spirit:maximum="333000000">1e+07</spirit:value>
+          <spirit:value spirit:format="float" spirit:resolve="dependent" spirit:id="BUSIFPARAM_VALUE.FCLK_CLK3.FREQ_HZ" spirit:dependency="(spirit:decode(id(PARAM_VALUE.PCW_CLK3_FREQ)))" spirit:minimum="100000" spirit:maximum="333000000">10000000</spirit:value>
         </spirit:parameter>
         <spirit:parameter>
           <spirit:name>PHASE</spirit:name>
@@ -11798,6 +11798,514 @@
         </xilinx:busInterfaceInfo>
       </spirit:vendorExtensions>
     </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>DMA0_REQ_tlm</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis_tlm" spirit:version="1.0"/>
+      <spirit:slave/>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>AXIS_SOCKET</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>DMA0_REQ_tlm_axis_socket</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:vendorExtensions>
+        <xilinx:busInterfaceInfo>
+          <xilinx:enablement>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="BUSIF_ENABLEMENT.DMA0_REQ_tlm" xilinx:dependency="(spirit:decode(id(PARAM_VALUE.PCW_USE_DMA0)) = 1)">false</xilinx:isEnabled>
+          </xilinx:enablement>
+        </xilinx:busInterfaceInfo>
+      </spirit:vendorExtensions>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>DMA0_ACK_tlm</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis_tlm" spirit:version="1.0"/>
+      <spirit:master/>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>AXIS_SOCKET</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>DMA0_ACK_tlm_axis_socket</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:vendorExtensions>
+        <xilinx:busInterfaceInfo>
+          <xilinx:enablement>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="BUSIF_ENABLEMENT.DMA0_ACK_tlm" xilinx:dependency="(spirit:decode(id(PARAM_VALUE.PCW_USE_DMA0)) = 1)">false</xilinx:isEnabled>
+          </xilinx:enablement>
+        </xilinx:busInterfaceInfo>
+      </spirit:vendorExtensions>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>DMA1_REQ_tlm</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis_tlm" spirit:version="1.0"/>
+      <spirit:slave/>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>AXIS_SOCKET</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>DMA1_REQ_tlm_axis_socket</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:vendorExtensions>
+        <xilinx:busInterfaceInfo>
+          <xilinx:enablement>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="BUSIF_ENABLEMENT.DMA1_REQ_tlm" xilinx:dependency="(spirit:decode(id(PARAM_VALUE.PCW_USE_DMA1)) = 1)">false</xilinx:isEnabled>
+          </xilinx:enablement>
+        </xilinx:busInterfaceInfo>
+      </spirit:vendorExtensions>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>DMA1_ACK_tlm</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis_tlm" spirit:version="1.0"/>
+      <spirit:master/>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>AXIS_SOCKET</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>DMA1_ACK_tlm_axis_socket</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:vendorExtensions>
+        <xilinx:busInterfaceInfo>
+          <xilinx:enablement>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="BUSIF_ENABLEMENT.DMA1_ACK_tlm" xilinx:dependency="(spirit:decode(id(PARAM_VALUE.PCW_USE_DMA1)) = 1)">false</xilinx:isEnabled>
+          </xilinx:enablement>
+        </xilinx:busInterfaceInfo>
+      </spirit:vendorExtensions>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>DMA2_REQ_tlm</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis_tlm" spirit:version="1.0"/>
+      <spirit:slave/>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>AXIS_SOCKET</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>DMA2_REQ_tlm_axis_socket</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:vendorExtensions>
+        <xilinx:busInterfaceInfo>
+          <xilinx:enablement>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="BUSIF_ENABLEMENT.DMA2_REQ_tlm" xilinx:dependency="(spirit:decode(id(PARAM_VALUE.PCW_USE_DMA2)) = 1)">false</xilinx:isEnabled>
+          </xilinx:enablement>
+        </xilinx:busInterfaceInfo>
+      </spirit:vendorExtensions>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>DMA2_ACK_tlm</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis_tlm" spirit:version="1.0"/>
+      <spirit:master/>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>AXIS_SOCKET</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>DMA2_ACK_tlm_axis_socket</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:vendorExtensions>
+        <xilinx:busInterfaceInfo>
+          <xilinx:enablement>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="BUSIF_ENABLEMENT.DMA2_ACK_tlm" xilinx:dependency="(spirit:decode(id(PARAM_VALUE.PCW_USE_DMA2)) = 1)">false</xilinx:isEnabled>
+          </xilinx:enablement>
+        </xilinx:busInterfaceInfo>
+      </spirit:vendorExtensions>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>DMA3_REQ_tlm</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis_tlm" spirit:version="1.0"/>
+      <spirit:slave/>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>AXIS_SOCKET</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>DMA3_REQ_tlm_axis_socket</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:vendorExtensions>
+        <xilinx:busInterfaceInfo>
+          <xilinx:enablement>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="BUSIF_ENABLEMENT.DMA3_REQ_tlm" xilinx:dependency="(spirit:decode(id(PARAM_VALUE.PCW_USE_DMA3)) = 1)">false</xilinx:isEnabled>
+          </xilinx:enablement>
+        </xilinx:busInterfaceInfo>
+      </spirit:vendorExtensions>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>DMA3_ACK_tlm</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis_tlm" spirit:version="1.0"/>
+      <spirit:master/>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>AXIS_SOCKET</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>DMA3_ACK_tlm_axis_socket</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:vendorExtensions>
+        <xilinx:busInterfaceInfo>
+          <xilinx:enablement>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="BUSIF_ENABLEMENT.DMA3_ACK_tlm" xilinx:dependency="(spirit:decode(id(PARAM_VALUE.PCW_USE_DMA3)) = 1)">false</xilinx:isEnabled>
+          </xilinx:enablement>
+        </xilinx:busInterfaceInfo>
+      </spirit:vendorExtensions>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>FTM_TRACE_DATA_tlm</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis_tlm" spirit:version="1.0"/>
+      <spirit:slave/>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>AXIS_SOCKET</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>FTM_TRACE_DATA_tlm_axis_socket</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:vendorExtensions>
+        <xilinx:busInterfaceInfo>
+          <xilinx:enablement>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="BUSIF_ENABLEMENT.FTM_TRACE_DATA_tlm" xilinx:dependency="(spirit:decode(id(PARAM_VALUE.PCW_USE_TRACE)) = 1)">false</xilinx:isEnabled>
+          </xilinx:enablement>
+        </xilinx:busInterfaceInfo>
+      </spirit:vendorExtensions>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>M_AXI_GP0_tlm</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="aximm" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="aximm_tlm" spirit:version="1.0"/>
+      <spirit:master>
+        <spirit:addressSpaceRef spirit:addressSpaceRef="Data">
+          <spirit:baseAddress spirit:format="bitString" spirit:bitStringLength="32">0x40000000</spirit:baseAddress>
+        </spirit:addressSpaceRef>
+      </spirit:master>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>AXIMM_WRITE_SOCKET</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>M_AXI_GP0_aximm_wr_socket</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>AXIMM_READ_SOCKET</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>M_AXI_GP0_aximm_rd_socket</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:vendorExtensions>
+        <xilinx:busInterfaceInfo>
+          <xilinx:enablement>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="BUSIF_ENABLEMENT.M_AXI_GP0_tlm" xilinx:dependency="(spirit:decode(id(PARAM_VALUE.PCW_USE_M_AXI_GP0)) = 1)">true</xilinx:isEnabled>
+          </xilinx:enablement>
+        </xilinx:busInterfaceInfo>
+      </spirit:vendorExtensions>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>M_AXI_GP1_tlm</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="aximm" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="aximm_tlm" spirit:version="1.0"/>
+      <spirit:master>
+        <spirit:addressSpaceRef spirit:addressSpaceRef="Data">
+          <spirit:baseAddress spirit:format="bitString" spirit:bitStringLength="32">0x80000000</spirit:baseAddress>
+        </spirit:addressSpaceRef>
+      </spirit:master>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>AXIMM_WRITE_SOCKET</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>M_AXI_GP1_aximm_wr_socket</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>AXIMM_READ_SOCKET</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>M_AXI_GP1_aximm_rd_socket</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:vendorExtensions>
+        <xilinx:busInterfaceInfo>
+          <xilinx:enablement>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="BUSIF_ENABLEMENT.M_AXI_GP1_tlm" xilinx:dependency="(spirit:decode(id(PARAM_VALUE.PCW_USE_M_AXI_GP1)) = 1)">false</xilinx:isEnabled>
+          </xilinx:enablement>
+        </xilinx:busInterfaceInfo>
+      </spirit:vendorExtensions>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>S_AXI_ACP_tlm</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="aximm" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="aximm_tlm" spirit:version="1.0"/>
+      <spirit:slave>
+        <spirit:memoryMapRef spirit:memoryMapRef="S_AXI_ACP"/>
+      </spirit:slave>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>AXIMM_WRITE_SOCKET</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>S_AXI_ACP_aximm_wr_socket</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>AXIMM_READ_SOCKET</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>S_AXI_ACP_aximm_rd_socket</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:vendorExtensions>
+        <xilinx:busInterfaceInfo>
+          <xilinx:enablement>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="BUSIF_ENABLEMENT.S_AXI_ACP_tlm" xilinx:dependency="(spirit:decode(id(PARAM_VALUE.PCW_USE_S_AXI_ACP)) = 1)">false</xilinx:isEnabled>
+          </xilinx:enablement>
+        </xilinx:busInterfaceInfo>
+      </spirit:vendorExtensions>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>S_AXI_GP0_tlm</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="aximm" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="aximm_tlm" spirit:version="1.0"/>
+      <spirit:slave>
+        <spirit:memoryMapRef spirit:memoryMapRef="S_AXI_GP0"/>
+      </spirit:slave>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>AXIMM_WRITE_SOCKET</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>S_AXI_GP0_aximm_wr_socket</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>AXIMM_READ_SOCKET</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>S_AXI_GP0_aximm_rd_socket</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:vendorExtensions>
+        <xilinx:busInterfaceInfo>
+          <xilinx:enablement>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="BUSIF_ENABLEMENT.S_AXI_GP0_tlm" xilinx:dependency="(spirit:decode(id(PARAM_VALUE.PCW_USE_S_AXI_GP0)) = 1)">false</xilinx:isEnabled>
+          </xilinx:enablement>
+        </xilinx:busInterfaceInfo>
+      </spirit:vendorExtensions>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>S_AXI_GP1_tlm</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="aximm" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="aximm_tlm" spirit:version="1.0"/>
+      <spirit:slave>
+        <spirit:memoryMapRef spirit:memoryMapRef="S_AXI_GP1"/>
+      </spirit:slave>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>AXIMM_WRITE_SOCKET</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>S_AXI_GP1_aximm_wr_socket</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>AXIMM_READ_SOCKET</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>S_AXI_GP1_aximm_rd_socket</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:vendorExtensions>
+        <xilinx:busInterfaceInfo>
+          <xilinx:enablement>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="BUSIF_ENABLEMENT.S_AXI_GP1_tlm" xilinx:dependency="(spirit:decode(id(PARAM_VALUE.PCW_USE_S_AXI_GP1)) = 1)">false</xilinx:isEnabled>
+          </xilinx:enablement>
+        </xilinx:busInterfaceInfo>
+      </spirit:vendorExtensions>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>S_AXI_HP0_tlm</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="aximm" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="aximm_tlm" spirit:version="1.0"/>
+      <spirit:slave>
+        <spirit:memoryMapRef spirit:memoryMapRef="S_AXI_HP0"/>
+      </spirit:slave>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>AXIMM_WRITE_SOCKET</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>S_AXI_HP0_aximm_wr_socket</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>AXIMM_READ_SOCKET</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>S_AXI_HP0_aximm_rd_socket</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:vendorExtensions>
+        <xilinx:busInterfaceInfo>
+          <xilinx:enablement>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="BUSIF_ENABLEMENT.S_AXI_HP0_tlm" xilinx:dependency="(spirit:decode(id(PARAM_VALUE.PCW_USE_S_AXI_HP0)) = 1)">false</xilinx:isEnabled>
+          </xilinx:enablement>
+        </xilinx:busInterfaceInfo>
+      </spirit:vendorExtensions>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>S_AXI_HP1_tlm</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="aximm" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="aximm_tlm" spirit:version="1.0"/>
+      <spirit:slave>
+        <spirit:memoryMapRef spirit:memoryMapRef="S_AXI_HP1"/>
+      </spirit:slave>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>AXIMM_WRITE_SOCKET</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>S_AXI_HP1_aximm_wr_socket</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>AXIMM_READ_SOCKET</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>S_AXI_HP1_aximm_rd_socket</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:vendorExtensions>
+        <xilinx:busInterfaceInfo>
+          <xilinx:enablement>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="BUSIF_ENABLEMENT.S_AXI_HP1_tlm" xilinx:dependency="(spirit:decode(id(PARAM_VALUE.PCW_USE_S_AXI_HP1)) = 1)">false</xilinx:isEnabled>
+          </xilinx:enablement>
+        </xilinx:busInterfaceInfo>
+      </spirit:vendorExtensions>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>S_AXI_HP2_tlm</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="aximm" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="aximm_tlm" spirit:version="1.0"/>
+      <spirit:slave>
+        <spirit:memoryMapRef spirit:memoryMapRef="S_AXI_HP2"/>
+      </spirit:slave>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>AXIMM_WRITE_SOCKET</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>S_AXI_HP2_aximm_wr_socket</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>AXIMM_READ_SOCKET</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>S_AXI_HP2_aximm_rd_socket</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:vendorExtensions>
+        <xilinx:busInterfaceInfo>
+          <xilinx:enablement>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="BUSIF_ENABLEMENT.S_AXI_HP2_tlm" xilinx:dependency="(spirit:decode(id(PARAM_VALUE.PCW_USE_S_AXI_HP2)) = 1)">false</xilinx:isEnabled>
+          </xilinx:enablement>
+        </xilinx:busInterfaceInfo>
+      </spirit:vendorExtensions>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>S_AXI_HP3_tlm</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="aximm" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="aximm_tlm" spirit:version="1.0"/>
+      <spirit:slave>
+        <spirit:memoryMapRef spirit:memoryMapRef="S_AXI_HP3"/>
+      </spirit:slave>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>AXIMM_WRITE_SOCKET</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>S_AXI_HP3_aximm_wr_socket</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>AXIMM_READ_SOCKET</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>S_AXI_HP3_aximm_rd_socket</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:vendorExtensions>
+        <xilinx:busInterfaceInfo>
+          <xilinx:enablement>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="BUSIF_ENABLEMENT.S_AXI_HP3_tlm" xilinx:dependency="(spirit:decode(id(PARAM_VALUE.PCW_USE_S_AXI_HP3)) = 1)">false</xilinx:isEnabled>
+          </xilinx:enablement>
+        </xilinx:busInterfaceInfo>
+      </spirit:vendorExtensions>
+    </spirit:busInterface>
   </spirit:busInterfaces>
   <spirit:addressSpaces>
     <spirit:addressSpace>
@@ -14032,24 +14540,6 @@
   <spirit:model>
     <spirit:views>
       <spirit:view>
-        <spirit:name>xilinx_externalfiles</spirit:name>
-        <spirit:displayName>External Files</spirit:displayName>
-        <spirit:envIdentifier>:vivado.xilinx.com:external.files</spirit:envIdentifier>
-        <spirit:fileSetRef>
-          <spirit:localName>xilinx_externalfiles_view_fileset</spirit:localName>
-        </spirit:fileSetRef>
-        <spirit:parameters>
-          <spirit:parameter>
-            <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Wed May 18 11:09:27 UTC 2022</spirit:value>
-          </spirit:parameter>
-          <spirit:parameter>
-            <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>8:71c85b21</spirit:value>
-          </spirit:parameter>
-        </spirit:parameters>
-      </spirit:view>
-      <spirit:view>
         <spirit:name>xilinx_anylanguagesynthesis</spirit:name>
         <spirit:displayName>Synthesis</spirit:displayName>
         <spirit:envIdentifier>:vivado.xilinx.com:synthesis</spirit:envIdentifier>
@@ -14060,11 +14550,22 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Wed May 18 11:09:23 UTC 2022</spirit:value>
+            <spirit:value>Wed May 18 17:17:09 UTC 2022</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>8:71c85b21</spirit:value>
+            <spirit:value>9:c51a9096</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+      <spirit:view>
+        <spirit:name>xilinx_synthesisconstraints</spirit:name>
+        <spirit:displayName>Synthesis Constraints</spirit:displayName>
+        <spirit:envIdentifier>:vivado.xilinx.com:synthesis.constraints</spirit:envIdentifier>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>outputProductCRC</spirit:name>
+            <spirit:value>9:c51a9096</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -14080,11 +14581,11 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Wed May 18 11:09:23 UTC 2022</spirit:value>
+            <spirit:value>Wed May 18 17:17:09 UTC 2022</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>8:71c85b21</spirit:value>
+            <spirit:value>9:c51a9096</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -14097,12 +14598,6 @@
           <spirit:localName>xilinx_anylanguagebehavioralsimulation_xilinx_com_ip_axi_infrastructure_1_1__ref_view_fileset</spirit:localName>
         </spirit:fileSetRef>
         <spirit:fileSetRef>
-          <spirit:localName>xilinx_anylanguagebehavioralsimulation_xilinx_com_ip_sc_util_1_0__ref_view_fileset</spirit:localName>
-        </spirit:fileSetRef>
-        <spirit:fileSetRef>
-          <spirit:localName>xilinx_anylanguagebehavioralsimulation_xilinx_com_ip_axi_protocol_checker_2_0__ref_view_fileset</spirit:localName>
-        </spirit:fileSetRef>
-        <spirit:fileSetRef>
           <spirit:localName>xilinx_anylanguagebehavioralsimulation_xilinx_com_ip_axi_vip_1_1__ref_view_fileset</spirit:localName>
         </spirit:fileSetRef>
         <spirit:fileSetRef>
@@ -14111,7 +14606,31 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>8:57aecf67</spirit:value>
+            <spirit:value>9:50a0cb3a</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+      <spirit:view>
+        <spirit:name>xilinx_systemcsimulation</spirit:name>
+        <spirit:displayName>SystemC Simulation</spirit:displayName>
+        <spirit:envIdentifier>systemCSource:vivado.xilinx.com:simulation</spirit:envIdentifier>
+        <spirit:language>systemc</spirit:language>
+        <spirit:modelName>processing_system7_v5_5_tlm</spirit:modelName>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_systemcsimulation_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>GENtimestamp</spirit:name>
+            <spirit:value>Wed May 18 17:17:10 UTC 2022</spirit:value>
+          </spirit:parameter>
+          <spirit:parameter>
+            <spirit:name>outputProductCRC</spirit:name>
+            <spirit:value>9:50a0cb3a</spirit:value>
+          </spirit:parameter>
+          <spirit:parameter>
+            <spirit:name>sim_type</spirit:name>
+            <spirit:value>tlm</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -14126,11 +14645,11 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Wed May 18 11:09:23 UTC 2022</spirit:value>
+            <spirit:value>Wed May 18 17:17:10 UTC 2022</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>8:57aecf67</spirit:value>
+            <spirit:value>9:50a0cb3a</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>sim_type</spirit:name>
@@ -14153,11 +14672,35 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Wed May 18 11:09:24 UTC 2022</spirit:value>
+            <spirit:value>Wed May 18 17:17:10 UTC 2022</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>8:57aecf67</spirit:value>
+            <spirit:value>9:50a0cb3a</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+      <spirit:view>
+        <spirit:name>xilinx_systemcsimulationwrapper</spirit:name>
+        <spirit:displayName>SystemC Simulation Wrapper</spirit:displayName>
+        <spirit:envIdentifier>systemCSource:vivado.xilinx.com:simulation.wrapper</spirit:envIdentifier>
+        <spirit:language>systemc</spirit:language>
+        <spirit:modelName>design_1_processing_system7_0_0</spirit:modelName>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_systemcsimulationwrapper_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>GENtimestamp</spirit:name>
+            <spirit:value>Wed May 18 17:17:10 UTC 2022</spirit:value>
+          </spirit:parameter>
+          <spirit:parameter>
+            <spirit:name>outputProductCRC</spirit:name>
+            <spirit:value>9:50a0cb3a</spirit:value>
+          </spirit:parameter>
+          <spirit:parameter>
+            <spirit:name>sim_type</spirit:name>
+            <spirit:value>tlm</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -14172,15 +14715,33 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Wed May 18 11:09:26 UTC 2022</spirit:value>
+            <spirit:value>Wed May 18 17:17:11 UTC 2022</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>8:57aecf67</spirit:value>
+            <spirit:value>9:50a0cb3a</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>sim_type</spirit:name>
             <spirit:value>tlm_dpi</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+      <spirit:view>
+        <spirit:name>xilinx_externalfiles</spirit:name>
+        <spirit:displayName>External Files</spirit:displayName>
+        <spirit:envIdentifier>:vivado.xilinx.com:external.files</spirit:envIdentifier>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_externalfiles_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>GENtimestamp</spirit:name>
+            <spirit:value>Wed May 18 17:18:10 UTC 2022</spirit:value>
+          </spirit:parameter>
+          <spirit:parameter>
+            <spirit:name>outputProductCRC</spirit:name>
+            <spirit:value>9:c51a9096</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -29800,6 +30361,843 @@
           </spirit:wireTypeDefs>
         </spirit:wire>
       </spirit:port>
+      <spirit:port>
+        <spirit:name>DMA0_REQ_tlm_axis_socket</spirit:name>
+        <spirit:transactional>
+          <spirit:transTypeDef>
+            <spirit:typeName>xtlm::xtlm_axis_target_socket</spirit:typeName>
+            <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+          </spirit:transTypeDef>
+          <spirit:service>
+            <spirit:initiative>provides</spirit:initiative>
+            <spirit:serviceTypeDefs>
+              <spirit:serviceTypeDef>
+                <spirit:typeName>tlm</spirit:typeName>
+                <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+                <spirit:parameters>
+                  <spirit:parameter>
+                    <spirit:name>name</spirit:name>
+                    <spirit:value>socket</spirit:value>
+                  </spirit:parameter>
+                  <spirit:parameter>
+                    <spirit:name>width</spirit:name>
+                    <spirit:value>32</spirit:value>
+                  </spirit:parameter>
+                </spirit:parameters>
+              </spirit:serviceTypeDef>
+            </spirit:serviceTypeDefs>
+          </spirit:service>
+          <spirit:connection>
+            <spirit:maxConnections>0</spirit:maxConnections>
+          </spirit:connection>
+        </spirit:transactional>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>DMA0_ACK_tlm_axis_socket</spirit:name>
+        <spirit:transactional>
+          <spirit:transTypeDef>
+            <spirit:typeName>xtlm::xtlm_axis_initiator_socket</spirit:typeName>
+            <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+          </spirit:transTypeDef>
+          <spirit:service>
+            <spirit:initiative>requires</spirit:initiative>
+            <spirit:serviceTypeDefs>
+              <spirit:serviceTypeDef>
+                <spirit:typeName>tlm</spirit:typeName>
+                <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+                <spirit:parameters>
+                  <spirit:parameter>
+                    <spirit:name>name</spirit:name>
+                    <spirit:value>socket</spirit:value>
+                  </spirit:parameter>
+                  <spirit:parameter>
+                    <spirit:name>width</spirit:name>
+                    <spirit:value>32</spirit:value>
+                  </spirit:parameter>
+                </spirit:parameters>
+              </spirit:serviceTypeDef>
+            </spirit:serviceTypeDefs>
+          </spirit:service>
+          <spirit:connection>
+            <spirit:maxConnections>0</spirit:maxConnections>
+          </spirit:connection>
+        </spirit:transactional>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>DMA1_REQ_tlm_axis_socket</spirit:name>
+        <spirit:transactional>
+          <spirit:transTypeDef>
+            <spirit:typeName>xtlm::xtlm_axis_target_socket</spirit:typeName>
+            <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+          </spirit:transTypeDef>
+          <spirit:service>
+            <spirit:initiative>provides</spirit:initiative>
+            <spirit:serviceTypeDefs>
+              <spirit:serviceTypeDef>
+                <spirit:typeName>tlm</spirit:typeName>
+                <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+                <spirit:parameters>
+                  <spirit:parameter>
+                    <spirit:name>name</spirit:name>
+                    <spirit:value>socket</spirit:value>
+                  </spirit:parameter>
+                  <spirit:parameter>
+                    <spirit:name>width</spirit:name>
+                    <spirit:value>32</spirit:value>
+                  </spirit:parameter>
+                </spirit:parameters>
+              </spirit:serviceTypeDef>
+            </spirit:serviceTypeDefs>
+          </spirit:service>
+          <spirit:connection>
+            <spirit:maxConnections>0</spirit:maxConnections>
+          </spirit:connection>
+        </spirit:transactional>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>DMA1_ACK_tlm_axis_socket</spirit:name>
+        <spirit:transactional>
+          <spirit:transTypeDef>
+            <spirit:typeName>xtlm::xtlm_axis_initiator_socket</spirit:typeName>
+            <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+          </spirit:transTypeDef>
+          <spirit:service>
+            <spirit:initiative>requires</spirit:initiative>
+            <spirit:serviceTypeDefs>
+              <spirit:serviceTypeDef>
+                <spirit:typeName>tlm</spirit:typeName>
+                <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+                <spirit:parameters>
+                  <spirit:parameter>
+                    <spirit:name>name</spirit:name>
+                    <spirit:value>socket</spirit:value>
+                  </spirit:parameter>
+                  <spirit:parameter>
+                    <spirit:name>width</spirit:name>
+                    <spirit:value>32</spirit:value>
+                  </spirit:parameter>
+                </spirit:parameters>
+              </spirit:serviceTypeDef>
+            </spirit:serviceTypeDefs>
+          </spirit:service>
+          <spirit:connection>
+            <spirit:maxConnections>0</spirit:maxConnections>
+          </spirit:connection>
+        </spirit:transactional>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>DMA2_REQ_tlm_axis_socket</spirit:name>
+        <spirit:transactional>
+          <spirit:transTypeDef>
+            <spirit:typeName>xtlm::xtlm_axis_target_socket</spirit:typeName>
+            <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+          </spirit:transTypeDef>
+          <spirit:service>
+            <spirit:initiative>provides</spirit:initiative>
+            <spirit:serviceTypeDefs>
+              <spirit:serviceTypeDef>
+                <spirit:typeName>tlm</spirit:typeName>
+                <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+                <spirit:parameters>
+                  <spirit:parameter>
+                    <spirit:name>name</spirit:name>
+                    <spirit:value>socket</spirit:value>
+                  </spirit:parameter>
+                  <spirit:parameter>
+                    <spirit:name>width</spirit:name>
+                    <spirit:value>32</spirit:value>
+                  </spirit:parameter>
+                </spirit:parameters>
+              </spirit:serviceTypeDef>
+            </spirit:serviceTypeDefs>
+          </spirit:service>
+          <spirit:connection>
+            <spirit:maxConnections>0</spirit:maxConnections>
+          </spirit:connection>
+        </spirit:transactional>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>DMA2_ACK_tlm_axis_socket</spirit:name>
+        <spirit:transactional>
+          <spirit:transTypeDef>
+            <spirit:typeName>xtlm::xtlm_axis_initiator_socket</spirit:typeName>
+            <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+          </spirit:transTypeDef>
+          <spirit:service>
+            <spirit:initiative>requires</spirit:initiative>
+            <spirit:serviceTypeDefs>
+              <spirit:serviceTypeDef>
+                <spirit:typeName>tlm</spirit:typeName>
+                <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+                <spirit:parameters>
+                  <spirit:parameter>
+                    <spirit:name>name</spirit:name>
+                    <spirit:value>socket</spirit:value>
+                  </spirit:parameter>
+                  <spirit:parameter>
+                    <spirit:name>width</spirit:name>
+                    <spirit:value>32</spirit:value>
+                  </spirit:parameter>
+                </spirit:parameters>
+              </spirit:serviceTypeDef>
+            </spirit:serviceTypeDefs>
+          </spirit:service>
+          <spirit:connection>
+            <spirit:maxConnections>0</spirit:maxConnections>
+          </spirit:connection>
+        </spirit:transactional>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>DMA3_REQ_tlm_axis_socket</spirit:name>
+        <spirit:transactional>
+          <spirit:transTypeDef>
+            <spirit:typeName>xtlm::xtlm_axis_target_socket</spirit:typeName>
+            <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+          </spirit:transTypeDef>
+          <spirit:service>
+            <spirit:initiative>provides</spirit:initiative>
+            <spirit:serviceTypeDefs>
+              <spirit:serviceTypeDef>
+                <spirit:typeName>tlm</spirit:typeName>
+                <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+                <spirit:parameters>
+                  <spirit:parameter>
+                    <spirit:name>name</spirit:name>
+                    <spirit:value>socket</spirit:value>
+                  </spirit:parameter>
+                  <spirit:parameter>
+                    <spirit:name>width</spirit:name>
+                    <spirit:value>32</spirit:value>
+                  </spirit:parameter>
+                </spirit:parameters>
+              </spirit:serviceTypeDef>
+            </spirit:serviceTypeDefs>
+          </spirit:service>
+          <spirit:connection>
+            <spirit:maxConnections>0</spirit:maxConnections>
+          </spirit:connection>
+        </spirit:transactional>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>DMA3_ACK_tlm_axis_socket</spirit:name>
+        <spirit:transactional>
+          <spirit:transTypeDef>
+            <spirit:typeName>xtlm::xtlm_axis_initiator_socket</spirit:typeName>
+            <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+          </spirit:transTypeDef>
+          <spirit:service>
+            <spirit:initiative>requires</spirit:initiative>
+            <spirit:serviceTypeDefs>
+              <spirit:serviceTypeDef>
+                <spirit:typeName>tlm</spirit:typeName>
+                <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+                <spirit:parameters>
+                  <spirit:parameter>
+                    <spirit:name>name</spirit:name>
+                    <spirit:value>socket</spirit:value>
+                  </spirit:parameter>
+                  <spirit:parameter>
+                    <spirit:name>width</spirit:name>
+                    <spirit:value>32</spirit:value>
+                  </spirit:parameter>
+                </spirit:parameters>
+              </spirit:serviceTypeDef>
+            </spirit:serviceTypeDefs>
+          </spirit:service>
+          <spirit:connection>
+            <spirit:maxConnections>0</spirit:maxConnections>
+          </spirit:connection>
+        </spirit:transactional>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>FTM_TRACE_DATA_tlm_axis_socket</spirit:name>
+        <spirit:transactional>
+          <spirit:transTypeDef>
+            <spirit:typeName>xtlm::xtlm_axis_target_socket</spirit:typeName>
+            <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+          </spirit:transTypeDef>
+          <spirit:service>
+            <spirit:initiative>provides</spirit:initiative>
+            <spirit:serviceTypeDefs>
+              <spirit:serviceTypeDef>
+                <spirit:typeName>tlm</spirit:typeName>
+                <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+                <spirit:parameters>
+                  <spirit:parameter>
+                    <spirit:name>name</spirit:name>
+                    <spirit:value>socket</spirit:value>
+                  </spirit:parameter>
+                  <spirit:parameter>
+                    <spirit:name>width</spirit:name>
+                    <spirit:value>32</spirit:value>
+                  </spirit:parameter>
+                </spirit:parameters>
+              </spirit:serviceTypeDef>
+            </spirit:serviceTypeDefs>
+          </spirit:service>
+          <spirit:connection>
+            <spirit:maxConnections>0</spirit:maxConnections>
+          </spirit:connection>
+        </spirit:transactional>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>M_AXI_GP0_tlm_aximm_wr_socket</spirit:name>
+        <spirit:transactional>
+          <spirit:transTypeDef>
+            <spirit:typeName>xtlm::xtlm_aximm_initiator_socket</spirit:typeName>
+            <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+          </spirit:transTypeDef>
+          <spirit:service>
+            <spirit:initiative>requires</spirit:initiative>
+            <spirit:serviceTypeDefs>
+              <spirit:serviceTypeDef>
+                <spirit:typeName>tlm</spirit:typeName>
+                <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+                <spirit:parameters>
+                  <spirit:parameter>
+                    <spirit:name>name</spirit:name>
+                    <spirit:value>wr_socket</spirit:value>
+                  </spirit:parameter>
+                  <spirit:parameter>
+                    <spirit:name>width</spirit:name>
+                    <spirit:value>32</spirit:value>
+                  </spirit:parameter>
+                </spirit:parameters>
+              </spirit:serviceTypeDef>
+            </spirit:serviceTypeDefs>
+          </spirit:service>
+          <spirit:connection>
+            <spirit:maxConnections>0</spirit:maxConnections>
+          </spirit:connection>
+        </spirit:transactional>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>M_AXI_GP0_tlm_aximm_rd_socket</spirit:name>
+        <spirit:transactional>
+          <spirit:transTypeDef>
+            <spirit:typeName>xtlm::xtlm_aximm_initiator_socket</spirit:typeName>
+            <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+          </spirit:transTypeDef>
+          <spirit:service>
+            <spirit:initiative>requires</spirit:initiative>
+            <spirit:serviceTypeDefs>
+              <spirit:serviceTypeDef>
+                <spirit:typeName>tlm</spirit:typeName>
+                <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+                <spirit:parameters>
+                  <spirit:parameter>
+                    <spirit:name>name</spirit:name>
+                    <spirit:value>rd_socket</spirit:value>
+                  </spirit:parameter>
+                  <spirit:parameter>
+                    <spirit:name>width</spirit:name>
+                    <spirit:value>32</spirit:value>
+                  </spirit:parameter>
+                </spirit:parameters>
+              </spirit:serviceTypeDef>
+            </spirit:serviceTypeDefs>
+          </spirit:service>
+          <spirit:connection>
+            <spirit:maxConnections>0</spirit:maxConnections>
+          </spirit:connection>
+        </spirit:transactional>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>M_AXI_GP1_tlm_aximm_wr_socket</spirit:name>
+        <spirit:transactional>
+          <spirit:transTypeDef>
+            <spirit:typeName>xtlm::xtlm_aximm_initiator_socket</spirit:typeName>
+            <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+          </spirit:transTypeDef>
+          <spirit:service>
+            <spirit:initiative>requires</spirit:initiative>
+            <spirit:serviceTypeDefs>
+              <spirit:serviceTypeDef>
+                <spirit:typeName>tlm</spirit:typeName>
+                <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+                <spirit:parameters>
+                  <spirit:parameter>
+                    <spirit:name>name</spirit:name>
+                    <spirit:value>wr_socket</spirit:value>
+                  </spirit:parameter>
+                  <spirit:parameter>
+                    <spirit:name>width</spirit:name>
+                    <spirit:value>32</spirit:value>
+                  </spirit:parameter>
+                </spirit:parameters>
+              </spirit:serviceTypeDef>
+            </spirit:serviceTypeDefs>
+          </spirit:service>
+          <spirit:connection>
+            <spirit:maxConnections>0</spirit:maxConnections>
+          </spirit:connection>
+        </spirit:transactional>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>M_AXI_GP1_tlm_aximm_rd_socket</spirit:name>
+        <spirit:transactional>
+          <spirit:transTypeDef>
+            <spirit:typeName>xtlm::xtlm_aximm_initiator_socket</spirit:typeName>
+            <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+          </spirit:transTypeDef>
+          <spirit:service>
+            <spirit:initiative>requires</spirit:initiative>
+            <spirit:serviceTypeDefs>
+              <spirit:serviceTypeDef>
+                <spirit:typeName>tlm</spirit:typeName>
+                <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+                <spirit:parameters>
+                  <spirit:parameter>
+                    <spirit:name>name</spirit:name>
+                    <spirit:value>rd_socket</spirit:value>
+                  </spirit:parameter>
+                  <spirit:parameter>
+                    <spirit:name>width</spirit:name>
+                    <spirit:value>32</spirit:value>
+                  </spirit:parameter>
+                </spirit:parameters>
+              </spirit:serviceTypeDef>
+            </spirit:serviceTypeDefs>
+          </spirit:service>
+          <spirit:connection>
+            <spirit:maxConnections>0</spirit:maxConnections>
+          </spirit:connection>
+        </spirit:transactional>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>S_AXI_ACP_tlm_aximm_wr_socket</spirit:name>
+        <spirit:transactional>
+          <spirit:transTypeDef>
+            <spirit:typeName>xtlm::xtlm_aximm_target_socket</spirit:typeName>
+            <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+          </spirit:transTypeDef>
+          <spirit:service>
+            <spirit:initiative>provides</spirit:initiative>
+            <spirit:serviceTypeDefs>
+              <spirit:serviceTypeDef>
+                <spirit:typeName>tlm</spirit:typeName>
+                <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+                <spirit:parameters>
+                  <spirit:parameter>
+                    <spirit:name>name</spirit:name>
+                    <spirit:value>wr_socket</spirit:value>
+                  </spirit:parameter>
+                  <spirit:parameter>
+                    <spirit:name>width</spirit:name>
+                    <spirit:value>32</spirit:value>
+                  </spirit:parameter>
+                </spirit:parameters>
+              </spirit:serviceTypeDef>
+            </spirit:serviceTypeDefs>
+          </spirit:service>
+          <spirit:connection>
+            <spirit:maxConnections>0</spirit:maxConnections>
+          </spirit:connection>
+        </spirit:transactional>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>S_AXI_ACP_tlm_aximm_rd_socket</spirit:name>
+        <spirit:transactional>
+          <spirit:transTypeDef>
+            <spirit:typeName>xtlm::xtlm_aximm_target_socket</spirit:typeName>
+            <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+          </spirit:transTypeDef>
+          <spirit:service>
+            <spirit:initiative>provides</spirit:initiative>
+            <spirit:serviceTypeDefs>
+              <spirit:serviceTypeDef>
+                <spirit:typeName>tlm</spirit:typeName>
+                <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+                <spirit:parameters>
+                  <spirit:parameter>
+                    <spirit:name>name</spirit:name>
+                    <spirit:value>rd_socket</spirit:value>
+                  </spirit:parameter>
+                  <spirit:parameter>
+                    <spirit:name>width</spirit:name>
+                    <spirit:value>32</spirit:value>
+                  </spirit:parameter>
+                </spirit:parameters>
+              </spirit:serviceTypeDef>
+            </spirit:serviceTypeDefs>
+          </spirit:service>
+          <spirit:connection>
+            <spirit:maxConnections>0</spirit:maxConnections>
+          </spirit:connection>
+        </spirit:transactional>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>S_AXI_GP0_tlm_aximm_wr_socket</spirit:name>
+        <spirit:transactional>
+          <spirit:transTypeDef>
+            <spirit:typeName>xtlm::xtlm_aximm_target_socket</spirit:typeName>
+            <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+          </spirit:transTypeDef>
+          <spirit:service>
+            <spirit:initiative>provides</spirit:initiative>
+            <spirit:serviceTypeDefs>
+              <spirit:serviceTypeDef>
+                <spirit:typeName>tlm</spirit:typeName>
+                <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+                <spirit:parameters>
+                  <spirit:parameter>
+                    <spirit:name>name</spirit:name>
+                    <spirit:value>wr_socket</spirit:value>
+                  </spirit:parameter>
+                  <spirit:parameter>
+                    <spirit:name>width</spirit:name>
+                    <spirit:value>32</spirit:value>
+                  </spirit:parameter>
+                </spirit:parameters>
+              </spirit:serviceTypeDef>
+            </spirit:serviceTypeDefs>
+          </spirit:service>
+          <spirit:connection>
+            <spirit:maxConnections>0</spirit:maxConnections>
+          </spirit:connection>
+        </spirit:transactional>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>S_AXI_GP0_tlm_aximm_rd_socket</spirit:name>
+        <spirit:transactional>
+          <spirit:transTypeDef>
+            <spirit:typeName>xtlm::xtlm_aximm_target_socket</spirit:typeName>
+            <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+          </spirit:transTypeDef>
+          <spirit:service>
+            <spirit:initiative>provides</spirit:initiative>
+            <spirit:serviceTypeDefs>
+              <spirit:serviceTypeDef>
+                <spirit:typeName>tlm</spirit:typeName>
+                <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+                <spirit:parameters>
+                  <spirit:parameter>
+                    <spirit:name>name</spirit:name>
+                    <spirit:value>rd_socket</spirit:value>
+                  </spirit:parameter>
+                  <spirit:parameter>
+                    <spirit:name>width</spirit:name>
+                    <spirit:value>32</spirit:value>
+                  </spirit:parameter>
+                </spirit:parameters>
+              </spirit:serviceTypeDef>
+            </spirit:serviceTypeDefs>
+          </spirit:service>
+          <spirit:connection>
+            <spirit:maxConnections>0</spirit:maxConnections>
+          </spirit:connection>
+        </spirit:transactional>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>S_AXI_GP1_tlm_aximm_wr_socket</spirit:name>
+        <spirit:transactional>
+          <spirit:transTypeDef>
+            <spirit:typeName>xtlm::xtlm_aximm_target_socket</spirit:typeName>
+            <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+          </spirit:transTypeDef>
+          <spirit:service>
+            <spirit:initiative>provides</spirit:initiative>
+            <spirit:serviceTypeDefs>
+              <spirit:serviceTypeDef>
+                <spirit:typeName>tlm</spirit:typeName>
+                <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+                <spirit:parameters>
+                  <spirit:parameter>
+                    <spirit:name>name</spirit:name>
+                    <spirit:value>wr_socket</spirit:value>
+                  </spirit:parameter>
+                  <spirit:parameter>
+                    <spirit:name>width</spirit:name>
+                    <spirit:value>32</spirit:value>
+                  </spirit:parameter>
+                </spirit:parameters>
+              </spirit:serviceTypeDef>
+            </spirit:serviceTypeDefs>
+          </spirit:service>
+          <spirit:connection>
+            <spirit:maxConnections>0</spirit:maxConnections>
+          </spirit:connection>
+        </spirit:transactional>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>S_AXI_GP1_tlm_aximm_rd_socket</spirit:name>
+        <spirit:transactional>
+          <spirit:transTypeDef>
+            <spirit:typeName>xtlm::xtlm_aximm_target_socket</spirit:typeName>
+            <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+          </spirit:transTypeDef>
+          <spirit:service>
+            <spirit:initiative>provides</spirit:initiative>
+            <spirit:serviceTypeDefs>
+              <spirit:serviceTypeDef>
+                <spirit:typeName>tlm</spirit:typeName>
+                <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+                <spirit:parameters>
+                  <spirit:parameter>
+                    <spirit:name>name</spirit:name>
+                    <spirit:value>rd_socket</spirit:value>
+                  </spirit:parameter>
+                  <spirit:parameter>
+                    <spirit:name>width</spirit:name>
+                    <spirit:value>32</spirit:value>
+                  </spirit:parameter>
+                </spirit:parameters>
+              </spirit:serviceTypeDef>
+            </spirit:serviceTypeDefs>
+          </spirit:service>
+          <spirit:connection>
+            <spirit:maxConnections>0</spirit:maxConnections>
+          </spirit:connection>
+        </spirit:transactional>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>S_AXI_HP0_tlm_aximm_wr_socket</spirit:name>
+        <spirit:transactional>
+          <spirit:transTypeDef>
+            <spirit:typeName>xtlm::xtlm_aximm_target_socket</spirit:typeName>
+            <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+          </spirit:transTypeDef>
+          <spirit:service>
+            <spirit:initiative>provides</spirit:initiative>
+            <spirit:serviceTypeDefs>
+              <spirit:serviceTypeDef>
+                <spirit:typeName>tlm</spirit:typeName>
+                <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+                <spirit:parameters>
+                  <spirit:parameter>
+                    <spirit:name>name</spirit:name>
+                    <spirit:value>wr_socket</spirit:value>
+                  </spirit:parameter>
+                  <spirit:parameter>
+                    <spirit:name>width</spirit:name>
+                    <spirit:value>32</spirit:value>
+                  </spirit:parameter>
+                </spirit:parameters>
+              </spirit:serviceTypeDef>
+            </spirit:serviceTypeDefs>
+          </spirit:service>
+          <spirit:connection>
+            <spirit:maxConnections>0</spirit:maxConnections>
+          </spirit:connection>
+        </spirit:transactional>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>S_AXI_HP0_tlm_aximm_rd_socket</spirit:name>
+        <spirit:transactional>
+          <spirit:transTypeDef>
+            <spirit:typeName>xtlm::xtlm_aximm_target_socket</spirit:typeName>
+            <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+          </spirit:transTypeDef>
+          <spirit:service>
+            <spirit:initiative>provides</spirit:initiative>
+            <spirit:serviceTypeDefs>
+              <spirit:serviceTypeDef>
+                <spirit:typeName>tlm</spirit:typeName>
+                <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+                <spirit:parameters>
+                  <spirit:parameter>
+                    <spirit:name>name</spirit:name>
+                    <spirit:value>rd_socket</spirit:value>
+                  </spirit:parameter>
+                  <spirit:parameter>
+                    <spirit:name>width</spirit:name>
+                    <spirit:value>32</spirit:value>
+                  </spirit:parameter>
+                </spirit:parameters>
+              </spirit:serviceTypeDef>
+            </spirit:serviceTypeDefs>
+          </spirit:service>
+          <spirit:connection>
+            <spirit:maxConnections>0</spirit:maxConnections>
+          </spirit:connection>
+        </spirit:transactional>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>S_AXI_HP1_tlm_aximm_wr_socket</spirit:name>
+        <spirit:transactional>
+          <spirit:transTypeDef>
+            <spirit:typeName>xtlm::xtlm_aximm_target_socket</spirit:typeName>
+            <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+          </spirit:transTypeDef>
+          <spirit:service>
+            <spirit:initiative>provides</spirit:initiative>
+            <spirit:serviceTypeDefs>
+              <spirit:serviceTypeDef>
+                <spirit:typeName>tlm</spirit:typeName>
+                <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+                <spirit:parameters>
+                  <spirit:parameter>
+                    <spirit:name>name</spirit:name>
+                    <spirit:value>wr_socket</spirit:value>
+                  </spirit:parameter>
+                  <spirit:parameter>
+                    <spirit:name>width</spirit:name>
+                    <spirit:value>32</spirit:value>
+                  </spirit:parameter>
+                </spirit:parameters>
+              </spirit:serviceTypeDef>
+            </spirit:serviceTypeDefs>
+          </spirit:service>
+          <spirit:connection>
+            <spirit:maxConnections>0</spirit:maxConnections>
+          </spirit:connection>
+        </spirit:transactional>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>S_AXI_HP1_tlm_aximm_rd_socket</spirit:name>
+        <spirit:transactional>
+          <spirit:transTypeDef>
+            <spirit:typeName>xtlm::xtlm_aximm_target_socket</spirit:typeName>
+            <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+          </spirit:transTypeDef>
+          <spirit:service>
+            <spirit:initiative>provides</spirit:initiative>
+            <spirit:serviceTypeDefs>
+              <spirit:serviceTypeDef>
+                <spirit:typeName>tlm</spirit:typeName>
+                <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+                <spirit:parameters>
+                  <spirit:parameter>
+                    <spirit:name>name</spirit:name>
+                    <spirit:value>rd_socket</spirit:value>
+                  </spirit:parameter>
+                  <spirit:parameter>
+                    <spirit:name>width</spirit:name>
+                    <spirit:value>32</spirit:value>
+                  </spirit:parameter>
+                </spirit:parameters>
+              </spirit:serviceTypeDef>
+            </spirit:serviceTypeDefs>
+          </spirit:service>
+          <spirit:connection>
+            <spirit:maxConnections>0</spirit:maxConnections>
+          </spirit:connection>
+        </spirit:transactional>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>S_AXI_HP2_tlm_aximm_wr_socket</spirit:name>
+        <spirit:transactional>
+          <spirit:transTypeDef>
+            <spirit:typeName>xtlm::xtlm_aximm_target_socket</spirit:typeName>
+            <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+          </spirit:transTypeDef>
+          <spirit:service>
+            <spirit:initiative>provides</spirit:initiative>
+            <spirit:serviceTypeDefs>
+              <spirit:serviceTypeDef>
+                <spirit:typeName>tlm</spirit:typeName>
+                <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+                <spirit:parameters>
+                  <spirit:parameter>
+                    <spirit:name>name</spirit:name>
+                    <spirit:value>wr_socket</spirit:value>
+                  </spirit:parameter>
+                  <spirit:parameter>
+                    <spirit:name>width</spirit:name>
+                    <spirit:value>32</spirit:value>
+                  </spirit:parameter>
+                </spirit:parameters>
+              </spirit:serviceTypeDef>
+            </spirit:serviceTypeDefs>
+          </spirit:service>
+          <spirit:connection>
+            <spirit:maxConnections>0</spirit:maxConnections>
+          </spirit:connection>
+        </spirit:transactional>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>S_AXI_HP2_tlm_aximm_rd_socket</spirit:name>
+        <spirit:transactional>
+          <spirit:transTypeDef>
+            <spirit:typeName>xtlm::xtlm_aximm_target_socket</spirit:typeName>
+            <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+          </spirit:transTypeDef>
+          <spirit:service>
+            <spirit:initiative>provides</spirit:initiative>
+            <spirit:serviceTypeDefs>
+              <spirit:serviceTypeDef>
+                <spirit:typeName>tlm</spirit:typeName>
+                <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+                <spirit:parameters>
+                  <spirit:parameter>
+                    <spirit:name>name</spirit:name>
+                    <spirit:value>rd_socket</spirit:value>
+                  </spirit:parameter>
+                  <spirit:parameter>
+                    <spirit:name>width</spirit:name>
+                    <spirit:value>32</spirit:value>
+                  </spirit:parameter>
+                </spirit:parameters>
+              </spirit:serviceTypeDef>
+            </spirit:serviceTypeDefs>
+          </spirit:service>
+          <spirit:connection>
+            <spirit:maxConnections>0</spirit:maxConnections>
+          </spirit:connection>
+        </spirit:transactional>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>S_AXI_HP3_tlm_aximm_wr_socket</spirit:name>
+        <spirit:transactional>
+          <spirit:transTypeDef>
+            <spirit:typeName>xtlm::xtlm_aximm_target_socket</spirit:typeName>
+            <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+          </spirit:transTypeDef>
+          <spirit:service>
+            <spirit:initiative>provides</spirit:initiative>
+            <spirit:serviceTypeDefs>
+              <spirit:serviceTypeDef>
+                <spirit:typeName>tlm</spirit:typeName>
+                <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+                <spirit:parameters>
+                  <spirit:parameter>
+                    <spirit:name>name</spirit:name>
+                    <spirit:value>wr_socket</spirit:value>
+                  </spirit:parameter>
+                  <spirit:parameter>
+                    <spirit:name>width</spirit:name>
+                    <spirit:value>32</spirit:value>
+                  </spirit:parameter>
+                </spirit:parameters>
+              </spirit:serviceTypeDef>
+            </spirit:serviceTypeDefs>
+          </spirit:service>
+          <spirit:connection>
+            <spirit:maxConnections>0</spirit:maxConnections>
+          </spirit:connection>
+        </spirit:transactional>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>S_AXI_HP3_tlm_aximm_rd_socket</spirit:name>
+        <spirit:transactional>
+          <spirit:transTypeDef>
+            <spirit:typeName>xtlm::xtlm_aximm_target_socket</spirit:typeName>
+            <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+          </spirit:transTypeDef>
+          <spirit:service>
+            <spirit:initiative>provides</spirit:initiative>
+            <spirit:serviceTypeDefs>
+              <spirit:serviceTypeDef>
+                <spirit:typeName>tlm</spirit:typeName>
+                <spirit:typeDefinition>xtlm.h</spirit:typeDefinition>
+                <spirit:parameters>
+                  <spirit:parameter>
+                    <spirit:name>name</spirit:name>
+                    <spirit:value>rd_socket</spirit:value>
+                  </spirit:parameter>
+                  <spirit:parameter>
+                    <spirit:name>width</spirit:name>
+                    <spirit:value>32</spirit:value>
+                  </spirit:parameter>
+                </spirit:parameters>
+              </spirit:serviceTypeDef>
+            </spirit:serviceTypeDefs>
+          </spirit:service>
+          <spirit:connection>
+            <spirit:maxConnections>0</spirit:maxConnections>
+          </spirit:connection>
+        </spirit:transactional>
+      </spirit:port>
     </spirit:ports>
     <spirit:modelParameters>
       <spirit:modelParameter xsi:type="spirit:nameValueTypeType" spirit:dataType="INTEGER">
@@ -31257,42 +32655,6 @@
   </spirit:choices>
   <spirit:fileSets>
     <spirit:fileSet>
-      <spirit:name>xilinx_externalfiles_view_fileset</spirit:name>
-      <spirit:file>
-        <spirit:name>design_1_processing_system7_0_0.dcp</spirit:name>
-        <spirit:userFileType>dcp</spirit:userFileType>
-        <spirit:userFileType>USED_IN_implementation</spirit:userFileType>
-        <spirit:userFileType>USED_IN_synthesis</spirit:userFileType>
-        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>design_1_processing_system7_0_0_stub.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-        <spirit:userFileType>USED_IN_synth_blackbox_stub</spirit:userFileType>
-        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>design_1_processing_system7_0_0_stub.vhdl</spirit:name>
-        <spirit:fileType>vhdlSource</spirit:fileType>
-        <spirit:userFileType>USED_IN_synth_blackbox_stub</spirit:userFileType>
-        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>design_1_processing_system7_0_0_sim_netlist.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-        <spirit:userFileType>USED_IN_simulation</spirit:userFileType>
-        <spirit:userFileType>USED_IN_single_language</spirit:userFileType>
-        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>design_1_processing_system7_0_0_sim_netlist.vhdl</spirit:name>
-        <spirit:fileType>vhdlSource</spirit:fileType>
-        <spirit:userFileType>USED_IN_simulation</spirit:userFileType>
-        <spirit:userFileType>USED_IN_single_language</spirit:userFileType>
-        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
-      </spirit:file>
-    </spirit:fileSet>
-    <spirit:fileSet>
       <spirit:name>xilinx_anylanguagesynthesis_view_fileset</spirit:name>
       <spirit:file>
         <spirit:name>design_1_processing_system7_0_0.xdc</spirit:name>
@@ -31394,62 +32756,16 @@
       </spirit:vendorExtensions>
     </spirit:fileSet>
     <spirit:fileSet>
-      <spirit:name>xilinx_anylanguagebehavioralsimulation_xilinx_com_ip_sc_util_1_0__ref_view_fileset</spirit:name>
-      <spirit:file>
-        <spirit:name>../../ipshared/5bb9/hdl/verilog/sc_util_v1_0_3_constants.vh</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-        <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
-        <spirit:isIncludeFile>true</spirit:isIncludeFile>
-        <spirit:logicalName>smartconnect_v1_0</spirit:logicalName>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>../../ipshared/5bb9/hdl/verilog/sc_util_v1_0_3_structs.svh</spirit:name>
-        <spirit:fileType>systemVerilogSource</spirit:fileType>
-        <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
-        <spirit:isIncludeFile>true</spirit:isIncludeFile>
-        <spirit:logicalName>smartconnect_v1_0</spirit:logicalName>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>../../ipshared/5bb9/hdl/sc_util_v1_0_vl_rfs.sv</spirit:name>
-        <spirit:fileType>systemVerilogSource</spirit:fileType>
-        <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
-        <spirit:logicalName>smartconnect_v1_0</spirit:logicalName>
-      </spirit:file>
-      <spirit:vendorExtensions>
-        <xilinx:subCoreRef>
-          <xilinx:componentRef xilinx:vendor="xilinx.com" xilinx:library="ip" xilinx:name="sc_util" xilinx:version="1.0" xilinx:isGenerated="true" xilinx:checksum="cc08a3e7">
-            <xilinx:mode xilinx:name="copy_mode"/>
-          </xilinx:componentRef>
-        </xilinx:subCoreRef>
-      </spirit:vendorExtensions>
-    </spirit:fileSet>
-    <spirit:fileSet>
-      <spirit:name>xilinx_anylanguagebehavioralsimulation_xilinx_com_ip_axi_protocol_checker_2_0__ref_view_fileset</spirit:name>
-      <spirit:file>
-        <spirit:name>../../ipshared/03a9/hdl/axi_protocol_checker_v2_0_vl_rfs.sv</spirit:name>
-        <spirit:fileType>systemVerilogSource</spirit:fileType>
-        <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
-        <spirit:logicalName>axi_protocol_checker_v2_0_3</spirit:logicalName>
-      </spirit:file>
-      <spirit:vendorExtensions>
-        <xilinx:subCoreRef>
-          <xilinx:componentRef xilinx:vendor="xilinx.com" xilinx:library="ip" xilinx:name="axi_protocol_checker" xilinx:version="2.0" xilinx:isGenerated="true" xilinx:checksum="660e7d51">
-            <xilinx:mode xilinx:name="copy_mode"/>
-          </xilinx:componentRef>
-        </xilinx:subCoreRef>
-      </spirit:vendorExtensions>
-    </spirit:fileSet>
-    <spirit:fileSet>
       <spirit:name>xilinx_anylanguagebehavioralsimulation_xilinx_com_ip_axi_vip_1_1__ref_view_fileset</spirit:name>
       <spirit:file>
-        <spirit:name>../../ipshared/b9a8/hdl/axi_vip_v1_1_vl_rfs.sv</spirit:name>
+        <spirit:name>../../ipshared/94c3/hdl/axi_vip_v1_1_vl_rfs.sv</spirit:name>
         <spirit:fileType>systemVerilogSource</spirit:fileType>
         <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
-        <spirit:logicalName>axi_vip_v1_1_3</spirit:logicalName>
+        <spirit:logicalName>axi_vip_v1_1_8</spirit:logicalName>
       </spirit:file>
       <spirit:vendorExtensions>
         <xilinx:subCoreRef>
-          <xilinx:componentRef xilinx:vendor="xilinx.com" xilinx:library="ip" xilinx:name="axi_vip" xilinx:version="1.1" xilinx:isGenerated="true" xilinx:checksum="db825b42">
+          <xilinx:componentRef xilinx:vendor="xilinx.com" xilinx:library="ip" xilinx:name="axi_vip" xilinx:version="1.1" xilinx:isGenerated="true" xilinx:checksum="ce5fc852">
             <xilinx:mode xilinx:name="copy_mode"/>
           </xilinx:componentRef>
         </xilinx:subCoreRef>
@@ -31458,74 +32774,109 @@
     <spirit:fileSet>
       <spirit:name>xilinx_anylanguagebehavioralsimulation_xilinx_com_ip_processing_system7_vip_1_0__ref_view_fileset</spirit:name>
       <spirit:file>
-        <spirit:name>../../ipshared/70fd/hdl/processing_system7_vip_v1_0_5_local_params.v</spirit:name>
+        <spirit:name>../../ipshared/34f8/hdl/processing_system7_vip_v1_0_10_local_params.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
         <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
         <spirit:isIncludeFile>true</spirit:isIncludeFile>
-        <spirit:logicalName>processing_system7_vip_v1_0_5</spirit:logicalName>
+        <spirit:logicalName>processing_system7_vip_v1_0_10</spirit:logicalName>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../../ipshared/70fd/hdl/processing_system7_vip_v1_0_vl_rfs.sv</spirit:name>
+        <spirit:name>../../ipshared/34f8/hdl/processing_system7_vip_v1_0_vl_rfs.sv</spirit:name>
         <spirit:fileType>systemVerilogSource</spirit:fileType>
         <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
-        <spirit:logicalName>processing_system7_vip_v1_0_5</spirit:logicalName>
+        <spirit:logicalName>processing_system7_vip_v1_0_10</spirit:logicalName>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../../ipshared/70fd/hdl/processing_system7_vip_v1_0_5_reg_params.v</spirit:name>
+        <spirit:name>../../ipshared/34f8/hdl/processing_system7_vip_v1_0_10_reg_params.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
         <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
         <spirit:isIncludeFile>true</spirit:isIncludeFile>
-        <spirit:logicalName>processing_system7_vip_v1_0_5</spirit:logicalName>
+        <spirit:logicalName>processing_system7_vip_v1_0_10</spirit:logicalName>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../../ipshared/70fd/hdl/processing_system7_vip_v1_0_5_reg_init.v</spirit:name>
+        <spirit:name>../../ipshared/34f8/hdl/processing_system7_vip_v1_0_10_reg_init.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
         <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
         <spirit:isIncludeFile>true</spirit:isIncludeFile>
-        <spirit:logicalName>processing_system7_vip_v1_0_5</spirit:logicalName>
+        <spirit:logicalName>processing_system7_vip_v1_0_10</spirit:logicalName>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../../ipshared/70fd/hdl/processing_system7_vip_v1_0_5_apis.v</spirit:name>
+        <spirit:name>../../ipshared/34f8/hdl/processing_system7_vip_v1_0_10_apis.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
         <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
         <spirit:isIncludeFile>true</spirit:isIncludeFile>
-        <spirit:logicalName>processing_system7_vip_v1_0_5</spirit:logicalName>
+        <spirit:logicalName>processing_system7_vip_v1_0_10</spirit:logicalName>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../../ipshared/70fd/hdl/processing_system7_vip_v1_0_5_unused_ports.v</spirit:name>
+        <spirit:name>../../ipshared/34f8/hdl/processing_system7_vip_v1_0_10_unused_ports.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
         <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
         <spirit:isIncludeFile>true</spirit:isIncludeFile>
-        <spirit:logicalName>processing_system7_vip_v1_0_5</spirit:logicalName>
+        <spirit:logicalName>processing_system7_vip_v1_0_10</spirit:logicalName>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../../ipshared/70fd/hdl/processing_system7_vip_v1_0_5_axi_gp.v</spirit:name>
+        <spirit:name>../../ipshared/34f8/hdl/processing_system7_vip_v1_0_10_axi_gp.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
         <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
         <spirit:isIncludeFile>true</spirit:isIncludeFile>
-        <spirit:logicalName>processing_system7_vip_v1_0_5</spirit:logicalName>
+        <spirit:logicalName>processing_system7_vip_v1_0_10</spirit:logicalName>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../../ipshared/70fd/hdl/processing_system7_vip_v1_0_5_axi_acp.v</spirit:name>
+        <spirit:name>../../ipshared/34f8/hdl/processing_system7_vip_v1_0_10_axi_acp.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
         <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
         <spirit:isIncludeFile>true</spirit:isIncludeFile>
-        <spirit:logicalName>processing_system7_vip_v1_0_5</spirit:logicalName>
+        <spirit:logicalName>processing_system7_vip_v1_0_10</spirit:logicalName>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../../ipshared/70fd/hdl/processing_system7_vip_v1_0_5_axi_hp.v</spirit:name>
+        <spirit:name>../../ipshared/34f8/hdl/processing_system7_vip_v1_0_10_axi_hp.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
         <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
         <spirit:isIncludeFile>true</spirit:isIncludeFile>
-        <spirit:logicalName>processing_system7_vip_v1_0_5</spirit:logicalName>
+        <spirit:logicalName>processing_system7_vip_v1_0_10</spirit:logicalName>
       </spirit:file>
       <spirit:vendorExtensions>
         <xilinx:subCoreRef>
-          <xilinx:componentRef xilinx:vendor="xilinx.com" xilinx:library="ip" xilinx:name="processing_system7_vip" xilinx:version="1.0" xilinx:isGenerated="true" xilinx:checksum="a85df2e8">
+          <xilinx:componentRef xilinx:vendor="xilinx.com" xilinx:library="ip" xilinx:name="processing_system7_vip" xilinx:version="1.0" xilinx:isGenerated="true" xilinx:checksum="04e25997">
             <xilinx:mode xilinx:name="copy_mode"/>
           </xilinx:componentRef>
         </xilinx:subCoreRef>
       </spirit:vendorExtensions>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_systemcsimulation_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>sim_tlm/processing_system7_v5_5_tlm.h</spirit:name>
+        <spirit:fileType>systemCSource</spirit:fileType>
+        <spirit:isIncludeFile>true</spirit:isIncludeFile>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>sim_tlm/processing_system7_v5_5_tlm.cpp</spirit:name>
+        <spirit:fileType>systemCSource</spirit:fileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>sim_tlm/xilinx-zynq.h</spirit:name>
+        <spirit:fileType>systemCSource</spirit:fileType>
+        <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
+        <spirit:isIncludeFile>true</spirit:isIncludeFile>
+        <spirit:logicalName>processing_system7_v5_5_6</spirit:logicalName>
+        <spirit:description>QEMU wrapper header file</spirit:description>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>sim_tlm/b_transport_converter.h</spirit:name>
+        <spirit:fileType>systemCSource</spirit:fileType>
+        <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
+        <spirit:isIncludeFile>true</spirit:isIncludeFile>
+        <spirit:logicalName>processing_system7_v5_5_6</spirit:logicalName>
+        <spirit:description>B2NB Transport Converter</spirit:description>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>sim_tlm/xilinx-zynq.cc</spirit:name>
+        <spirit:fileType>systemCSource</spirit:fileType>
+        <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
+        <spirit:logicalName>processing_system7_v5_5_6</spirit:logicalName>
+        <spirit:description>QEMU wrapper src file</spirit:description>
+      </spirit:file>
     </spirit:fileSet>
     <spirit:fileSet>
       <spirit:name>xilinx_anylanguagebehavioralsimulation_1_view_fileset</spirit:name>
@@ -31558,10 +32909,71 @@
       </spirit:file>
     </spirit:fileSet>
     <spirit:fileSet>
+      <spirit:name>xilinx_systemcsimulationwrapper_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>sim/design_1_processing_system7_0_0_sc.h</spirit:name>
+        <spirit:fileType>systemCSource</spirit:fileType>
+        <spirit:isIncludeFile>true</spirit:isIncludeFile>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>sim/design_1_processing_system7_0_0_sc.cpp</spirit:name>
+        <spirit:fileType>systemCSource</spirit:fileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>sim/design_1_processing_system7_0_0.h</spirit:name>
+        <spirit:fileType>systemCSource</spirit:fileType>
+        <spirit:isIncludeFile>true</spirit:isIncludeFile>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>sim/design_1_processing_system7_0_0.cpp</spirit:name>
+        <spirit:fileType>systemCSource</spirit:fileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>sim/design_1_processing_system7_0_0_stub.sv</spirit:name>
+        <spirit:fileType>systemVerilogSource</spirit:fileType>
+      </spirit:file>
+    </spirit:fileSet>
+    <spirit:fileSet>
       <spirit:name>xilinx_anylanguagesimulationwrapper_1_view_fileset</spirit:name>
       <spirit:file>
         <spirit:name>sim/design_1_processing_system7_0_0.sv</spirit:name>
         <spirit:fileType>systemVerilogSource</spirit:fileType>
+      </spirit:file>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_externalfiles_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>design_1_processing_system7_0_0.dcp</spirit:name>
+        <spirit:userFileType>dcp</spirit:userFileType>
+        <spirit:userFileType>USED_IN_implementation</spirit:userFileType>
+        <spirit:userFileType>USED_IN_synthesis</spirit:userFileType>
+        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>design_1_processing_system7_0_0_stub.v</spirit:name>
+        <spirit:fileType>verilogSource</spirit:fileType>
+        <spirit:userFileType>USED_IN_synth_blackbox_stub</spirit:userFileType>
+        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>design_1_processing_system7_0_0_stub.vhdl</spirit:name>
+        <spirit:fileType>vhdlSource</spirit:fileType>
+        <spirit:userFileType>USED_IN_synth_blackbox_stub</spirit:userFileType>
+        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>design_1_processing_system7_0_0_sim_netlist.v</spirit:name>
+        <spirit:fileType>verilogSource</spirit:fileType>
+        <spirit:userFileType>USED_IN_simulation</spirit:userFileType>
+        <spirit:userFileType>USED_IN_single_language</spirit:userFileType>
+        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>design_1_processing_system7_0_0_sim_netlist.vhdl</spirit:name>
+        <spirit:fileType>vhdlSource</spirit:fileType>
+        <spirit:userFileType>USED_IN_simulation</spirit:userFileType>
+        <spirit:userFileType>USED_IN_single_language</spirit:userFileType>
+        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
       </spirit:file>
     </spirit:fileSet>
   </spirit:fileSets>
@@ -38523,43 +39935,62 @@
       <xilinx:coreRevision>6</xilinx:coreRevision>
       <xilinx:requiresVIP>true</xilinx:requiresVIP>
       <xilinx:configElementInfos>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.DDR.AXI_ARBITRATION_SCHEME" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.DDR.BURST_LENGTH" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.DDR.CAN_DEBUG" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.DDR.CAS_LATENCY" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.DDR.CAS_WRITE_LATENCY" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.DDR.CS_ENABLED" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.DDR.CUSTOM_PARTS" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.DDR.DATA_MASK_ENABLED" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.DDR.DATA_WIDTH" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.DDR.MEMORY_PART" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.DDR.MEMORY_TYPE" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.DDR.MEM_ADDR_MAP" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.DDR.SLOT" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.DDR.TIMEPERIOD_PS" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.FCLK_CLK0.ASSOCIATED_BUSIF" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.FCLK_CLK0.ASSOCIATED_RESET" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.FCLK_CLK0.CLK_DOMAIN" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.FCLK_CLK0.FREQ_HZ" xilinx:valueSource="user" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.FCLK_CLK0.PHASE" xilinx:valuePermission="bd"/>
-        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.ADDR_WIDTH" xilinx:valueSource="user" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.FCLK_RESET0_N.POLARITY" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.FIXED_IO.CAN_DEBUG" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.ADDR_WIDTH" xilinx:valueSource="auto" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.ARUSER_WIDTH" xilinx:valueSource="constant" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.AWUSER_WIDTH" xilinx:valueSource="constant" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.BUSER_WIDTH" xilinx:valueSource="constant" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.CLK_DOMAIN" xilinx:valueSource="default_prop" xilinx:valuePermission="bd"/>
-        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.DATA_WIDTH" xilinx:valueSource="user" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.DATA_WIDTH" xilinx:valueSource="auto" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.FREQ_HZ" xilinx:valueSource="user_prop" xilinx:valuePermission="bd"/>
-        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.HAS_BRESP" xilinx:valueSource="user" xilinx:valuePermission="bd"/>
-        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.HAS_BURST" xilinx:valueSource="user" xilinx:valuePermission="bd"/>
-        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.HAS_CACHE" xilinx:valueSource="user" xilinx:valuePermission="bd"/>
-        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.HAS_LOCK" xilinx:valueSource="user" xilinx:valuePermission="bd"/>
-        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.HAS_PROT" xilinx:valueSource="user" xilinx:valuePermission="bd"/>
-        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.HAS_QOS" xilinx:valueSource="user" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.HAS_BRESP" xilinx:valueSource="auto" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.HAS_BURST" xilinx:valueSource="auto" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.HAS_CACHE" xilinx:valueSource="auto" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.HAS_LOCK" xilinx:valueSource="auto" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.HAS_PROT" xilinx:valueSource="auto" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.HAS_QOS" xilinx:valueSource="auto" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.HAS_REGION" xilinx:valueSource="constant" xilinx:valuePermission="bd"/>
-        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.HAS_RRESP" xilinx:valueSource="user" xilinx:valuePermission="bd"/>
-        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.HAS_WSTRB" xilinx:valueSource="user" xilinx:valuePermission="bd"/>
-        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.ID_WIDTH" xilinx:valueSource="user" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.HAS_RRESP" xilinx:valueSource="auto" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.HAS_WSTRB" xilinx:valueSource="auto" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.ID_WIDTH" xilinx:valueSource="auto" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.MAX_BURST_LENGTH" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.NUM_READ_OUTSTANDING" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.NUM_READ_THREADS" xilinx:valueSource="constant" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.NUM_WRITE_OUTSTANDING" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.NUM_WRITE_THREADS" xilinx:valueSource="constant" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.PHASE" xilinx:valuePermission="bd"/>
-        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.PROTOCOL" xilinx:valueSource="user" xilinx:valuePermission="bd"/>
-        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.READ_WRITE_MODE" xilinx:valueSource="user" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.PROTOCOL" xilinx:valueSource="auto" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.READ_WRITE_MODE" xilinx:valueSource="auto" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.RUSER_BITS_PER_BYTE" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.RUSER_WIDTH" xilinx:valueSource="constant" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.SUPPORTS_NARROW_BURST" xilinx:valueSource="user" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.WUSER_BITS_PER_BYTE" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0.WUSER_WIDTH" xilinx:valueSource="constant" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0_ACLK.ASSOCIATED_BUSIF" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0_ACLK.ASSOCIATED_RESET" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0_ACLK.CLK_DOMAIN" xilinx:valueSource="default_prop" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0_ACLK.FREQ_HZ" xilinx:valueSource="user_prop" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI_GP0_ACLK.PHASE" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.PCW_ACT_APU_PERIPHERAL_FREQMHZ" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.PCW_ACT_CAN0_PERIPHERAL_FREQMHZ" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.PCW_ACT_CAN1_PERIPHERAL_FREQMHZ" xilinx:valueSource="user"/>
@@ -38991,6 +40422,7 @@
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.PCW_M_AXI_GP0_ID_WIDTH" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.PCW_M_AXI_GP0_SUPPORT_NARROW_BURST" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.PCW_M_AXI_GP0_THREAD_ID_WIDTH" xilinx:valueSource="user"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.PCW_M_AXI_GP1_FREQMHZ" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.PCW_NAND_CYCLES_T_AR" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.PCW_NAND_CYCLES_T_CLR" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.PCW_NAND_CYCLES_T_RC" xilinx:valueSource="user"/>
@@ -39035,6 +40467,7 @@
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.PCW_NOR_SRAM_CS1_T_WC" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.PCW_NOR_SRAM_CS1_T_WP" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.PCW_NOR_SRAM_CS1_WE_TIME" xilinx:valueSource="user"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.PCW_NUM_F2P_INTR_INPUTS" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.PCW_OVERRIDE_BASIC_CLOCK" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.PCW_PACKAGE_DDR_BOARD_DELAY0" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.PCW_PACKAGE_DDR_BOARD_DELAY1" xilinx:valueSource="user"/>
@@ -39104,6 +40537,13 @@
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.PCW_SPI_PERIPHERAL_CLKSRC" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.PCW_SPI_PERIPHERAL_DIVISOR0" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.PCW_SPI_PERIPHERAL_VALID" xilinx:valueSource="user"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.PCW_S_AXI_ACP_FREQMHZ" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.PCW_S_AXI_GP0_FREQMHZ" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.PCW_S_AXI_GP1_FREQMHZ" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.PCW_S_AXI_HP0_FREQMHZ" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.PCW_S_AXI_HP1_FREQMHZ" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.PCW_S_AXI_HP2_FREQMHZ" xilinx:valuePermission="bd"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.PCW_S_AXI_HP3_FREQMHZ" xilinx:valuePermission="bd"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.PCW_TPIU_PERIPHERAL_CLKSRC" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.PCW_TPIU_PERIPHERAL_DIVISOR0" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.PCW_TPIU_PERIPHERAL_FREQMHZ" xilinx:valueSource="user"/>

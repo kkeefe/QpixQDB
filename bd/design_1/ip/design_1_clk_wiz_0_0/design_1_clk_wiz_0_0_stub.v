@@ -1,10 +1,10 @@
-// Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
+// Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
-// Tool Version: Vivado v.2018.2 (win64) Build 2258646 Thu Jun 14 20:03:12 MDT 2018
-// Date        : Mon Apr  4 14:25:19 2022
-// Host        : The-Bridge running 64-bit major release  (build 9200)
+// Tool Version: Vivado v.2020.2 (lin64) Build 3064766 Wed Nov 18 09:12:47 MST 2020
+// Date        : Wed May 18 12:18:57 2022
+// Host        : kevin-Ubuntue running 64-bit Ubuntu 20.04.4 LTS
 // Command     : write_verilog -force -mode synth_stub
-//               C:/Users/keefe/Documents/vivado_projects/ZyboQDB_DAQ/ZyboQDB_DAQ.srcs/sources_1/bd/design_1/ip/design_1_clk_wiz_0_0/design_1_clk_wiz_0_0_stub.v
+//               /home/kevin/Documents/QpixQDB/bd/design_1/ip/design_1_clk_wiz_0_0/design_1_clk_wiz_0_0_stub.v
 // Design      : design_1_clk_wiz_0_0
 // Purpose     : Stub declaration of top-level module interface
 // Device      : xc7z020clg400-1
