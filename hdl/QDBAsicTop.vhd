@@ -18,34 +18,34 @@ entity QDBAsicTop is
    generic (
       X_POS_G      : natural := 0;
       Y_POS_G      : natural := 0;
-      pulse_time   : natural :=  0_999_999;
-      fake_trg_cnt : natural := 36_999_999;
+      pulse_time   : natural :=  1_999_999;
+      fake_trg_cnt : natural := 119_999_999;
       RAM_TYPE     : string  := "Lattice"; -- lattice hardcodes BRAM for lattice, or distributed / block
       TXRX_TYPE    : string  := "ENDEAVOR" -- "DUMMY"/"UART"/"ENDEAVOR"
     );
 port (
     -- internal clock
-    clk : in STD_LOGIC;
+    --clk : in STD_LOGIC;
     --rst : in STD_LOGIC;
 
     -- Tx/Rx IO
-    Tx1 : out STD_LOGIC; -- North
-    Rx1 : in STD_LOGIC;
-    Tx2 : out STD_LOGIC; -- East
-    Rx2 : in STD_LOGIC;
+    --Tx1 : out STD_LOGIC; -- North
+    --Rx1 : in STD_LOGIC;
+    --Tx2 : out STD_LOGIC; -- East
+    --Rx2 : in STD_LOGIC;
     Tx3 : out STD_LOGIC; -- South
     Rx3 : in STD_LOGIC;
-    Tx4 : out STD_LOGIC; -- West
-    Rx4 : in STD_LOGIC;
+    --Tx4 : out STD_LOGIC; -- West
+    --Rx4 : in STD_LOGIC;
 
     -- extra IO, hardcode IO for now
     --IO : in STD_LOGIC_VECTOR(3 downto 0);
 
     -- optional ss pins -- south Top
-    --ss  : in std_logic; -- south 8   /  north 6
+    ss  : in std_logic; -- south 8   /  north 6
     --so  : in std_logic; -- south 6   /  north 4
-    --si  : in std_logic; -- south 4   /  north 2
-    --sck : in std_logic; -- south 2   /  north 8
+    si  : out std_logic; -- south 4   /  north 2
+    sck : out std_logic; -- south 2   /  north 8
 
     -- outputs
     red_led : out STD_LOGIC;
@@ -59,18 +59,21 @@ end QDBAsicTop;
 architecture Behavioral of QDBAsicTop is
 
   -- timestamp and QDBAsic specifics
-  signal fake_trg     : std_logic := '0';
-  signal count        : integer range 0 to 50000000;
-  signal rst          : std_logic := '0';
---  signal clk          : std_logic;
+  signal clk          : std_logic;
+  signal fake_trg     : std_logic              := '0';
+  signal rst          : std_logic              := '0';
   signal localCnt     : unsigned (31 downto 0) := (others => '0');
   signal slv_localCnt : std_logic_vector(31 downto 0);
-  signal pulse_tx     : std_logic := '0';
-  signal pulse_rx     : std_logic := '0';
-  signal pulse_trg    : std_logic := '0';
-  signal spi_input    : std_logic := '0';
+  signal pulse_red    : std_logic              := '0';
+  signal pulse_blu    : std_logic              := '0';
+  signal pulse_gre    : std_logic              := '0';
+  --signal spi_input    : std_logic := '0';
 
-  -- QpixAsicTop copied signals
+ 
+  signal TxByteValidArr_out : std_logic_vector(3 downto 0);
+  signal RxByteValidArr_out : std_logic_vector(3 downto 0);
+  signal TxPortsArr : std_logic_vector(3 downto 0);
+  signal RxPortsArr : std_logic_vector(3 downto 0);
   signal inData       : QpixDataFormatType := QpixDataZero_C;
   signal txData       : QpixDataFormatType := QpixDataZero_C;
   signal rxData       : QpixDataFormatType := QpixDataZero_C;
@@ -79,107 +82,106 @@ architecture Behavioral of QDBAsicTop is
   signal qpixConf     : QpixConfigType     := QpixConfigDef_C;
   signal qpixReq      : QpixRequestType    := QpixRequestZero_C;
   signal TxReady      : std_logic          := '0';
-  -- signal localDataEna : std_logic := '0';
-  -- signal inPorts      :  QpixInPortsType;
-  signal TxPortsArr   :  std_logic_vector(3 downto 0);
-  signal RxPortsArr   :  std_logic_vector(3 downto 0);
 
   -- simulation monitor
   -- signal spulse_count : integer range 0 to pulse_time := 0;
   -- signal sstart_pulse : std_logic;
 
---component HSOSC
---GENERIC( CLKHF_DIV :string :="0b00");
---PORT(
---        CLKHFEN : IN  STD_LOGIC;
---        CLKHFPU : IN  STD_LOGIC;
---        CLKHF   : OUT STD_LOGIC);
---END COMPONENT;
+component HSOSC
+GENERIC( CLKHF_DIV :string :="0b00");
+PORT(
+        CLKHFEN : IN  STD_LOGIC;
+        CLKHFPU : IN  STD_LOGIC;
+        CLKHF   : OUT STD_LOGIC);
+END COMPONENT;
 
 begin
 
     -- LEDs, active LOW (on when value is '0')
-    red_led <= not pulse_rx;
-    blu_led <= not pulse_tx;
-    gre_led <= not pulse_trg;
+    red_led <= not pulse_red;
+    blu_led <= not pulse_blu;
+    gre_led <= not pulse_gre;
     --spi_input <= si;
     rst <= '0';
 
     -- internal oscillator, generate 50 MHz clk
---  u_osc : HSOSC
---  GENERIC MAP(CLKHF_DIV =>"0b11")
---  port map(
---      CLKHFEN  => '1',
---      CLKHFPU  => '1',
---      CLKHF    => clk
---  );
+  u_osc : HSOSC
+  GENERIC MAP(CLKHF_DIV =>"0b10")
+  port map(
+      CLKHFEN  => '1',
+      CLKHFPU  => '1',
+      CLKHF    => clk
+  );
 
     -- connect Tx/Rx to the signals
-    Tx1 <= TxPortsArr(0);
-    RxPortsArr(0) <= Rx1;
-    Tx2 <= TxPortsArr(1);
-    RxPortsArr(1) <= Rx2;
+    --Tx1 <= TxPortsArr(0);
+    --RxPortsArr(0) <= Rx1;
+    --Tx2 <= TxPortsArr(1);
+    --RxPortsArr(1) <= Rx2;
     Tx3 <= TxPortsArr(2);
+	sck <= TxPortsArr(2);
+	si  <= Rx3;
     RxPortsArr(2) <= Rx3;
     --Tx4 <= TxPortsArr(3);
     --RxPortsArr(3) <= Rx4;
 
 --  -- create a 1 second pulse width when either Tx or Rx goes high
- pulse : process (clk, Rx3, pulse_rx, TxPortsArr(2), fake_trg) is
-     variable pulse_count_rx : integer range 0 to pulse_time := 0;
-     variable start_pulse_rx : std_logic := '0';
-     variable pulse_count_tx : integer range 0 to pulse_time := 0;
-     variable start_pulse_tx : std_logic := '0';
-     variable pulse_count_trg : integer range 0 to pulse_time := 0;
-     variable start_pulse_trg : std_logic := '0';
+ pulse : process (clk, Rx3, pulse_red, pulse_blu, pulse_gre, TxPortsArr(2), fake_trg) is
+     variable pulse_count_red : integer range 0 to pulse_time := 0;
+     variable start_pulse_red : std_logic := '0';
+     variable pulse_count_blu : integer range 0 to pulse_time := 0;
+     variable start_pulse_blu : std_logic := '0';
+     variable pulse_count_gre : integer range 0 to pulse_time := 0;
+     variable start_pulse_gre : std_logic := '0';
  begin
      if rising_edge(clk) then
 
-         -- pulse the Rx, Red
-         if Rx3 = '1' then
-             start_pulse_rx := '1';
-             pulse_count_rx := 0;
+         -- pulse Red
+         if RxByteValidArr_out(2) = '1' then
+             start_pulse_red := '1';
+             pulse_count_red := 0;
          end if;
-         if start_pulse_rx = '1' then
-             pulse_count_rx := pulse_count_rx + 1;
-             pulse_rx <= '1';
-             if pulse_count_rx >= pulse_time then
-                 pulse_rx       <= '0';
-                 pulse_count_rx := 0;
-                 start_pulse_rx := '0';
+         if start_pulse_red = '1' then
+             pulse_count_red := pulse_count_red + 1;
+             pulse_red <= '1';
+             if pulse_count_red >= pulse_time then
+                 pulse_red       <= '0';
+                 pulse_count_red := 0;
+                 start_pulse_red := '0';
              end if;
          end if;
 
-         -- pulse the Tx, Blue
+         -- pulse Blue
          if TxPortsArr(2) = '1' then
-             start_pulse_tx := '1';
-             pulse_count_tx := 0;
+             start_pulse_blu := '1';
+             pulse_count_blu := 0;
          end if;
-         if start_pulse_tx = '1' then
-             pulse_count_tx := pulse_count_tx + 1;
-             pulse_tx <= '1';
-             if pulse_count_tx >= pulse_time then
-                 pulse_tx       <= '0';
-                 pulse_count_tx := 0;
-                 start_pulse_tx := '0';
+         if start_pulse_blu = '1' then
+             pulse_count_blu := pulse_count_blu + 1;
+             pulse_blu <= '1';
+             if pulse_count_blu >= pulse_time then
+                 pulse_blu       <= '0';
+                 pulse_count_blu := 0;
+                 start_pulse_blu := '0';
              end if;
          end if;
 
-         if fake_trg = '1' then
-             start_pulse_trg := '1';
-             pulse_count_trg := 0;
+         -- pulse Green
+         if TxByteValidArr_out(2) = '1' then
+             start_pulse_gre := '1';
+             pulse_count_gre := 0;
          end if;
-         if start_pulse_trg = '1' then
-             pulse_count_trg := pulse_count_trg + 1;
-             pulse_trg <= '1';
-             if pulse_count_trg >= pulse_time then
-                 pulse_trg <= '0';
-                 pulse_count_trg := 0;
-                 start_pulse_trg := '0';
+         if start_pulse_gre = '1' then
+             pulse_count_gre := pulse_count_gre + 1;
+             pulse_gre <= '1';
+             if pulse_count_gre >= pulse_time then
+                 pulse_gre <= '0';
+                 pulse_count_gre := 0;
+                 start_pulse_gre := '0';
              end if;
          end if;
 
-         --simulation only
+        --simulation only
         --spulse_count <= pulse_count_rx;
         --sstart_pulse <= start_pulse_rx;
 
@@ -206,10 +208,9 @@ begin
     process (clk)
       begin
          if rising_edge (clk) then
-            if fake_trg = '1' then
-               inData.DataValid <= '1';
+            if ss = '1' then
+               inData.DataValid <= '0';
                inData.TimeStamp <= slv_localCnt;
-
             else
                inData.DataValid <= '0';
                inData.TimeStamp <= (others => '0');
@@ -219,18 +220,19 @@ begin
     inData.ChanMask <=  (others => '1');
 	inData.xpos     <= toslv(X_POS_G, 4);
     inData.ypos     <= toslv(Y_POS_G, 4);
-    inData.data     <= (others => '1');
+    inData.data     <= x"aaaa_bbbb_cccc_dddd";
     inData.wordtype <= (others => '0');
     inData.dirMask  <= DirDown;
 
     counter: process (clk) is
+      variable count : integer := 0;
     begin
         if clk'event and clk = '1' then     -- rising clock edge
-            count <= count + 1;
+            count := count + 1;
             localCnt <= localCnt + 1;
           if count >= fake_trg_cnt then
             fake_trg <= '1';
-            count <= 0;
+            count := 0;
           else
             fake_trg <= '0';
           end if;
@@ -257,6 +259,8 @@ begin
       -- physical connections
       TxPortsArr     => TxPortsArr, -- slv output to physical
       RxPortsArr     => RxPortsArr, -- slv input form physical
+      TxByteValidArr_out     => TxByteValidArr_out, -- slv output to physical
+      RxByteValidArr_out     => RxByteValidArr_out, -- slv input form physical
       -- unused / changed
       QpixConf       => QpixConf, -- record input
 --    QpixReq        => open,

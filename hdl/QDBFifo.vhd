@@ -11,8 +11,8 @@ use work.QpixPkg.all;
 use work.stdrtlpkg.all;
 
 -- ice things
-library ice;
-use ice.all;
+--library ice;
+--use ice.all;
 
 entity QDBFifo is
 

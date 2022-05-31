@@ -12,43 +12,48 @@ use work.QpixProtoPkg.all;
 
 entity QDBDaqTop is
    generic (
-   BOARD_G : string  := "ZYBO"; -- ZYBO, MINIZED
-   TXRX_TYPE : string  := "ENDEAVOR"; -- "DUMMY"/"UART"/"ENDEAVOR"
-   X_NUM_G : natural := 3;
-   Y_NUM_G : natural := 3
+   BOARD_G   : string  := "ZYBO";       -- ZYBO, MINIZED
+   TXRX_TYPE : string  := "ENDEAVOR";   -- "DUMMY"/"UART"/"ENDEAVOR"
+   X_NUM_G   : natural := 3;
+   Y_NUM_G   : natural := 3
 );
 port (    
    sysClk    : in std_logic;
    led       : out std_logic_vector(3 downto 0);
    sw        : in std_logic_vector(3 downto 0);
-   
+
+   -- led_5
+   led5_r : out std_logic;
+   led5_b : out std_logic;
+   led5_g : out std_logic;
+
    -- I/O ports
-   je : out STD_LOGIC_VECTOR(1 downto 0);
+   je    : out STD_LOGIC_VECTOR(1 downto 0);
    DaqTx : out STD_LOGIC;
-   DaqRx : in STD_LOGIC;
+   DaqRx : in  STD_LOGIC;
 
    -- PS ports
-   DDR_addr : inout STD_LOGIC_VECTOR ( 14 downto 0 );
-   DDR_ba : inout STD_LOGIC_VECTOR ( 2 downto 0 );
-   DDR_cas_n : inout STD_LOGIC;
-   DDR_ck_n : inout STD_LOGIC;
-   DDR_ck_p : inout STD_LOGIC;
-   DDR_cke : inout STD_LOGIC;
-   DDR_cs_n : inout STD_LOGIC;
-   DDR_dm : inout STD_LOGIC_VECTOR ( 3 downto 0 );
-   DDR_dq : inout STD_LOGIC_VECTOR ( 31 downto 0 );
-   DDR_dqs_n : inout STD_LOGIC_VECTOR ( 3 downto 0 );
-   DDR_dqs_p : inout STD_LOGIC_VECTOR ( 3 downto 0 );
-   DDR_odt : inout STD_LOGIC;
-   DDR_ras_n : inout STD_LOGIC;
-   DDR_reset_n : inout STD_LOGIC;
-   DDR_we_n : inout STD_LOGIC;
-   FIXED_IO_ddr_vrn : inout STD_LOGIC;
-   FIXED_IO_ddr_vrp : inout STD_LOGIC;
-   FIXED_IO_mio : inout STD_LOGIC_VECTOR ( 53 downto 0 );
-   FIXED_IO_ps_clk : inout STD_LOGIC;
-   FIXED_IO_ps_porb : inout STD_LOGIC;
-   FIXED_IO_ps_srstb : inout STD_LOGIC 
+   DDR_addr          : inout STD_LOGIC_VECTOR (14 downto 0);
+   DDR_ba            : inout STD_LOGIC_VECTOR (2 downto 0);
+   DDR_cas_n         : inout STD_LOGIC;
+   DDR_ck_n          : inout STD_LOGIC;
+   DDR_ck_p          : inout STD_LOGIC;
+   DDR_cke           : inout STD_LOGIC;
+   DDR_cs_n          : inout STD_LOGIC;
+   DDR_dm            : inout STD_LOGIC_VECTOR (3 downto 0);
+   DDR_dq            : inout STD_LOGIC_VECTOR (31 downto 0);
+   DDR_dqs_n         : inout STD_LOGIC_VECTOR (3 downto 0);
+   DDR_dqs_p         : inout STD_LOGIC_VECTOR (3 downto 0);
+   DDR_odt           : inout STD_LOGIC;
+   DDR_ras_n         : inout STD_LOGIC;
+   DDR_reset_n       : inout STD_LOGIC;
+   DDR_we_n          : inout STD_LOGIC;
+   FIXED_IO_ddr_vrn  : inout STD_LOGIC;
+   FIXED_IO_ddr_vrp  : inout STD_LOGIC;
+   FIXED_IO_mio      : inout STD_LOGIC_VECTOR (53 downto 0);
+   FIXED_IO_ps_clk   : inout STD_LOGIC;
+   FIXED_IO_ps_porb  : inout STD_LOGIC;
+   FIXED_IO_ps_srstb : inout STD_LOGIC
 );
 end QDBDaqTop;
 
@@ -61,23 +66,23 @@ architecture Behavioral of QDBDaqTop is
 
     -- ps-pl axi
    signal axi_resetn  : std_logic_vector(0 downto 0) := (others => '1');
-   signal axi_awaddr  : std_logic_vector ( 31 downto 0 );
-   signal axi_awprot  : std_logic_vector ( 2 downto 0 );
+   signal axi_awaddr  : std_logic_vector (31 downto 0);
+   signal axi_awprot  : std_logic_vector (2 downto 0);
    signal axi_awvalid : std_logic;
    signal axi_awready : std_logic;
-   signal axi_wdata   : std_logic_vector ( 31 downto 0 );
-   signal axi_wstrb   : std_logic_vector ( 3 downto 0 );
+   signal axi_wdata   : std_logic_vector (31 downto 0);
+   signal axi_wstrb   : std_logic_vector (3 downto 0);
    signal axi_wvalid  : std_logic;
    signal axi_wready  : std_logic;
-   signal axi_bresp   : std_logic_vector ( 1 downto 0 );
+   signal axi_bresp   : std_logic_vector (1 downto 0);
    signal axi_bvalid  : std_logic;
    signal axi_bready  : std_logic;
-   signal axi_araddr  : std_logic_vector ( 31 downto 0 );
-   signal axi_arprot  : std_logic_vector ( 2 downto 0 );
+   signal axi_araddr  : std_logic_vector (31 downto 0);
+   signal axi_arprot  : std_logic_vector (2 downto 0);
    signal axi_arvalid : std_logic;
    signal axi_arready : std_logic;
-   signal axi_rdata   : std_logic_vector ( 31 downto 0 );
-   signal axi_rresp   : std_logic_vector ( 1 downto 0 );
+   signal axi_rdata   : std_logic_vector (31 downto 0);
+   signal axi_rresp   : std_logic_vector (1 downto 0);
    signal axi_rvalid  : std_logic;
    signal axi_rready  : std_logic;
 
@@ -88,24 +93,19 @@ architecture Behavioral of QDBDaqTop is
    signal reg_wen     : std_logic := '0';
    signal reg_ack     : std_logic := '0';
 
-   signal inPortsArr  : QpixInPortsArrType(0 to X_NUM_G-1, 0 to Y_NUM_G-1);
-
---   signal daqTx       : QpixTxRxPortType := QpixTxRxPortZero_C;
---   signal daqRx       : QpixTxRxPortType := QpixTxRxPortZero_C;
-
+   -- signal inPortsArr  : QpixInPortsArrType(0 to X_NUM_G-1, 0 to Y_NUM_G-1);
    signal hitMask     : Sl2DArray ;
 
-   signal trg         : std_logic := '0';
-   signal asicAddr    : std_logic_vector(31 downto 0) := (others => '0');
-   signal asicOpWrite : std_logic := '0';
+   signal trg         : std_logic                                      := '0';
+   signal asicAddr    : std_logic_vector(31 downto 0)                  := (others => '0');
+   signal asicOpWrite : std_logic                                      := '0';
    signal asicData    : std_logic_vector(15 downto 0);
-   signal asicReq     : std_logic := '0';
+   signal asicReq     : std_logic                                      := '0';
    --signal hitXY       : std_logic_vector (31 downto 0) := (others => '0');
-   signal timestamp    : std_logic_vector (G_TIMESTAMP_BITS-1 downto 0) := (others => '0');
-   signal chanMask     : std_logic_vector (G_N_ANALOG_CHAN-1 downto 0)  := (others => '0');
-   signal trgTime      : std_logic_vector (31 downto 0) := (others => '0');
-
-   signal evtSize     : std_logic_vector (31 downto 0) := (others => '0');
+   signal timestamp   : std_logic_vector (G_TIMESTAMP_BITS-1 downto 0) := (others => '0');
+   signal chanMask    : std_logic_vector (G_N_ANALOG_CHAN-1 downto 0)  := (others => '0');
+   signal trgTime     : std_logic_vector (31 downto 0)                 := (others => '0');
+   signal evtSize     : std_logic_vector (31 downto 0)                 := (others => '0');
 
    signal memAddrRst  : std_logic := '0';
    signal memRdAddr   : std_logic_vector (G_QPIX_PROTO_MEM_DEPTH-1+2 downto 0) := (others => '0');
@@ -114,36 +114,38 @@ architecture Behavioral of QDBDaqTop is
    signal memRdReq    : std_logic := '0';
    signal memEvtSize  : std_logic_vector (G_QPIX_PROTO_MEM_DEPTH-1 downto 0) := (others => '0');
 
-   signal leds        : std_logic_vector(3 downto 0) := (others => '0');
-
-   signal qpixDebugArr : QpixDebug2DArrayType(0 to X_NUM_G-1, 0 to Y_NUM_G-1);
-
-   signal extFifoMaxArr : Slv4b2DArray;
-
-   signal status      : std_logic_vector(31 downto 0) := (others => '0');
-
-   signal asic_mask   : std_logic_vector (15 downto 0) ;
-
+   signal qpixDebugArr   : QpixDebug2DArrayType(0 to X_NUM_G-1, 0 to Y_NUM_G-1);
+   signal extFifoMaxArr  : Slv4b2DArray;
+   signal status         : std_logic_vector(31 downto 0)  := (others => '0');
+   signal asic_mask      : std_logic_vector (15 downto 0);
    signal daqFrameErrCnt : std_logic_vector (31 downto 0) := (others => '0');
    signal daqBreakErrCnt : std_logic_vector (31 downto 0) := (others => '0');
    
-   signal counter_led : std_logic := '0';
+   signal counter_led  : std_logic                    := '0';
+   signal leds         : std_logic_vector(3 downto 0) := (others => '0');
    -- buffer daqTx / daqRx
-   signal s_daqTx : std_logic := '0';
-   signal s_daqRx : std_logic := '0';
-   signal pulse_tx : std_logic := '0';
-   signal pulse_rx : std_logic := '0';
-   constant pulse_time : integer := 2_999_999; -- fclk_freq / pulse_time = pulse's width
+   signal s_daqTx      : std_logic                    := '0';
+   signal s_daqRx      : std_logic                    := '0';
+   signal pulse_red    : std_logic                    := '0';
+   signal pulse_blu    : std_logic                    := '0';
+   signal pulse_gre    : std_logic                    := '0';
+   constant pulse_time : integer                      := 2_999_999;  -- fclk_freq / pulse_time = pulse's width
 
 begin
 
     -- connect the switches to the LEDs
-    --led <= sw;
+    -- led <= sw;
     je(0) <= sw(0);
-    je(1) <= sw(1);    
+    je(1) <= sw(1); 
+    DaqTx <= s_daqTx;
+    s_daqRx <= DaqRx;   
     assgn: for i in 0 to 3 generate
         led(i) <= sw(i) and counter_led;
     end generate;
+   -- LED-5, active high
+   led5_r <= pulse_red;
+   led5_b <= pulse_blu;
+   led5_g <= pulse_gre;
     
     counter: process(clk, rst) is
         constant count : natural := 12000000;
@@ -268,7 +270,8 @@ begin
    QpixProtoRegMap_U : entity work.QpixProtoRegMap
    generic map (
       X_NUM_G => X_NUM_G,
-      Y_NUM_G => Y_NUM_G
+      Y_NUM_G => Y_NUM_G,
+      Version => x"0000_0003"
    )
    port map(
       --clk          => fclk,
@@ -349,40 +352,57 @@ begin
 
  
  pulse : process (fclk, s_daqRx, s_daqTx) is
-     variable pulse_count_rx : integer range 0 to pulse_time := 0;
-     variable start_pulse_rx : std_logic := '0';
-     variable pulse_count_tx : integer range 0 to pulse_time := 0;
-     variable start_pulse_tx : std_logic := '0';
+     variable pulse_count_red : integer range 0 to pulse_time := 0;
+     variable start_pulse_red : std_logic := '0';
+     variable pulse_count_blu : integer range 0 to pulse_time := 0;
+     variable start_pulse_blu : std_logic := '0';
+     variable pulse_count_gre : integer range 0 to pulse_time := 0;
+     variable start_pulse_gre : std_logic := '0';
  begin
      if rising_edge(fclk) then
 
-         -- pulse the Rx, Red
+         -- pulse Red
          if s_daqRx = '1' then
-             start_pulse_rx := '1';
-             pulse_count_rx := 0;
+             start_pulse_red := '1';
+             pulse_count_red := 0;
          end if;
-         if start_pulse_rx = '1' then
-             pulse_count_rx := pulse_count_rx + 1;
-             pulse_rx <= '1';
-             if pulse_count_rx >= pulse_time then
-                 pulse_rx       <= '0';
-                 pulse_count_rx := 0;
-                 start_pulse_rx := '0';
+         if start_pulse_red = '1' then
+             pulse_count_red := pulse_count_red + 1;
+             pulse_red <= '1';
+             if pulse_count_red >= pulse_time then
+                 pulse_red       <= '0';
+                 pulse_count_red := 0;
+                 start_pulse_red := '0';
              end if;
          end if;
 
-         -- pulse the Tx, Blue
+         -- pulse Blue
          if s_daqTx = '1' then
-             start_pulse_tx := '1';
-             pulse_count_tx := 0;
+             start_pulse_blu := '1';
+             pulse_count_blu := 0;
          end if;
-         if start_pulse_tx = '1' then
-             pulse_count_tx := pulse_count_tx + 1;
-             pulse_tx <= '1';
-             if pulse_count_tx >= pulse_time then
-                 pulse_tx       <= '0';
-                 pulse_count_tx := 0;
-                 start_pulse_tx := '0';
+         if start_pulse_blu = '1' then
+             pulse_count_blu := pulse_count_blu + 1;
+             pulse_blu <= '1';
+             if pulse_count_blu >= pulse_time then
+                 pulse_blu       <= '0';
+                 pulse_count_blu := 0;
+                 start_pulse_blu := '0';
+             end if;
+         end if;
+
+         -- pulse Green
+         if trg = '1' then
+             start_pulse_gre := '1';
+             pulse_count_gre := 0;
+         end if;
+         if start_pulse_gre = '1' then
+             pulse_count_gre := pulse_count_gre + 1;
+             pulse_gre <= '1';
+             if pulse_count_gre >= pulse_time then
+                 pulse_gre       <= '0';
+                 pulse_count_gre := 0;
+                 start_pulse_gre := '0';
              end if;
          end if;
 

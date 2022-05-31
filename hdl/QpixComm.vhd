@@ -34,7 +34,11 @@ entity QpixComm is
       -- -- Fixme / TODO?? - These ports do nothing in QpixParser.vhd
       -- register info to QpixRoute
       qpixConf       : in QpixConfigType;
---      qpixReq        : out QpixRequestType;  
+--      qpixReq        : out QpixRequestType;
+
+      -- Debug
+      TxByteValidArr_out : out std_logic_vector(3 downto 0);
+      RxByteValidArr_out : out std_logic_vector(3 downto 0);
 
       -- register information to QpixRegFile
       regData        : out QpixRegDataType;
@@ -69,6 +73,10 @@ architecture behav of QpixComm is
    --signal InData           : QpixDataFormatType := QpixDataZero_C;
 
 begin
+
+   -- debug
+   TxByteValidArr_out <= TxByteValidArr;
+   RxByteValidArr_out <= RxByteValidArr;
    
    ------------------------------------------------------------
    -- Transcievers
@@ -88,8 +96,10 @@ begin
                -- outputs
                rxFrameErr  => open,
                rxBreakErr  => open,
+               rxGapErr    => open,
                rxByte      => RxByteArr(i),
                rxByteValid => RxByteValidArr(i),
+               rxState     => open,
                -- external ports
                Rx          => RxPortsArr(i),  -- input
                Tx          => TxPortsArr(i)   -- output
@@ -118,7 +128,7 @@ begin
             FIFO_U : entity work.fifo_cc
             generic map(
                DATA_WIDTH => NUM_BITS_G,
-               DEPTH      => 1,
+               DEPTH      => 2,
                RAM_TYPE   => "distributed"
             )
             port map(

@@ -82,6 +82,7 @@ architecture behav of QpixDaqCtrl is
 
    signal daqRxFrameErr : std_logic := '0';
    signal daqRxBreakErr : std_logic := '0';
+   -- signal daqRxGapErr   : std_logic := '0';
 
    signal daqFrameErrCnt : std_logic_vector (31 downto 0) := (others => '0');
    signal daqBreakErrCnt : std_logic_vector (31 downto 0) := (others => '0');
@@ -145,6 +146,8 @@ begin
          rxByteValid => daqRxByteValid,
          rxFrameErr  => daqRxFrameErr,
          rxBreakErr  => daqRxBreakErr,
+         rxGapErr    => open,
+         rxState     => open,
 
          Tx          => daqTx,
          Rx          => daqRx

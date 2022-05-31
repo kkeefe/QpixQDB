@@ -17,10 +17,11 @@ entity QpixEndeavorTop is
       -- RX out
       rxByte      : out std_logic_vector(NUM_BITS_G-1 downto 0);
       rxByteValid : out std_logic;
+      rxState     : out std_logic_vector(2 downto 0);
       -- RX Error statuses out
       rxFrameErr  : out std_logic; -- No valid stop bit found
       rxBreakErr  : out std_logic; -- Line low for longer than a character time
-	  rxGapErr    : out std_logic; -- ??
+      rxGapErr    : out std_logic; -- ??
       -- TX in 
       txByte      : in  std_logic_vector(NUM_BITS_G-1 downto 0) := (others => '0');
       txByteValid : in  std_logic := '0';
@@ -51,11 +52,12 @@ begin
 		 -- Byte signal out
          rxByte      => rxByte,      -- output
          rxByteValid => rxByteValid, -- output
+         rxState     => rxState,     -- output
          
 		 -- Error statuses out
-         bitError    => rxFrameErr,
-         lenError    => rxBreakErr,         
-         gapError    => rxGapErr,
+         bitError    => rxFrameErr, -- output
+         lenError    => rxBreakErr, -- output
+         gapError    => rxGapErr,   -- output
 
          Rx          => Rx -- input
       );
@@ -74,7 +76,7 @@ begin
 		 -- Ready to send new byte (data is sent on txByteValid AND txByteReady)
          txByte      => txByte,      -- input
          txByteValid => txByteValid, -- input
-		 txByteReady => txByteReady, -- output
+         txByteReady => txByteReady, -- output
 		 
          tx          => Tx  -- output    
       );

@@ -99,7 +99,7 @@ architecture behav of QpixRoute is
    signal extFifoFull_e  : std_logic := '0';
 
 
-   signal respDir      : std_logic_vector(3 downto 0) := (others => '0');
+   --signal respDir      : std_logic_vector(3 downto 0) := (others => '0');
 
    signal stateInt       : integer := 0;
 

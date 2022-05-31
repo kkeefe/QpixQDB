@@ -11,7 +11,8 @@ use work.QpixProtoPkg.all;
 entity QpixProtoRegMap is
    generic (
       X_NUM_G : natural := 3;
-      Y_NUM_G : natural := 3
+      Y_NUM_G : natural := 3;
+      Version : std_logic_vector(31 downto 0) := x"0000_0000"
    );
    port (
       clk         : in std_logic;
@@ -48,8 +49,6 @@ entity QpixProtoRegMap is
       asicData    : out std_logic_vector(15 downto 0);
       asicReq     : out std_logic;
       
-
-      
       memRdReq    : out std_logic;
       memRdAck    : in  std_logic;
       memData     : in  std_logic_vector(31 downto 0);
@@ -57,8 +56,6 @@ entity QpixProtoRegMap is
 
       daqTestWordIn  : in std_logic_vector(G_DATA_BITS-1 downto 0) := (others => '0');
       daqTestWordOut : out  std_logic_vector(G_DATA_BITS-1 downto 0)
-
-
    );
 end entity QpixProtoRegMap;
 
@@ -75,7 +72,7 @@ architecture behav of QpixProtoRegMap is
    signal s_asic_mask  : std_logic_vector (15 downto 0) := (others => '1');
    signal test_word_out : std_logic_vector(63 downto 0);
    
-   signal scratch_word : std_logic_vector(31 downto 0) := 0x"0a0a0a0a";
+   signal scratch_word : std_logic_vector(31 downto 0) := Version;
 
 begin
 
@@ -187,6 +184,7 @@ begin
                   rdata <= x"0BAD_ADD0";
 
             end case;
+
          -- event memory
          elsif s_addr(21 downto 18) = x"1" then
             memRdReq <= req;
@@ -195,12 +193,14 @@ begin
                memAddr <= s_addr(G_QPIX_PROTO_MEM_DEPTH-1+2+2 downto 2);
                rdata   <= memData;
             end if;
+
          -- fifo counters
          elsif s_addr(21 downto 18) = x"2" then
             ack <= req;
             iX := to_integer(unsigned(a_reg_addr(3 downto 0)));
             iY := to_integer(unsigned(a_reg_addr(7 downto 4)));
             rdata <= extFifoMax(iX,iY);
+
          -- asic reg request
          elsif s_addr(21 downto 18) = x"3" then
             ack         <= req;
