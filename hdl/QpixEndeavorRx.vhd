@@ -168,7 +168,7 @@ begin
                nxtReg.byteValid <= '1';
             else 
                -- temporarily send a bad byte just to see what we're reading if we've made it this far
-               nxtReg.byteValid <= '1';
+               --nxtReg.byteValid <= '1';
                nxtReg.lenError  <= '1';
             end if;
             nxtReg.state <= IDLE_S;

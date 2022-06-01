@@ -102,41 +102,41 @@ architecture Behavioral of qpix_qdb_sim_TB is
 
   constant fake_trg_cnt : natural := 200*12;-- try to get ~200 us fake trigger rate;
    -- all ASIC TxRx ports
-  signal A_Tx1 : std_logic;
-  signal A_Rx1 : std_logic;
-  signal A_Tx2 : std_logic;
-  signal A_Rx2 : std_logic;
-  signal A_Tx3 : std_logic;
-  signal A_Rx3 : std_logic;
-  signal A_Tx4 : std_logic;
-  signal A_Rx4 : std_logic;
+--  signal A_Tx1 : std_logic;
+--  signal A_Rx1 : std_logic;
+--  signal A_Tx2 : std_logic;
+--  signal A_Rx2 : std_logic;
+--  signal A_Tx3 : std_logic;
+--  signal A_Rx3 : std_logic;
+--  signal A_Tx4 : std_logic;
+--  signal A_Rx4 : std_logic;
 
-  signal B_Tx1 : std_logic;
-  signal B_Rx1 : std_logic;
-  signal B_Tx2 : std_logic;
-  signal B_Rx2 : std_logic;
-  signal B_Tx3 : std_logic;
-  signal B_Rx3 : std_logic;
-  signal B_Tx4 : std_logic;
-  signal B_Rx4 : std_logic;
+--  signal B_Tx1 : std_logic;
+--  signal B_Rx1 : std_logic;
+--  signal B_Tx2 : std_logic;
+--  signal B_Rx2 : std_logic;
+--  signal B_Tx3 : std_logic;
+--  signal B_Rx3 : std_logic;
+--  signal B_Tx4 : std_logic;
+--  signal B_Rx4 : std_logic;
 
-  signal C_Tx1 : std_logic;
-  signal C_Rx1 : std_logic;
-  signal C_Tx2 : std_logic;
-  signal C_Rx2 : std_logic;
+--  signal C_Tx1 : std_logic;
+--  signal C_Rx1 : std_logic;
+--  signal C_Tx2 : std_logic;
+--  signal C_Rx2 : std_logic;
   signal C_Tx3 : std_logic;
   signal C_Rx3 : std_logic;
-  signal C_Tx4 : std_logic;
-  signal C_Rx4 : std_logic;
+--  signal C_Tx4 : std_logic;
+--  signal C_Rx4 : std_logic;
 
-  signal D_Tx1 : std_logic;
-  signal D_Rx1 : std_logic;
-  signal D_Tx2 : std_logic;
-  signal D_Rx2 : std_logic;
-  signal D_Tx3 : std_logic;
-  signal D_Rx3 : std_logic;
-  signal D_Tx4 : std_logic;
-  signal D_Rx4 : std_logic;
+--  signal D_Tx1 : std_logic;
+--  signal D_Rx1 : std_logic;
+--  signal D_Tx2 : std_logic;
+--  signal D_Rx2 : std_logic;
+--  signal D_Tx3 : std_logic;
+--  signal D_Rx3 : std_logic;
+--  signal D_Tx4 : std_logic;
+--  signal D_Rx4 : std_logic;
 
 begin
 
@@ -148,18 +148,18 @@ begin
   C_Rx3 <= DaqTx;
   -- East West
   -- AB
-  B_Rx4 <= A_Tx2;
-  A_Rx2 <= B_Tx4;
-  -- CD
-  D_Rx4 <= C_Tx2;
-  C_Rx2 <= D_Tx4;
-  -- North South
-  -- AC
-  A_Rx3 <= C_Tx1;
-  C_Rx1 <= A_Tx3;
-  -- BD
-  B_Rx3 <= D_Tx1;
-  D_Rx1 <= B_Tx3;
+--  B_Rx4 <= A_Tx2;
+--  A_Rx2 <= B_Tx4;
+--  -- CD
+--  D_Rx4 <= C_Tx2;
+--  C_Rx2 <= D_Tx4;
+--  -- North South
+--  -- AC
+--  A_Rx3 <= C_Tx1;
+--  C_Rx1 <= A_Tx3;
+--  -- BD
+--  B_Rx3 <= D_Tx1;
+--  D_Rx1 <= B_Tx3;
 
 
     -- instantiate a portion of the top level here
@@ -234,59 +234,59 @@ begin
       );
       memAddrRst <= trg or asicReq;
 
-    -- ASIC-A, "main" ASIC that speaks with DaqNode
-    U_QDBAsicA : entity work.QDBAsicTop
-    generic map(
-       X_POS_G      => 0,
-       Y_POS_G      => 1,
-       pulse_time  => 2,
-       fake_trg_cnt => fake_trg_cnt,
-       TXRX_TYPE    => "ENDEAVOR"       -- "DUMMY"/"UART"/"ENDEAVOR"
-    )
-    port map(
-        -- internal clock
-        clk     => clk12,
-        --rst : in STD_LOGIC;
-        Tx1     => A_Tx1,
-        Rx1     => A_Rx1,
-        Tx2     => A_Tx2,
-        Rx2     => A_Rx2,
-        Tx3     => A_Tx3,
-        Rx3     => A_Rx3,
-        Tx4     => A_Tx4,
-        Rx4     => A_Rx4,
-        -- outputs
-        red_led => red_led(0),
-        blu_led => blu_led(0),
-        gre_led => gre_led(0)
-    );
+--    -- ASIC-A, "main" ASIC that speaks with DaqNode
+--    U_QDBAsicA : entity work.QDBAsicTop
+--    generic map(
+--       X_POS_G      => 0,
+--       Y_POS_G      => 1,
+--       pulse_time  => 2,
+--       fake_trg_cnt => fake_trg_cnt,
+--       TXRX_TYPE    => "ENDEAVOR"       -- "DUMMY"/"UART"/"ENDEAVOR"
+--    )
+--    port map(
+--        -- internal clock
+--        clk     => clk12,
+--        --rst : in STD_LOGIC;
+--        Tx1     => A_Tx1,
+--        Rx1     => A_Rx1,
+--        Tx2     => A_Tx2,
+--        Rx2     => A_Rx2,
+--        Tx3     => A_Tx3,
+--        Rx3     => A_Rx3,
+--        Tx4     => A_Tx4,
+--        Rx4     => A_Rx4,
+--        -- outputs
+--        red_led => red_led(0),
+--        blu_led => blu_led(0),
+--        gre_led => gre_led(0)
+--    );
 
-    -- ASIC-B
-    U_QDBAsicB : entity work.QDBAsicTop
-    generic map(
-       X_POS_G      => 1,
-       Y_POS_G      => 1,
-       pulse_time  => 2,
-       fake_trg_cnt => fake_trg_cnt,
-       TXRX_TYPE    => "ENDEAVOR"       -- "DUMMY"/"UART"/"ENDEAVOR"
-    )
-    port map(
-        -- internal clock
-        clk => clk12,
-        --rst : in STD_LOGIC;
-        Tx1 => B_Tx1,
-        Rx1 => B_Rx1,
-        Tx2 => B_Tx2,
-        Rx2 => B_Rx2,
-        Tx3 => B_Tx3,
-        Rx3 => B_Rx3,
-        Tx4 => B_Tx4,
-        Rx4 => B_Rx4,
-        -- outputs
-        red_led => red_led(1),
-        blu_led => blu_led(1),
-        gre_led => gre_led(1)
-    );
+--    -- ASIC-B
+--    U_QDBAsicB : entity work.QDBAsicTop
+--    generic map(
+--       X_POS_G      => 1,
+--       Y_POS_G      => 1,
+--       pulse_time  => 2,
+--       fake_trg_cnt => fake_trg_cnt,
+--       TXRX_TYPE    => "ENDEAVOR"       -- "DUMMY"/"UART"/"ENDEAVOR"
+--    )
+--    port map(
+--        -- internal clock
+--        clk => clk12,
+--        --rst : in STD_LOGIC;
+--        Tx1 => B_Tx1,
+--        Rx1 => B_Rx1,
+--        Tx2 => B_Tx2,
+--        Rx2 => B_Rx2,
+--        Tx3 => B_Tx3,
+--        Rx3 => B_Rx3,
+--        Tx4 => B_Tx4,
+--        Rx4 => B_Rx4,
+--        -- outputs
+--        red_led => red_led(1),
+--        blu_led => blu_led(1),
+--        gre_led => gre_led(1)
+--    );
 
     -- ASIC-C, "main" ASIC that speaks with DaqNode
     U_QDBAsicC : entity work.QDBAsicTop
@@ -295,52 +295,53 @@ begin
         Y_POS_G      => 0,
         pulse_time   => 2,
         fake_trg_cnt => fake_trg_cnt,
+        RAM_TYPE => "distributed",
         TXRX_TYPE => "ENDEAVOR" -- "DUMMY"/"UART"/"ENDEAVOR"
     )
     port map(
         -- internal clock
         clk => clk12,
         --rst : in STD_LOGIC;
-        Tx1 => C_Tx1,
-        Rx1 => C_Rx1,
-        Tx2 => C_Tx2,
-        Rx2 => C_Rx2,
+--        Tx1 => C_Tx1,
+--        Rx1 => C_Rx1,
+--        Tx2 => C_Tx2,
+--        Rx2 => C_Rx2,
         Tx3 => C_Tx3,
         Rx3 => C_Rx3,
-        Tx4 => C_Tx4,
-        Rx4 => C_Rx4,
+--        Tx4 => C_Tx4,
+--        Rx4 => C_Rx4,
         -- outputs
         red_led => red_led(2),
         blu_led => blu_led(2),
         gre_led => gre_led(2)
     );
 
-    -- ASIC-D
-    U_QDBAsicD : entity work.QDBAsicTop
-    generic map(
-        X_POS_G   => 1,
-        Y_POS_G   => 0,
-        pulse_time  => 2,
-        fake_trg_cnt => fake_trg_cnt,
-        TXRX_TYPE => "ENDEAVOR" -- "DUMMY"/"UART"/"ENDEAVOR"
-    )
-    port map(
-        -- internal clock
-        clk => clk12,
-        --rst : in STD_LOGIC;
-        Tx1 => D_Tx1,
-        Rx1 => D_Rx1,
-        Tx2 => D_Tx2,
-        Rx2 => D_Rx2,
-        Tx3 => D_Tx3,
-        Rx3 => D_Rx3,
-        Tx4 => D_Tx4,
-        Rx4 => D_Rx4,
-        -- outputs
-        red_led => red_led(3),
-        blu_led => blu_led(3),
-        gre_led => gre_led(3)
-    );
+--    -- ASIC-D
+--    U_QDBAsicD : entity work.QDBAsicTop
+--    generic map(
+--        X_POS_G   => 1,
+--        Y_POS_G   => 0,
+--        pulse_time  => 2,
+--        fake_trg_cnt => fake_trg_cnt,
+--        TXRX_TYPE => "ENDEAVOR" -- "DUMMY"/"UART"/"ENDEAVOR"
+--    )
+--    port map(
+--        -- internal clock
+--        clk => clk12,
+--        --rst : in STD_LOGIC;
+--        Tx1 => D_Tx1,
+--        Rx1 => D_Rx1,
+--        Tx2 => D_Tx2,
+--        Rx2 => D_Rx2,
+--        Tx3 => D_Tx3,
+--        Rx3 => D_Rx3,
+--        Tx4 => D_Tx4,
+--        Rx4 => D_Rx4,
+--        -- outputs
+--        red_led => red_led(3),
+--        blu_led => blu_led(3),
+--        gre_led => gre_led(3)
+--    );
 
    --
    -- Simulation clocks for signals
@@ -356,18 +357,7 @@ begin
          rst          => open  -- : out sl := '1';
       );
 
---   U_QDBDaqClk : entity work.ClkRst
---      generic map (
---         RST_HOLD_TIME_G   => 1 us -- : time    := 6 us;  -- Hold reset for this long
---      )
---      port map (
---         CLK_PERIOD_G => Zynq_CLK_PERIOD_NOMINAL_C, -- : time    := 10 ns;
---         CLK_DELAY_G  => 1 ns,   -- : time    := 1 ns;  -- Wait this long into simulation before asserting reset
---         clkP         => sysClk, -- : out sl := '0';
---         rst          => open  -- : out sl := '1';
---      );
-
-   U_AsicClk : entity work.ClkRst
+    U_QDBAsicClk12 : entity work.ClkRst
       generic map (
          RST_HOLD_TIME_G   => 1 us -- : time    := 6 us;  -- Hold reset for this long
       )
@@ -398,16 +388,16 @@ begin
         wdata    <= 0x"1234abcd";
         rst <= '0';
         -- turn off reception from un-connected directions
-        A_Rx1 <= '0';
-        A_Rx4 <= '0';
-        -- B
-        B_Rx1 <= '0';
-        B_Rx2 <= '0';
-        -- C only doesn't connect WEST
-        C_Rx4 <= '0';
-        -- D - Doesn't  east / south
-        D_Rx2 <= '0';
-        D_Rx3 <= '0';
+--        A_Rx1 <= '0';
+--        A_Rx4 <= '0';
+--        -- B
+--        B_Rx1 <= '0';
+--        B_Rx2 <= '0';
+--        -- C only doesn't connect WEST
+--        C_Rx4 <= '0';
+--        -- D - Doesn't  east / south
+--        D_Rx2 <= '0';
+--        D_Rx3 <= '0';
         wen <= '0';
         req <= '0';
         
@@ -442,12 +432,12 @@ begin
       wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
         req <= '0';
       wait for 500 us; -- (sets A manual routing, successfully)
-          req   <= '1';
-          wdata <= x"0000001" & b"0100";    -- set ManRoute '1' and DirMask "DirDown" from QPixPkg.vhd 
-          wen <= '1';                       -- opWrite
-          addr  <= x"000" & x"c" & x"082c"; -- C for remote, 002 for X/Y, c=3<<2 for dir mask
-        wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
-          req <= '0';
+--          req   <= '1';
+--          wdata <= x"0000001" & b"0100";    -- set ManRoute '1' and DirMask "DirDown" from QPixPkg.vhd 
+--          wen <= '1';                       -- opWrite
+--          addr  <= x"000" & x"c" & x"082c"; -- C for remote, 002 for X/Y, c=3<<2 for dir mask
+--        wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
+--          req <= '0';
    
       -- interrogate fifos after setting the dirMask with trigger
       wait for 500 us;

@@ -25,7 +25,7 @@ entity QDBAsicTop is
     );
 port (
     -- internal clock
-    --clk : in STD_LOGIC;
+    clk : in STD_LOGIC;
     --rst : in STD_LOGIC;
 
     -- Tx/Rx IO
@@ -42,10 +42,10 @@ port (
     --IO : in STD_LOGIC_VECTOR(3 downto 0);
 
     -- optional ss pins -- south Top
-    ss  : in std_logic; -- south 8   /  north 6
+--    ss  : in std_logic; -- south 8   /  north 6
     --so  : in std_logic; -- south 6   /  north 4
-    si  : out std_logic; -- south 4   /  north 2
-    sck : out std_logic; -- south 2   /  north 8
+--    si  : out std_logic; -- south 4   /  north 2
+--    sck : out std_logic; -- south 2   /  north 8
 
     -- outputs
     red_led : out STD_LOGIC;
@@ -59,7 +59,7 @@ end QDBAsicTop;
 architecture Behavioral of QDBAsicTop is
 
   -- timestamp and QDBAsic specifics
-  signal clk          : std_logic;
+ -- signal clk          : std_logic;
   signal fake_trg     : std_logic              := '0';
   signal rst          : std_logic              := '0';
   signal localCnt     : unsigned (31 downto 0) := (others => '0');
@@ -87,13 +87,13 @@ architecture Behavioral of QDBAsicTop is
   -- signal spulse_count : integer range 0 to pulse_time := 0;
   -- signal sstart_pulse : std_logic;
 
-component HSOSC
-GENERIC( CLKHF_DIV :string :="0b00");
-PORT(
-        CLKHFEN : IN  STD_LOGIC;
-        CLKHFPU : IN  STD_LOGIC;
-        CLKHF   : OUT STD_LOGIC);
-END COMPONENT;
+-- component HSOSC
+-- GENERIC( CLKHF_DIV :string :="0b00");
+-- PORT(
+--        CLKHFEN : IN  STD_LOGIC;
+--        CLKHFPU : IN  STD_LOGIC;
+--        CLKHF   : OUT STD_LOGIC);
+-- END COMPONENT;
 
 begin
 
@@ -105,13 +105,13 @@ begin
     rst <= '0';
 
     -- internal oscillator, generate 50 MHz clk
-  u_osc : HSOSC
-  GENERIC MAP(CLKHF_DIV =>"0b10")
-  port map(
-      CLKHFEN  => '1',
-      CLKHFPU  => '1',
-      CLKHF    => clk
-  );
+ -- u_osc : HSOSC
+ -- GENERIC MAP(CLKHF_DIV =>"0b10")
+ -- port map(
+ --     CLKHFEN  => '1',
+ --     CLKHFPU  => '1',
+ --     CLKHF    => clk
+ -- );
 
     -- connect Tx/Rx to the signals
     --Tx1 <= TxPortsArr(0);
@@ -119,8 +119,8 @@ begin
     --Tx2 <= TxPortsArr(1);
     --RxPortsArr(1) <= Rx2;
     Tx3 <= TxPortsArr(2);
-	sck <= TxPortsArr(2);
-	si  <= Rx3;
+--	sck <= TxPortsArr(2);
+--	si  <= Rx3;
     RxPortsArr(2) <= Rx3;
     --Tx4 <= TxPortsArr(3);
     --RxPortsArr(3) <= Rx4;
@@ -152,7 +152,7 @@ begin
          end if;
 
          -- pulse Blue
-         if TxPortsArr(2) = '1' then
+         if qpixConf.DirMask(2) = '1' then
              start_pulse_blu := '1';
              pulse_count_blu := 0;
          end if;
@@ -167,7 +167,7 @@ begin
          end if;
 
          -- pulse Green
-         if TxByteValidArr_out(2) = '1' then
+         if qpixConf.ManRoute = '1' then
              start_pulse_gre := '1';
              pulse_count_gre := 0;
          end if;
@@ -208,8 +208,8 @@ begin
     process (clk)
       begin
          if rising_edge (clk) then
-            if ss = '1' then
-               inData.DataValid <= '0';
+            if fake_trg = '1' then
+               inData.DataValid <= '1';
                inData.TimeStamp <= slv_localCnt;
             else
                inData.DataValid <= '0';
@@ -259,8 +259,8 @@ begin
       -- physical connections
       TxPortsArr     => TxPortsArr, -- slv output to physical
       RxPortsArr     => RxPortsArr, -- slv input form physical
-      TxByteValidArr_out     => TxByteValidArr_out, -- slv output to physical
-      RxByteValidArr_out     => RxByteValidArr_out, -- slv input form physical
+      TxByteValidArr_out  => TxByteValidArr_out, -- slv output to physical
+      RxByteValidArr_out  => RxByteValidArr_out, -- slv input form physical
       -- unused / changed
       QpixConf       => QpixConf, -- record input
 --    QpixReq        => open,
@@ -302,12 +302,12 @@ begin
       qpixReq       => QpixReq,  -- input register from reg file
       qpixConf      => QpixConf, -- input register from reg file
       -- analog ASIC trigger connections
-      inData        => inData,   -- Data from Process, NOT inData to comm
+      inData        => inData,   -- input Data from Process, NOT inData to comm
       localDataEna  => open,
       -- comm connections
-      txReady       => TxReady, -- ready signal from comm
-      txData        => txData,  -- record output to parser
-      rxData        => rxData,  -- record input from parser
+      txReady       => TxReady, -- input ready signal from comm
+      txData        => txData,  -- output record output to parser
+      rxData        => rxData,  -- input record input from parser
       -- unused
       routeErr      => open,                     
       debug         => open,

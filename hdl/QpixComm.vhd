@@ -56,9 +56,9 @@ architecture behav of QpixComm is
    ------------------------------------------------------------
    -- Signals
    ------------------------------------------------------------
-   signal txByteArr        : QpixByteArrType      := (others => (others => '0'));
-   signal txByteValidArr   : std_logic_vector(3 downto 0) := (others => '0');
-   signal txByteReadyArr   : std_logic_vector(3 downto 0) := (others => '0');
+   signal TxByteArr        : QpixByteArrType      := (others => (others => '0'));
+   signal TxByteValidArr   : std_logic_vector(3 downto 0) := (others => '0');
+   signal TxByteReadyArr   : std_logic_vector(3 downto 0) := (others => '0');
 
    signal RxByteArr        : QpixByteArrType      := (others => (others => '0'));
    signal RxByteValidArr   : std_logic_vector(3 downto 0) := (others => '0');
@@ -90,19 +90,19 @@ begin
                clk         => clk,
                sRst        => rst,
                -- inputs
-               txByte      => TxByteArr(i), 
-               txByteValid => TxByteValidArr(i), 
-               txByteReady => TxByteReadyArr(i),
+               txByte      => TxByteArr(i),       -- input, slv(63 downto 0)
+               txByteValid => TxByteValidArr(i),  -- input
+               txByteReady => TxByteReadyArr(i),  -- ouput
                -- outputs
-               rxFrameErr  => open,
-               rxBreakErr  => open,
-               rxGapErr    => open,
-               rxByte      => RxByteArr(i),
-               rxByteValid => RxByteValidArr(i),
-               rxState     => open,
+               rxFrameErr  => open,               -- output
+               rxBreakErr  => open,               -- output
+               rxGapErr    => open,               -- output
+               rxByte      => RxByteArr(i),       -- output, slv(63 downto 0)
+               rxByteValid => RxByteValidArr(i),  -- output
+               rxState     => open,               -- output, slv(2 downto 0)
                -- external ports
-               Rx          => RxPortsArr(i),  -- input
-               Tx          => TxPortsArr(i)   -- output
+               Rx          => RxPortsArr(i),      -- input
+               Tx          => TxPortsArr(i)       -- output
          );
 
          -- select the correct RAM_TYPE
@@ -169,22 +169,26 @@ begin
       clk          => clk,
       rst          => rst,
 
-      inBytesArr        => RxFifoDoutArr,
-      inFifoEmptyArr    => RxFifoEmptyArr,
-      inFifoREnArr      => RxFifoREnArr,
-      inData            => inData,
-                        
-      outData           => outData_i,
-      outBytesArr       => TxByteArr,
-      outBytesValidArr  => TxByteValidArr,
-      txReady           => TxReady,
+      -- fifo enables
+      inBytesArr     => RxFifoDoutArr,   -- input
+      inFifoEmptyArr => RxFifoEmptyArr,  -- input
+      inFifoREnArr   => RxFifoREnArr,    -- output
 
+      -- endeavor connections
+      outBytesArr      => TxByteArr,       -- output
+      outBytesValidArr => TxByteValidArr,  -- output
+      txReady          => TxReady,         -- input
+
+      -- data to route
+      inData  => inData,                -- output
+      outData => outData_i,             -- input
+
+      -- regFile configurations
       -- FixMe / TODO??
-      qpixConf          => qpixConf,
+      qpixConf => qpixConf,             -- input
       --qpixReq           => qpixReq,
-
-      regData           => regData,
-      regResp           => regResp
+      regData => regData,               -- output
+      regResp => regResp                -- input
    );
    ------------------------------------------------------------
 

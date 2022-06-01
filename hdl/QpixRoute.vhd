@@ -24,7 +24,7 @@ entity QpixRoute is
       qpixReq         : in  QpixRequestType;
       qpixConf        : in  QpixConfigType;
       
-      -- Tx/Rx data to QpixComm          
+      -- Tx/Rx data to QpixComm -> QPixParser
       txReady         : in  std_logic;
       txData          : out QpixDataFormatType;
       rxData          : in  QpixDataFormatType;

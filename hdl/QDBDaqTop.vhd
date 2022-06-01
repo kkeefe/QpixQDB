@@ -147,11 +147,11 @@ begin
    led5_b <= pulse_blu;
    led5_g <= pulse_gre;
     
-    counter: process(clk, rst) is
+    counter: process(fclk, rst) is
         constant count : natural := 12000000;
         variable hz : natural range 0 to count := 0;
     begin
-        if rising_edge(clk_12Mhz) then
+        if rising_edge(fclk) then
             hz := hz + 1;
             if hz >= count - 1 then
                 hz := 0;
@@ -271,11 +271,11 @@ begin
    generic map (
       X_NUM_G => X_NUM_G,
       Y_NUM_G => Y_NUM_G,
-      Version => x"0000_0003"
+      Version => x"0000_0004"
    )
    port map(
-      --clk          => fclk,
-      clk          => clk_12Mhz,
+      clk          => fclk,
+      -- clk          => clk_12Mhz,
       rst          => rst,
                    
       addr         => reg_addr,
@@ -320,8 +320,8 @@ begin
       MEM_DEPTH  => G_QPIX_PROTO_MEM_DEPTH
    )
    port map(
-      --clk         => fclk,
-      clk         => clk_12Mhz,
+      clk         => fclk,
+      -- clk         => clk_12Mhz,
       rst         => rst,
                   
       daqTx       => s_daqTx,
@@ -392,7 +392,7 @@ begin
          end if;
 
          -- pulse Green
-         if trg = '1' then
+         if evtSize /= x"0000_0000" then
              start_pulse_gre := '1';
              pulse_count_gre := 0;
          end if;

@@ -22,14 +22,14 @@ entity QpixParser is
       rst                 : in std_logic;
       
       -- input to ASIC 
-      inBytesArr          : in  QpixByteArrType;
+      inBytesArr          : in  QpixByteArrType; -- array(3 downto 0) of slv(63 downto 0)
       inFifoEmptyArr      : in  std_logic_vector(3 downto 0); 
       inFifoREnArr        : out std_logic_vector(3 downto 0);
       inData              : out QpixDataFormatType;
       
       -- output from ASIC
       outData             : in  QpixDataFormatType;
-      outBytesArr         : out QpixByteArrType;
+      outBytesArr         : out QpixByteArrType; -- array(3 downto 0) of slv(63 downto 0)
       outBytesValidArr    : out std_logic_vector(3 downto 0);
       txReady             : in  std_logic;
 
@@ -228,7 +228,4 @@ begin
    end generate;
    ------------------------------------------------------------
 
-
-
 end behav;
-
