@@ -20,7 +20,7 @@ entity QDBAsicTop is
       Y_POS_G      : natural := 0;
       pulse_time   : natural :=  1_999_999;
       fake_trg_cnt : natural := 119_999_999;
-      RAM_TYPE     : string  := "Lattice"; -- lattice hardcodes BRAM for lattice, or distributed / block
+      RAM_TYPE     : string  := "lattice"; -- lattice hardcodes BRAM for lattice, or distributed / block
       TXRX_TYPE    : string  := "ENDEAVOR" -- "DUMMY"/"UART"/"ENDEAVOR"
     );
 port (
@@ -72,20 +72,19 @@ architecture Behavioral of QDBAsicTop is
  
   signal TxByteValidArr_out : std_logic_vector(3 downto 0);
   signal RxByteValidArr_out : std_logic_vector(3 downto 0);
-  signal TxPortsArr : std_logic_vector(3 downto 0);
-  signal RxPortsArr : std_logic_vector(3 downto 0);
-  signal inData       : QpixDataFormatType := QpixDataZero_C;
-  signal txData       : QpixDataFormatType := QpixDataZero_C;
-  signal rxData       : QpixDataFormatType := QpixDataZero_C;
-  signal regData      : QpixRegDataType    := QpixRegDataZero_C;
-  signal regResp      : QpixRegDataType    := QpixRegDataZero_C;
-  signal qpixConf     : QpixConfigType     := QpixConfigDef_C;
-  signal qpixReq      : QpixRequestType    := QpixRequestZero_C;
-  signal TxReady      : std_logic          := '0';
-
-  -- simulation monitor
-  -- signal spulse_count : integer range 0 to pulse_time := 0;
-  -- signal sstart_pulse : std_logic;
+  signal TxPortsArr         : std_logic_vector(3 downto 0);
+  signal RxPortsArr         : std_logic_vector(3 downto 0);
+  signal inData             : QpixDataFormatType := QpixDataZero_C;
+  signal txData             : QpixDataFormatType := QpixDataZero_C;
+  signal rxData             : QpixDataFormatType := QpixDataZero_C;
+  signal regData            : QpixRegDataType    := QpixRegDataZero_C;
+  signal regResp            : QpixRegDataType    := QpixRegDataZero_C;
+  signal qpixConf           : QpixConfigType     := QpixConfigDef_C;
+  signal qpixReq            : QpixRequestType    := QpixRequestZero_C;
+  signal TxReady            : std_logic          := '0';
+  signal debug              : QpixDebugType      := QpixDebugZero_C;
+  signal RxFifoEmptyArr_out : std_logic_vector(3 downto 0);
+  signal RxFifoFullArr_out  : std_logic_vector(3 downto 0);
 
 -- component HSOSC
 -- GENERIC( CLKHF_DIV :string :="0b00");
@@ -137,7 +136,8 @@ begin
      if rising_edge(clk) then
 
          -- pulse Red
-         if RxByteValidArr_out(2) = '1' then
+         -- if RxByteValidArr_out(2) = '1' then
+         if debug.locFifoCnt(0) = '1' then
              start_pulse_red := '1';
              pulse_count_red := 0;
          end if;
@@ -152,7 +152,7 @@ begin
          end if;
 
          -- pulse Blue
-         if qpixConf.DirMask(2) = '1' then
+         if RxFifoEmptyArr_out(2) = '1' then
              start_pulse_blu := '1';
              pulse_count_blu := 0;
          end if;
@@ -167,7 +167,7 @@ begin
          end if;
 
          -- pulse Green
-         if qpixConf.ManRoute = '1' then
+         if RxFifoFullArr_out(2) = '1' then
              start_pulse_gre := '1';
              pulse_count_gre := 0;
          end if;
@@ -221,7 +221,7 @@ begin
 	inData.xpos     <= toslv(X_POS_G, 4);
     inData.ypos     <= toslv(Y_POS_G, 4);
     inData.data     <= x"aaaa_bbbb_cccc_dddd";
-    inData.wordtype <= (others => '0');
+    inData.wordtype <= G_WORD_TYPE_DATA;
     inData.dirMask  <= DirDown;
 
     counter: process (clk) is
@@ -261,6 +261,8 @@ begin
       RxPortsArr     => RxPortsArr, -- slv input form physical
       TxByteValidArr_out  => TxByteValidArr_out, -- slv output to physical
       RxByteValidArr_out  => RxByteValidArr_out, -- slv input form physical
+      RxFifoEmptyArr_out => RxFifoEmptyArr_out,
+      RxFifoFullArr_out  => RxFifoFullArr_out,
       -- unused / changed
       QpixConf       => QpixConf, -- record input
 --    QpixReq        => open,
@@ -310,7 +312,7 @@ begin
       rxData        => rxData,  -- input record input from parser
       -- unused
       routeErr      => open,                     
-      debug         => open,
+      debug         => debug,
       routeStateInt => open);
    -----------------------------------------------
 

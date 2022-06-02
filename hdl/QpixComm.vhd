@@ -39,6 +39,8 @@ entity QpixComm is
       -- Debug
       TxByteValidArr_out : out std_logic_vector(3 downto 0);
       RxByteValidArr_out : out std_logic_vector(3 downto 0);
+      RxFifoEmptyArr_out : out std_logic_vector(3 downto 0);
+      RxFifoFullArr_out  : out std_logic_vector(3 downto 0);
 
       -- register information to QpixRegFile
       regData        : out QpixRegDataType;
@@ -77,6 +79,8 @@ begin
    -- debug
    TxByteValidArr_out <= TxByteValidArr;
    RxByteValidArr_out <= RxByteValidArr;
+   RxFifoEmptyArr_out <= RxFifoEmptyArr;
+   RxFifoFullArr_out <= RxFifoFullArr;
    
    ------------------------------------------------------------
    -- Transcievers
