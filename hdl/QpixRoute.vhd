@@ -35,6 +35,7 @@ entity QpixRoute is
       
       -- debug information
       debug           : out QpixDebugType;
+      state           : out std_logic_vector(3 downto 0);
       routeErr        : out routeErrType;                     
       routeStateInt   : out integer    
    );
@@ -111,6 +112,14 @@ architecture behav of QpixRoute is
 begin
 
    localDataEna <= '1';
+
+   with curReg.state select state <=
+      "0000" when IDLE_S,
+      "0001" when REP_LOCAL_S,
+      "0010" when REP_REMOTE_S,
+      "0100" when REP_FINISH_S,
+      "1000" when ROUTE_REGRSP_S,
+      "0000" when others;
 
    ---------------------------------------------------
    -- FIFO for local data
@@ -243,7 +252,8 @@ begin
    ---------------------------------------------------
    -- Combinational logic
    ---------------------------------------------------
-   process(curReg, nxtReg, inData, rxData, qpixReq, extFifoEmpty, extFifoDout, txReady, locFifoEmpty, qpixConf, locFifoDout) begin
+   process(curReg, nxtReg, inData, rxData, qpixReq, extFifoEmpty, extFifoDout,
+           txReady, locFifoEmpty, qpixConf, locFifoDout) begin
       nxtReg <= curReg;
       nxtReg.txData.DataValid <= '0';
       nxtReg.clkCnt <= curReg.clkCnt + 1;
@@ -327,6 +337,7 @@ begin
                nxtReg.state            <= REP_FINISH_S;
                nxtReg.stateCnt         <= (others => '0');
             end if;
+
          when REP_FINISH_S => 
             -- all hits are done, send the packet which indicates that
             nxtReg.stateCnt <= curReg.stateCnt + 1;

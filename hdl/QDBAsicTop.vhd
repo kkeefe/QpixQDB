@@ -20,12 +20,12 @@ entity QDBAsicTop is
       Y_POS_G      : natural := 0;
       pulse_time   : natural :=  1_999_999;
       fake_trg_cnt : natural := 119_999_999;
-      RAM_TYPE     : string  := "lattice"; -- lattice hardcodes BRAM for lattice, or distributed / block
+      RAM_TYPE     : string  := "Lattice"; -- 'Lattice' hardcodes BRAM for lattice, or distributed / block
       TXRX_TYPE    : string  := "ENDEAVOR" -- "DUMMY"/"UART"/"ENDEAVOR"
     );
 port (
     -- internal clock
-    clk : in STD_LOGIC;
+    --clk : in STD_LOGIC;
     --rst : in STD_LOGIC;
 
     -- Tx/Rx IO
@@ -59,7 +59,7 @@ end QDBAsicTop;
 architecture Behavioral of QDBAsicTop is
 
   -- timestamp and QDBAsic specifics
- -- signal clk          : std_logic;
+  signal clk          : std_logic;
   signal fake_trg     : std_logic              := '0';
   signal rst          : std_logic              := '0';
   signal localCnt     : unsigned (31 downto 0) := (others => '0');
@@ -67,9 +67,7 @@ architecture Behavioral of QDBAsicTop is
   signal pulse_red    : std_logic              := '0';
   signal pulse_blu    : std_logic              := '0';
   signal pulse_gre    : std_logic              := '0';
-  --signal spi_input    : std_logic := '0';
 
- 
   signal TxByteValidArr_out : std_logic_vector(3 downto 0);
   signal RxByteValidArr_out : std_logic_vector(3 downto 0);
   signal TxPortsArr         : std_logic_vector(3 downto 0);
@@ -83,16 +81,17 @@ architecture Behavioral of QDBAsicTop is
   signal qpixReq            : QpixRequestType    := QpixRequestZero_C;
   signal TxReady            : std_logic          := '0';
   signal debug              : QpixDebugType      := QpixDebugZero_C;
+  signal route_state        : std_logic_vector(3 downto 0);
   signal RxFifoEmptyArr_out : std_logic_vector(3 downto 0);
   signal RxFifoFullArr_out  : std_logic_vector(3 downto 0);
 
--- component HSOSC
--- GENERIC( CLKHF_DIV :string :="0b00");
--- PORT(
---        CLKHFEN : IN  STD_LOGIC;
---        CLKHFPU : IN  STD_LOGIC;
---        CLKHF   : OUT STD_LOGIC);
--- END COMPONENT;
+component HSOSC
+GENERIC( CLKHF_DIV :string :="0b00");
+PORT(
+       CLKHFEN : IN  STD_LOGIC;
+       CLKHFPU : IN  STD_LOGIC;
+       CLKHF   : OUT STD_LOGIC);
+END COMPONENT;
 
 begin
 
@@ -104,13 +103,13 @@ begin
     rst <= '0';
 
     -- internal oscillator, generate 50 MHz clk
- -- u_osc : HSOSC
- -- GENERIC MAP(CLKHF_DIV =>"0b10")
- -- port map(
- --     CLKHFEN  => '1',
- --     CLKHFPU  => '1',
- --     CLKHF    => clk
- -- );
+ u_osc : HSOSC
+ GENERIC MAP(CLKHF_DIV =>"0b10")
+ port map(
+     CLKHFEN  => '1',
+     CLKHFPU  => '1',
+     CLKHF    => clk
+ );
 
     -- connect Tx/Rx to the signals
     --Tx1 <= TxPortsArr(0);
@@ -136,8 +135,10 @@ begin
      if rising_edge(clk) then
 
          -- pulse Red
-         -- if RxByteValidArr_out(2) = '1' then
-         if debug.locFifoCnt(0) = '1' then
+         if qpixReq.Interrogation = '1' then -- goes low after trg
+         -- if route_state(3) = '1' then -- high when REP_REGRSP_S -- goes low after trg
+         -- if route_state(0) = '1' then -- (temp!) high when IDLE_S  -- also loops here continually
+         -- if route_state(2) = '1' then -- high when REP_FINISH_S -- does NOT go low after trg
              start_pulse_red := '1';
              pulse_count_red := 0;
          end if;
@@ -152,7 +153,8 @@ begin
          end if;
 
          -- pulse Blue
-         if RxFifoEmptyArr_out(2) = '1' then
+         -- if qpixConf.DirMask(2) = '1' then
+         if route_state(0) = '1' then -- high when REP_LOCAL_S
              start_pulse_blu := '1';
              pulse_count_blu := 0;
          end if;
@@ -167,7 +169,8 @@ begin
          end if;
 
          -- pulse Green
-         if RxFifoFullArr_out(2) = '1' then
+         -- if route_state(1) = '1' then -- high when REP_REMOTE_S
+         if qpixConf.ManRoute = '1' then
              start_pulse_gre := '1';
              pulse_count_gre := 0;
          end if;
@@ -259,8 +262,8 @@ begin
       -- physical connections
       TxPortsArr     => TxPortsArr, -- slv output to physical
       RxPortsArr     => RxPortsArr, -- slv input form physical
-      TxByteValidArr_out  => TxByteValidArr_out, -- slv output to physical
-      RxByteValidArr_out  => RxByteValidArr_out, -- slv input form physical
+      TxByteValidArr_out => TxByteValidArr_out,  -- slv output to physical
+      RxByteValidArr_out => RxByteValidArr_out,  -- slv input form physical
       RxFifoEmptyArr_out => RxFifoEmptyArr_out,
       RxFifoFullArr_out  => RxFifoFullArr_out,
       -- unused / changed
@@ -285,7 +288,7 @@ begin
       regResp  => regResp,  -- record regData type
       -- route connections
       QpixConf => QpixConf, -- record qpixConfigType
-      QpixReq  => QpixReq   -- record qpixRequestType
+      QpixReq  => qpixReq   -- record qpixRequestType
       );
    -----------------------------------------------
 
@@ -301,7 +304,7 @@ begin
       clk           => clk,
       rst           => rst,
       -- reg file connections
-      qpixReq       => QpixReq,  -- input register from reg file
+      qpixReq       => qpixReq,  -- input register from reg file
       qpixConf      => QpixConf, -- input register from reg file
       -- analog ASIC trigger connections
       inData        => inData,   -- input Data from Process, NOT inData to comm
@@ -310,9 +313,10 @@ begin
       txReady       => TxReady, -- input ready signal from comm
       txData        => txData,  -- output record output to parser
       rxData        => rxData,  -- input record input from parser
-      -- unused
+      -- debug words:
       routeErr      => open,                     
       debug         => debug,
+      state         => route_state,
       routeStateInt => open);
    -----------------------------------------------
 

@@ -44,6 +44,7 @@ architecture Behavioral of QDBFifo is
    signal i_ren       : std_logic;
    signal i_full      : std_logic;
    signal i_empty     : std_logic;
+   signal i_empty_r   : std_logic;
    signal i_waddr     : std_logic_vector(DEPTH-1 downto 0) := (others => '0');
    signal i_raddr     : std_logic_vector(DEPTH-1 downto 0) := (others => '0');
    signal i_cnt       : std_logic_vector(DEPTH-1 downto 0) := (others => '0');
@@ -164,8 +165,15 @@ begin
    i_full   <= '1' when i_cnt = MAX_ADDR  else '0';
    i_empty  <= '1' when i_cnt = ZERO_ADDR else '0';
    full     <= i_full;
-   empty    <= i_empty;
+   empty    <= i_empty or i_empty_r;
    i_ren    <= ren;
+
+   process(clk)
+   begin
+      if rising_edge(clk) then
+         i_empty_r    <= i_empty;
+      end if;
+   end process;
 
    ---- count number of words in FIFO
    FIFO_CNT_PROC : process(clk)

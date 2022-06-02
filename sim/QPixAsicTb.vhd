@@ -49,25 +49,27 @@ architecture Behavioral of QpixAsicTb is
 
   -- QDBAsic signals
   signal clk     : std_logic;
-  signal clk48   : std_logic;
+
   -- signal asicClk : std_logic;
   signal DaqRx   : std_logic;
   signal DaqTx   : std_logic;
   signal red_led : std_logic;
   signal blu_led : std_logic;
   signal gre_led : std_logic;
-  signal IO      : std_logic_vector(3 downto 0);
+
+  constant fake_trg_cnt : natural := 200*12;-- try to get ~200 us fake trigger rate;
 
 begin
 
     -- instantiate the top level of QDBAsic:
     U_QDBAsicTop : entity work.QDBAsicTop
     generic map(
-        X_POS_G      => 1,
-        Y_POS_G      => 1,
-        fake_trg_cnt => 5,
-        pulse_time   => 10,
-        TXRX_TYPE    => "ENDEAVOR"      -- "DUMMY"/"UART"/"ENDEAVOR"
+        X_POS_G      => 0,
+        Y_POS_G      => 0,
+        pulse_time   => 2,
+        fake_trg_cnt => fake_trg_cnt,
+        RAM_TYPE => "distributed",
+        TXRX_TYPE => "ENDEAVOR" -- "DUMMY"/"UART"/"ENDEAVOR"
     )
     port map(
         -- internal clock
@@ -78,26 +80,14 @@ begin
         -- outputs
         red_led => red_led,
         blu_led => blu_led,
-        gre_led => gre_led,
+        gre_led => gre_led
         -- extra IO
-        IO      => IO
-        -- 'fake'
-        -- asicClk    => asicClk
+        -- IO      => IO
     );
 
    --
    -- Simulation clocks for signals
    --
-   U_QDBAsicClk : entity work.ClkRst
-      generic map (
-         RST_HOLD_TIME_G   => 1 us -- : time    := 6 us;  -- Hold reset for this long
-      )
-      port map (
-         CLK_PERIOD_G => CLK_PERIOD_NOMINAL_C, -- : time    := 10 ns;
-         CLK_DELAY_G  => 1 ns,   -- : time    := 1 ns;  -- Wait this long into simulation before asserting reset
-         clkP         => clk48, -- : out sl := '0';
-         rst          => open  -- : out sl := '1';
-      );
 
    U_AsicClk : entity work.ClkRst
       generic map (
@@ -122,30 +112,21 @@ begin
 
       --------------------------
       -- Stimulus begins here --
-      --------------------------
-      wait for 2.0 ns;
-        IO <= (others => '0');
-        DaqTx   <= '0';
+      DaqTx   <= '1';
 
       -- IO trigger and test Tx into array
-      wait for 10 ns;
-         IO    <= (others => '1');
-         DaqTx <= '1';
-      wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
-         IO    <= (others => '0');
-         DaqTx <= '0';
-      wait for 1000 ns;
-         IO    <= (others => '1');
-         DaqTx <= '1';
-      wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
-         IO    <= (others => '0');
-         DaqTx <= '0';
-      wait for 1000 ns;
-         IO    <= (others => '1');
-         DaqTx <= '1';
-      wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
-         IO    <= (others => '0');
-         DaqTx <= '0';
+--      wait for 10 ns;
+--         DaqTx <= '1';
+      -- wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
+      --    DaqTx <= '0';
+      -- wait for 1000 ns;
+      --    DaqTx <= '1';
+      -- wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
+      --    DaqTx <= '0';
+      -- wait for 1000 ns;
+      --    DaqTx <= '1';
+      -- wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
+      --    DaqTx <= '0';
 
       -- End simulation stimulus by waiting forever
       wait;

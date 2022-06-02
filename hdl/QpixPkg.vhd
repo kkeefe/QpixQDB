@@ -204,6 +204,7 @@ type QpixInPortsArrType is array(natural range <>, natural range <>) of QpixInPo
    constant QpixConfigDef_C : QpixConfigType := (
       something  => '0',
       Timeout    => std_logic_vector(to_unsigned(15000,G_REG_DATA_BITS)), -- UART
+      -- Timeout    => (others => '0'), -- Lattice sim testing
       --Timeout   => std_logic_vector(to_unsigned(100,G_REG_DATA_BITS)),   -- dummy
       DirMask    => (others => '0'),
       locEnaSnd  => '1',
