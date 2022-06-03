@@ -392,19 +392,19 @@ begin
          end if;
 
          -- pulse Green
-         if evtSize /= x"0000_0000" then
-             start_pulse_gre := '1';
-             pulse_count_gre := 0;
-         end if;
-         if start_pulse_gre = '1' then
-             pulse_count_gre := pulse_count_gre + 1;
-             pulse_gre <= '1';
-             if pulse_count_gre >= pulse_time then
-                 pulse_gre       <= '0';
-                 pulse_count_gre := 0;
-                 start_pulse_gre := '0';
-             end if;
-         end if;
+--        if evtSize /= x"0000_0000" then
+--             start_pulse_gre := '1';
+--             pulse_count_gre := 0;
+--         end if;
+--         if start_pulse_gre = '1' then
+--             pulse_count_gre := pulse_count_gre + 1;
+--             pulse_gre <= '1';
+--             if pulse_count_gre >= pulse_time then
+--                 pulse_gre       <= '0';
+--                 pulse_count_gre := 0;
+--                 start_pulse_gre := '0';
+--             end if;
+--         end if;
 
      end if;
  end process pulse;

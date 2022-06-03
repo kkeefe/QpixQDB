@@ -60,11 +60,11 @@ architecture behav of QpixParser is
    signal fifoRen          : std_logic_vector(3 downto 0) := (others => '0');
 
    signal txReadyR         : std_logic  := '1';
-   signal fifoRenOrR       : std_logic  := '0';
-   signal fifoRenOrRR      : std_logic := '0';
+   -- signal fifoRenOrR       : std_logic  := '0';
+   -- signal fifoRenOrRR      : std_logic := '0';
 
    type MuxStatesType is (IDLE_S, READ_S, WAIT_S);
-   signal muxState : MuxStatesType := IDLE_S;
+   -- signal muxState : MuxStatesType := IDLE_S;
 
    function fGetFirstZeroPos(x : std_logic_vector) return natural is
       variable pos : natural := 0;
@@ -91,8 +91,8 @@ begin
          inBytesMuxValid <= '0';
          fifoRen         <= (others => '0');
          txReadyR        <= txReady;
-         fifoRenOrR      <= or fifoRen;
-         fifoRenOrRR     <= fifoRenOrR;
+         -- fifoRenOrR      <= or fifoRen;
+         -- fifoRenOrRR     <= fifoRenOrR;
          for i in 0 to 3 loop
             --fifoRen(i)   <= '0';
             if inFifoEmptyArr(i) = '0' and fifoRen = b"0000" and txReady = '1' then

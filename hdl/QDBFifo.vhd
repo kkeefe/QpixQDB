@@ -113,7 +113,7 @@ begin
 		port map(
 			wr_clk_i=> clk,
 			rd_clk_i=> clk,
-			rst_i=> '0',
+			rst_i=> rst,
 			wr_clk_en_i=> '1',
 			rd_en_i=> i_ren,
 			rd_clk_en_i=> '1',
@@ -131,7 +131,7 @@ begin
 		port map(
 			wr_clk_i=> clk,
 			rd_clk_i=> clk,
-			rst_i=> '0',
+			rst_i=> rst,
 			wr_clk_en_i=> '1',
 			rd_en_i=> i_ren,
 			rd_clk_en_i=> '1',
@@ -148,7 +148,7 @@ begin
 		port map(
 			wr_clk_i=> clk,
 			rd_clk_i=> clk,
-			rst_i=> '0',
+			rst_i=> rst,
 			wr_clk_en_i=> '1',
 			rd_en_i=> i_ren,
 			rd_clk_en_i=> '1',

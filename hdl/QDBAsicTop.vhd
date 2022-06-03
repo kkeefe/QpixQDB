@@ -100,7 +100,7 @@ begin
     blu_led <= not pulse_blu;
     gre_led <= not pulse_gre;
     --spi_input <= si;
-    rst <= '0';
+    rst <= qpixReq.AsicReset;
 
     -- internal oscillator, generate 50 MHz clk
  u_osc : HSOSC
@@ -122,9 +122,11 @@ begin
     RxPortsArr(2) <= Rx3;
     --Tx4 <= TxPortsArr(3);
     --RxPortsArr(3) <= Rx4;
+    RxPortsArr(1 downto 0) <= "00";
+    RxPortsArr(3) <= '0';
 
 --  -- create a 1 second pulse width when either Tx or Rx goes high
- pulse : process (clk, Rx3, pulse_red, pulse_blu, pulse_gre, TxPortsArr(2), fake_trg) is
+ pulse : process (all) is
      variable pulse_count_red : integer range 0 to pulse_time := 0;
      variable start_pulse_red : std_logic := '0';
      variable pulse_count_blu : integer range 0 to pulse_time := 0;
@@ -135,8 +137,8 @@ begin
      if rising_edge(clk) then
 
          -- pulse Red
-         if qpixReq.Interrogation = '1' then -- goes low after trg
-         -- if route_state(3) = '1' then -- high when REP_REGRSP_S -- goes low after trg
+         if qpixReq.Interrogation = '1' then -- goes low after trg / this is a trigger
+         -- if regResp.Valid = '1' then
          -- if route_state(0) = '1' then -- (temp!) high when IDLE_S  -- also loops here continually
          -- if route_state(2) = '1' then -- high when REP_FINISH_S -- does NOT go low after trg
              start_pulse_red := '1';
@@ -153,8 +155,10 @@ begin
          end if;
 
          -- pulse Blue
-         -- if qpixConf.DirMask(2) = '1' then
-         if route_state(0) = '1' then -- high when REP_LOCAL_S
+         if regResp.valid = '1' then
+		 -- if qpixConf.DirMask(2) = '1' then
+         -- if route_state(3) = '1' then -- high when REP_REGRSP_S -- does not go low after trg?
+         -- if route_state(0) = '1' then -- high when REP_LOCAL_S, does not go low after trg
              start_pulse_blu := '1';
              pulse_count_blu := 0;
          end if;
@@ -170,7 +174,9 @@ begin
 
          -- pulse Green
          -- if route_state(1) = '1' then -- high when REP_REMOTE_S
-         if qpixConf.ManRoute = '1' then
+         if rst = '1' then
+         -- if TxPortsArr(2) = '1' then
+         -- if qpixConf.ManRoute = '1' then
              start_pulse_gre := '1';
              pulse_count_gre := 0;
          end if;

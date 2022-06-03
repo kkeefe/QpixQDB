@@ -246,6 +246,7 @@ begin
             
          end if;
       end process;
+   routeErr <= routeErr_i;
    ---------------------------------------------------
 
 
