@@ -290,7 +290,6 @@ begin
       clk      => clk,
       rst      => rst,
 
-      clkCnt  => localCnt;
       -- comm connections
       regData  => regData,  -- input record regData type, from parser
       regResp  => regResp,  -- output record regData type, to parser
