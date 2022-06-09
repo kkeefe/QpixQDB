@@ -100,7 +100,7 @@ begin
             clkCnt  <= (others => '0');
          else
             clkCnt <= clkCnt + 1;
-            if trg = '1' then
+            if trg = '1' or asicReq = '1' then
                trgTime <= clkCnt;
             end if;
          end if;

@@ -338,9 +338,9 @@ package body QpixPkg is
    begin
       x(63 downto 60) := (others => '0');  -- reserved
       if d.OpWrite = '0' and d.OpRead = '0' then
-         x(59 downto 56) := x"4";
+         x(59 downto 56) := G_WORD_TYPE_REGRSP;
       else
-         x(59 downto 56) := x"3";             -- word type
+         x(59 downto 56) := G_WORD_TYPE_REGREQ;             -- word type
       end if;
       x(55)           := d.OpWrite;
       x(54)           := d.OpRead;
@@ -366,7 +366,7 @@ package body QpixPkg is
       variable x : std_logic_vector(G_DATA_BITS-1 downto 0) := (others => '0');
    begin
       x(63 downto 60) := (others => '0');  -- reserved
-      x(59 downto 56) := x"3";             -- word type
+      x(59 downto 56) := G_WORD_TYPE_REGREQ;             -- word type
       x(55 downto 40) := (others => '0');  -- chan mask
       x(39 downto 36) := d.XDest;           -- x
       x(35 downto 32) := d.YDest;           -- y

@@ -23,6 +23,9 @@ entity QpixRegFile is
       clk      : in std_logic;
       rst      : in std_logic;
 
+      -- local count - keep track of current count on register
+      localCnt : in std_logic_vector(31 downto 0);
+
       -- Register information from Qpixcomm
       regData  : in QpixRegDataType;
       regResp  : out QpixRegDataType;
@@ -124,6 +127,16 @@ begin
                         regResp_r.Addr <= regData.Addr;
                         regResp_r.Data <= (others => '0');
                         regResp_r.Data(4 downto 0) <= qpixConf_r.ManRoute & qpixConf_r.DirMask;
+                        regResp_r.XDest <= std_logic_vector(to_unsigned(X_POS_G, G_POS_BITS));
+                        regResp_r.YDest <= std_logic_vector(to_unsigned(Y_POS_G, G_POS_BITS));
+                        regResp_r.Valid <= '1';
+                     end if;
+
+                  -- Time register - used for calibration signals
+                  when toslv(4, G_REG_ADDR_BITS) =>
+                     if regData.OpRead = '1' then
+                        regResp_r.Addr <= localCnt(32 downto 16);
+                        regResp_r.Data <= localCnt(15 downto 0);
                         regResp_r.XDest <= std_logic_vector(to_unsigned(X_POS_G, G_POS_BITS));
                         regResp_r.YDest <= std_logic_vector(to_unsigned(Y_POS_G, G_POS_BITS));
                         regResp_r.Valid <= '1';

@@ -271,7 +271,7 @@ begin
    generic map (
       X_NUM_G => X_NUM_G,
       Y_NUM_G => Y_NUM_G,
-      Version => x"0000_0004"
+      Version => x"0000_0005"
    )
    port map(
       clk          => fclk,
@@ -321,7 +321,6 @@ begin
    )
    port map(
       clk         => fclk,
-      -- clk         => clk_12Mhz,
       rst         => rst,
                   
       daqTx       => s_daqTx,
@@ -391,20 +390,20 @@ begin
              end if;
          end if;
 
-         -- pulse Green
---        if evtSize /= x"0000_0000" then
---             start_pulse_gre := '1';
---             pulse_count_gre := 0;
---         end if;
---         if start_pulse_gre = '1' then
---             pulse_count_gre := pulse_count_gre + 1;
---             pulse_gre <= '1';
---             if pulse_count_gre >= pulse_time then
---                 pulse_gre       <= '0';
---                 pulse_count_gre := 0;
---                 start_pulse_gre := '0';
---             end if;
---         end if;
+       -- pulse Green
+       if evtSize /= x"0000_0000" then
+            start_pulse_gre := '1';
+            pulse_count_gre := 0;
+        end if;
+        if start_pulse_gre = '1' then
+            pulse_count_gre := pulse_count_gre + 1;
+            pulse_gre <= '1';
+            if pulse_count_gre >= pulse_time then
+                pulse_gre       <= '0';
+                pulse_count_gre := 0;
+                start_pulse_gre := '0';
+            end if;
+        end if;
 
      end if;
  end process pulse;

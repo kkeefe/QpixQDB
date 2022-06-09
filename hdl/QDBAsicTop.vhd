@@ -289,9 +289,11 @@ begin
    port map(
       clk      => clk,
       rst      => rst,
+
+      clkCnt  => localCnt;
       -- comm connections
-      regData  => regData,  -- record regData type
-      regResp  => regResp,  -- record regData type
+      regData  => regData,  -- input record regData type, from parser
+      regResp  => regResp,  -- output record regData type, to parser
       -- route connections
       QpixConf => QpixConf, -- record qpixConfigType
       QpixReq  => qpixReq   -- record qpixRequestType
