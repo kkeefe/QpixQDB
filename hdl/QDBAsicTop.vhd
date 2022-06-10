@@ -42,10 +42,10 @@ port (
     --IO : in STD_LOGIC_VECTOR(3 downto 0);
 
     -- optional ss pins -- south Top
---    ss  : in std_logic; -- south 8   /  north 6
-    --so  : in std_logic; -- south 6   /  north 4
---    si  : out std_logic; -- south 4   /  north 2
---    sck : out std_logic; -- south 2   /  north 8
+    -- ss  : in  std_logic;  -- south 8   /  north 6
+    -- so  : in  std_logic;  -- south 6   /  north 4
+    -- si  : out std_logic;  -- south 4   /  north 2
+    sck : in std_logic;  -- south 2   /  north 8
 
     -- outputs
     red_led : out STD_LOGIC;
@@ -67,6 +67,8 @@ architecture Behavioral of QDBAsicTop is
   signal pulse_red    : std_logic              := '0';
   signal pulse_blu    : std_logic              := '0';
   signal pulse_gre    : std_logic              := '0';
+  signal enabled      : boolean                := false;
+  signal rising       : boolean                := false;
 
   signal TxByteValidArr_out : std_logic_vector(3 downto 0);
   signal RxByteValidArr_out : std_logic_vector(3 downto 0);
@@ -99,7 +101,9 @@ begin
     red_led <= not pulse_red;
     blu_led <= not pulse_blu;
     gre_led <= not pulse_gre;
-    --spi_input <= si;
+    
+	-- used to buffer readout on timing measurement
+	-- si <= clk;
     rst <= qpixReq.AsicReset;
 
     -- internal oscillator, generate 50 MHz clk
@@ -174,7 +178,8 @@ begin
 
          -- pulse Green
          -- if route_state(1) = '1' then -- high when REP_REMOTE_S
-         if rst = '1' then
+         if inData.DataValid = '1' then
+         -- if rst = '1' then
          -- if TxPortsArr(2) = '1' then
          -- if qpixConf.ManRoute = '1' then
              start_pulse_gre := '1';
@@ -214,23 +219,35 @@ begin
 
     -- connect external IO to QpixDataProc
     slv_localCnt <= std_logic_vector(localCnt);
+    enabled <= (QpixConf.locEnaSnd = '1' and QpixConf.locEnaRcv = '1' and QpixConf.locEnaReg = '1');
     process (clk)
       begin
          if rising_edge (clk) then
-            if fake_trg = '1' then
-               inData.DataValid <= '1';
-               inData.TimeStamp <= slv_localCnt;
-            else
-               inData.DataValid <= '0';
-               inData.TimeStamp <= (others => '0');
-              end if;
-            end if;
-         end process;
+		 
+		   -- keep track of rising edges on sck
+		   if sck = '0' then
+		      rising <= true;
+		   end if;
+		   
+		   -- trigger conditions, only read on rising edge
+           if sck = '1' and enabled and rising then
+             inData.DataValid <= '1';
+             inData.TimeStamp <= slv_localCnt;
+             rising <= false;
+           elsif fake_trg = '1' and not enabled then
+             inData.DataValid <= '1';
+             inData.TimeStamp <= slv_localCnt;
+           else
+             inData.DataValid <= '0';
+             inData.TimeStamp <= (others => '0');
+           end if;
+         end if;
+    end process;
+    inData.wordtype  <= "1111"; -- inData word type is NOT used
     inData.ChanMask <=  (others => '1');
 	inData.xpos     <= toslv(X_POS_G, 4);
     inData.ypos     <= toslv(Y_POS_G, 4);
-    inData.data     <= x"aaaa_bbbb_cccc_dddd";
-    inData.wordtype <= G_WORD_TYPE_DATA;
+    inData.data     <= x"aaaa_bbbb_cccc_dddd"; -- unused by fQpixRecordToByte
     inData.dirMask  <= DirDown;
 
     counter: process (clk) is
@@ -315,7 +332,6 @@ begin
       qpixConf      => QpixConf, -- input register from reg file
       -- analog ASIC trigger connections
       inData        => inData,   -- input Data from Process, NOT inData to comm
-      localDataEna  => open,
       -- comm connections
       txReady       => TxReady, -- input ready signal from comm
       txData        => txData,  -- output record output to parser

@@ -31,8 +31,7 @@ entity QpixRoute is
 
       -- QpixDataProc data and enable
       inData          : in  QpixDataFormatType;
-      localDataEna    : out std_logic;     
-      
+
       -- debug information
       debug           : out QpixDebugType;
       state           : out std_logic_vector(3 downto 0);
@@ -110,8 +109,6 @@ architecture behav of QpixRoute is
    constant timeoutZero_C : std_logic_vector(curReg.timeout'range) := (others => '0');
 
 begin
-
-   localDataEna <= '1';
 
    with curReg.state select state <=
       "0000" when IDLE_S,

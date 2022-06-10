@@ -98,7 +98,7 @@ begin
                      qpixReq_r.Interrogation <= regData.Data(0);
                      qpixReq_r.ResetState    <= regData.Data(1);
                      qpixReq_r.AsicReset     <= regData.Data(2);
-                  --when G_REG_RESET   => 
+
                   --when G_REG_SETPOS  =>
 
                   -- TIMEOUT reg
@@ -138,6 +138,24 @@ begin
                         regResp_r.YDest <= std_logic_vector(to_unsigned(Y_POS_G, G_POS_BITS));
                         regResp_r.Valid <= '1';
                      end if;
+
+                  -- Enable register - used to turn on taking real data
+                  when toslv(5, G_REG_ADDR_BITS) =>
+                     if regData.OpWrite = '1' then
+                        qpixConf_r.locEnaSnd <= regData.Data(0);
+                        qpixConf_r.locEnaRcv <= regData.Data(1);
+                        qpixConf_r.locEnaReg <= regData.Data(2);
+                     end if;
+                     if regData.OpRead = '1' then
+                        regResp_r.Addr <= regData.Addr;
+                        regResp_r.Data <= (others => '0');
+                        regResp_r.Data(2 downto 0) <= qpixConf_r.locEnaSnd & qpixConf_r.locEnaRcv & qpixConf_r.locEnaReg;
+                        regResp_r.XDest <= std_logic_vector(to_unsigned(X_POS_G, G_POS_BITS));
+                        regResp_r.YDest <= std_logic_vector(to_unsigned(Y_POS_G, G_POS_BITS));
+                        regResp_r.Valid <= '1';
+                     end if;
+
+                  -- defaults
                   when others =>
                      qpixConf_r <= qpixConf_r;
                end case;

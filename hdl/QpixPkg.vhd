@@ -207,11 +207,10 @@ type QpixInPortsArrType is array(natural range <>, natural range <>) of QpixInPo
       -- Timeout    => (others => '0'), -- Lattice sim testing
       --Timeout   => std_logic_vector(to_unsigned(100,G_REG_DATA_BITS)),   -- dummy
       DirMask    => (others => '0'),
-      locEnaSnd  => '1',
-      locEnaRcv  => '1',
-      locEnaReg  => '1', 
-      ManRoute => '0'
-
+      locEnaSnd  => '0',
+      locEnaRcv  => '0',
+      locEnaReg  => '0',
+      ManRoute   => '0'
    );
    ------------------------------------------------------------------
 
