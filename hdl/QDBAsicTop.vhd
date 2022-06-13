@@ -43,8 +43,8 @@ port (
 
     -- optional ss pins -- south Top
     -- ss  : in  std_logic;  -- south 8   /  north 6
-    -- so  : in  std_logic;  -- south 6   /  north 4
-    -- si  : out std_logic;  -- south 4   /  north 2
+    so  : out std_logic;  -- south 6   /  north 4
+    si  : out std_logic;  -- south 4   /  north 2
     sck : in std_logic;  -- south 2   /  north 8
 
     -- outputs
@@ -60,6 +60,7 @@ architecture Behavioral of QDBAsicTop is
 
   -- timestamp and QDBAsic specifics
   signal clk          : std_logic;
+  signal fast_clk     : std_logic;
   signal fake_trg     : std_logic              := '0';
   signal rst          : std_logic              := '0';
   signal localCnt     : unsigned (31 downto 0) := (others => '0');
@@ -67,8 +68,16 @@ architecture Behavioral of QDBAsicTop is
   signal pulse_red    : std_logic              := '0';
   signal pulse_blu    : std_logic              := '0';
   signal pulse_gre    : std_logic              := '0';
+  signal data_i1      : std_logic              := '0';
+  signal data_i2      : std_logic              := '0';
+  signal data         : std_logic              := '0';
   signal enabled      : boolean                := false;
   signal rising       : boolean                := false;
+  -- fast signals which sample the input of channel data and need to be
+  -- synchronized back to 12 MHz
+  signal data_fi1 : std_logic := '0';
+  signal data_fi2 : std_logic := '0';
+  signal data_f   : std_logic := '0';
 
   signal TxByteValidArr_out : std_logic_vector(3 downto 0);
   signal RxByteValidArr_out : std_logic_vector(3 downto 0);
@@ -101,19 +110,8 @@ begin
     red_led <= not pulse_red;
     blu_led <= not pulse_blu;
     gre_led <= not pulse_gre;
-    
-	-- used to buffer readout on timing measurement
-	-- si <= clk;
-    rst <= qpixReq.AsicReset;
-
-    -- internal oscillator, generate 50 MHz clk
- u_osc : HSOSC
- GENERIC MAP(CLKHF_DIV =>"0b10")
- port map(
-     CLKHFEN  => '1',
-     CLKHFPU  => '1',
-     CLKHF    => clk
- );
+	si <= clk;
+	so <= fast_clk;
 
     -- connect Tx/Rx to the signals
     --Tx1 <= TxPortsArr(0);
@@ -121,13 +119,37 @@ begin
     --Tx2 <= TxPortsArr(1);
     --RxPortsArr(1) <= Rx2;
     Tx3 <= TxPortsArr(2);
---	sck <= TxPortsArr(2);
---	si  <= Rx3;
     RxPortsArr(2) <= Rx3;
     --Tx4 <= TxPortsArr(3);
     --RxPortsArr(3) <= Rx4;
     RxPortsArr(1 downto 0) <= "00";
     RxPortsArr(3) <= '0';
+
+    
+    -- used to buffer readout on timing measurement
+    -- si <= clk;
+    rst <= qpixReq.AsicReset;
+
+    -- use the fast clock to read the input of the data
+    -- internal oscillator, generate 50 MHz clk
+    u_osc : HSOSC
+    GENERIC MAP(CLKHF_DIV =>"0b00")
+    port map(
+        CLKHFEN  => '1',
+        CLKHFPU  => '1',
+        CLKHF    => fast_clk
+    );
+    process(fast_clk) is
+      variable count : integer range 0 to 2 := 0;
+    begin
+      if rising_edge(fast_clk) then
+        count := count + 1;
+        if count = 2 then
+          clk <= not clk;
+          count := 0;
+        end if;
+      end if;
+    end process;
 
 --  -- create a 1 second pulse width when either Tx or Rx goes high
  pulse : process (all) is
@@ -195,48 +217,69 @@ begin
              end if;
          end if;
 
-        --simulation only
-        --spulse_count <= pulse_count_rx;
-        --sstart_pulse <= start_pulse_rx;
-
      end if;
  end process pulse;
 
-   -------------------------------------------------
-   -- Process ASIC internal data with defined format
-   -------------------------------------------------
-   --QpixDataProc_U : entity work.QpixDataProc
-   --generic map(
-      --X_POS_G => X_POS_G,
-      --Y_POS_G => Y_POS_G)
-   --port map(
-      --clk     => clk,
-      --rst     => rst,
-      --ena     => localDataEna,
-      --testEna => '0',
-      --inPorts => inPorts,
-      --outData => inData);
+   ------------------------------------
+   -- syncrhonize ASIC internal data --
+   ------------------------------------
+   process(fast_clk,rst)
+   begin
+      if rising_edge(fast_clk) then
+         if rst = '1' then
+           data_fi1 <= '0';
+           data_fi2 <= '0';
+           data_f    <= '0';
+         else
+           data_fi1 <= sck;
+           data_fi2 <= data_fi1;
+           data_f   <= data_fi2;
+         end if;
+      end if;
+   end process;
+   -- put sck - data onto the 12 MHz clk
+   process(clk,rst)
+   begin
+      if rising_edge(clk) then
+         if rst = '1' then
+           data_i1 <= '0';
+           data_i2 <= '0';
+           data    <= '0';
+         else
+           data_i1 <= data_f;
+           data_i2 <= data_i1;
+           data    <= data_i2;
+         end if;
+      end if;
+   end process;
 
     -- connect external IO to QpixDataProc
     slv_localCnt <= std_logic_vector(localCnt);
     enabled <= (QpixConf.locEnaSnd = '1' and QpixConf.locEnaRcv = '1' and QpixConf.locEnaReg = '1');
     process (clk)
+      variable count : natural range 1 to 16 := 0;
       begin
-         if rising_edge (clk) then
-		 
-		   -- keep track of rising edges on sck
-		   if sck = '0' then
-		      rising <= true;
-		   end if;
-		   
-		   -- trigger conditions, only read on rising edge
-           if sck = '1' and enabled and rising then
+         if rising_edge(clk) then
+
+           -- keep track of rising edges on sck
+           if data = '0' then
+             count := count + 1;
+             if count >= 15 then
+               rising <= true;
+               count  := 0;
+             end if;
+           else
+               count  := 0;
+           end if;
+
+           -- trigger conditions, only read on rising edge
+           if data = '1' and enabled and rising then
              inData.DataValid <= '1';
              inData.TimeStamp <= slv_localCnt;
              rising <= false;
-           elsif fake_trg = '1' and not enabled then
-             inData.DataValid <= '1';
-             inData.TimeStamp <= slv_localCnt;
+           --elsif fake_trg = '1' and not enabled then
+             --inData.DataValid <= '1';
+             --inData.TimeStamp <= slv_localCnt;
            else
              inData.DataValid <= '0';
              inData.TimeStamp <= (others => '0');
