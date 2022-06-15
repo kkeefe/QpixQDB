@@ -275,21 +275,23 @@ begin
 
          -- waiting for interrogation
          when IDLE_S       =>
+
             nxtReg.stateCnt <= (others => '0');
             nxtReg.txData <= QpixDataZero_C;
+            nxtReg.locFifoRen <= '0';
+            nxtReg.extFifoRen <= '0';
+            nxtReg.manRoute <= qpixConf.ManRoute;
+            nxtReg.timeout    <= qpixConf.Timeout;
+
             if qpixReq.Interrogation = '1' then
                nxtReg.state  <= REP_LOCAL_S;
             end if;
-            nxtReg.locFifoRen <= '0';
-            nxtReg.extFifoRen <= '0';
 
-            nxtReg.manRoute <= qpixConf.ManRoute;
             if curReg.manRoute = '1' then
                nxtReg.respDir  <= qpixConf.DirMask;
             else
                nxtReg.respDir <= fQpixGetDirectionMask(X_POS_G, Y_POS_G);
             end if;
-            nxtReg.timeout    <= qpixConf.Timeout;
             
             if extFifoEmpty = '0' and fQpixGetWordType(extFifoDout) = REGRSP_W then
                nxtReg.state <= ROUTE_REGRSP_S;

@@ -79,8 +79,6 @@ architecture Behavioral of QDBAsicTop is
   signal data_fi2 : std_logic := '0';
   signal data_f   : std_logic := '0';
 
-  signal TxByteValidArr_out : std_logic_vector(3 downto 0);
-  signal RxByteValidArr_out : std_logic_vector(3 downto 0);
   signal TxPortsArr         : std_logic_vector(3 downto 0);
   signal RxPortsArr         : std_logic_vector(3 downto 0);
   signal inData             : QpixDataFormatType := QpixDataZero_C;
@@ -89,12 +87,14 @@ architecture Behavioral of QDBAsicTop is
   signal regData            : QpixRegDataType    := QpixRegDataZero_C;
   signal regResp            : QpixRegDataType    := QpixRegDataZero_C;
   signal qpixConf           : QpixConfigType     := QpixConfigDef_C;
-  signal qpixReq            : QpixRequestType    := QpixRequestZero_C;
+  signal QpixReq            : QpixRequestType    := QpixRequestZero_C;
   signal TxReady            : std_logic          := '0';
   signal debug              : QpixDebugType      := QpixDebugZero_C;
   signal route_state        : std_logic_vector(3 downto 0);
-  signal RxFifoEmptyArr_out : std_logic_vector(3 downto 0);
-  signal RxFifoFullArr_out  : std_logic_vector(3 downto 0);
+  -- signal RxFifoEmptyArr_out : std_logic_vector(3 downto 0);
+  -- signal RxFifoFullArr_out  : std_logic_vector(3 downto 0);
+  -- signal TxByteValidArr_out : std_logic_vector(3 downto 0);
+  -- signal RxByteValidArr_out : std_logic_vector(3 downto 0);
 
 component HSOSC
 GENERIC( CLKHF_DIV :string :="0b00");
@@ -110,8 +110,8 @@ begin
     red_led <= not pulse_red;
     blu_led <= not pulse_blu;
     gre_led <= not pulse_gre;
-	si <= clk;
-	so <= fast_clk;
+    si <= clk;
+    so <= fast_clk;
 
     -- connect Tx/Rx to the signals
     --Tx1 <= TxPortsArr(0);
@@ -128,7 +128,7 @@ begin
     
     -- used to buffer readout on timing measurement
     -- si <= clk;
-    rst <= qpixReq.AsicReset;
+    rst <= QpixReq.AsicReset;
 
     -- use the fast clock to read the input of the data
     -- internal oscillator, generate 50 MHz clk
@@ -163,7 +163,7 @@ begin
      if rising_edge(clk) then
 
          -- pulse Red
-         if qpixReq.Interrogation = '1' then -- goes low after trg / this is a trigger
+         if QpixReq.Interrogation = '1' then -- goes low after trg / this is a trigger
          -- if regResp.Valid = '1' then
          -- if route_state(0) = '1' then -- (temp!) high when IDLE_S  -- also loops here continually
          -- if route_state(2) = '1' then -- high when REP_FINISH_S -- does NOT go low after trg
@@ -328,14 +328,12 @@ begin
       -- physical connections
       TxPortsArr     => TxPortsArr, -- slv output to physical
       RxPortsArr     => RxPortsArr, -- slv input form physical
-      TxByteValidArr_out => TxByteValidArr_out,  -- slv output to physical
-      RxByteValidArr_out => RxByteValidArr_out,  -- slv input form physical
-      RxFifoEmptyArr_out => RxFifoEmptyArr_out,
-      RxFifoFullArr_out  => RxFifoFullArr_out,
-      -- unused / changed
-      QpixConf       => QpixConf, -- record input
---    QpixReq        => open,
+      TxByteValidArr_out => open,
+      RxByteValidArr_out => open,
+      RxFifoEmptyArr_out => open,
+      RxFifoFullArr_out  => open,
       -- reg file connections
+      QpixConf       => QpixConf, -- record input
       regData        => regData,  -- output from parser
       regResp        => regResp); -- input from parser
    -----------------------------------------------
@@ -355,7 +353,7 @@ begin
       regResp  => regResp,  -- output record regData type, to parser
       -- route connections
       QpixConf => QpixConf, -- record qpixConfigType
-      QpixReq  => qpixReq   -- record qpixRequestType
+      QpixReq  => QpixReq   -- record qpixRequestType
       );
    -----------------------------------------------
 
@@ -371,12 +369,12 @@ begin
       clk           => clk,
       rst           => rst,
       -- reg file connections
-      qpixReq       => qpixReq,  -- input register from reg file
-      qpixConf      => QpixConf, -- input register from reg file
+      QpixReq       => QpixReq,  -- input register from reg file
+      QpixConf      => QpixConf, -- input register from reg file
       -- analog ASIC trigger connections
       inData        => inData,   -- input Data from Process, NOT inData to comm
-      -- comm connections
-      txReady       => TxReady, -- input ready signal from comm
+      -- Qpixcomm connections
+      TxReady       => TxReady, -- input ready signal from comm
       txData        => txData,  -- output record output to parser
       rxData        => rxData,  -- input record input from parser
       -- debug words:

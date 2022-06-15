@@ -58,9 +58,9 @@ architecture behav of QpixComm is
    ------------------------------------------------------------
    -- Signals
    ------------------------------------------------------------
-   signal TxByteArr        : QpixByteArrType      := (others => (others => '0'));
-   signal TxByteValidArr   : std_logic_vector(3 downto 0) := (others => '0');
-   signal TxByteReadyArr   : std_logic_vector(3 downto 0) := (others => '0');
+   signal TxByteArr      : QpixByteArrType              := (others => (others => '0'));
+   signal TxByteValidArr : std_logic_vector(3 downto 0) := (others => '0');
+   signal TxByteReadyArr : std_logic_vector(3 downto 0) := (others => '0');
 
    signal RxByteArr        : QpixByteArrType      := (others => (others => '0'));
    signal RxByteValidArr   : std_logic_vector(3 downto 0) := (others => '0');
@@ -93,11 +93,11 @@ begin
           port map (
                clk         => clk,
                sRst        => rst,
-               -- inputs
+               -- Input of TxByte to send to physical
                txByte      => TxByteArr(i),       -- input, slv(63 downto 0)
                txByteValid => TxByteValidArr(i),  -- input
                txByteReady => TxByteReadyArr(i),  -- ouput
-               -- outputs
+               -- Output of Rx to FIFO
                rxFrameErr  => open,               -- output
                rxBreakErr  => open,               -- output
                rxGapErr    => open,               -- output
@@ -150,14 +150,6 @@ begin
    end generate GEN_TXRX;
    ------------------------------------------------------------
 
-   --TxReadyOr <= and TxByteReadyArr;
-   --RxByteArr(3) <= (others => '0');
-   --RxByteValidArr(3) <= '0';
-   --RxFifoREnArr(3) <= '0';
-   --RxFifoEmptyArr(3) <= '0';
-   --RxFifoFullArr(3) <= '0';
-   --TxPortsArr(3) <= '0';
-   --TxByteReadyArr(3) <= '1';
    TxReadyOr <= '1' when TxByteReadyArr = "1111" else '0';
    TxReady   <= TxReadyOr;
 
@@ -173,12 +165,12 @@ begin
       clk          => clk,
       rst          => rst,
 
-      -- fifo enables
+      -- FIFO data from the Rx port
       inBytesArr     => RxFifoDoutArr,   -- input
       inFifoEmptyArr => RxFifoEmptyArr,  -- input
       inFifoREnArr   => RxFifoREnArr,    -- output
 
-      -- endeavor connections
+      -- Tx Endeavor connections
       outBytesArr      => TxByteArr,       -- output
       outBytesValidArr => TxByteValidArr,  -- output
       txReady          => TxReady,         -- input

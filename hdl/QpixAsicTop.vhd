@@ -141,8 +141,8 @@ begin
       clk           => clk,
       rst           => AsicRst,
                     
-      qpixReq       => QpixReq,
-      qpixConf      => QpixConf,
+      QpixReq       => QpixReq,
+      QpixConf      => QpixConf,
                     
       inData        => inData,
       localDataEna  => localDataEna,
