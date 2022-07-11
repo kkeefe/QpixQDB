@@ -135,7 +135,7 @@ begin
 
     -- connect the switches to the LEDs
     -- led <= sw;
-    je(0) <= sw(0);
+    je(0) <= fclk;
     je(1) <= sw(1); 
     DaqTx <= s_daqTx;
     s_daqRx <= DaqRx;   

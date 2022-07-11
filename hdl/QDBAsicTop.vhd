@@ -61,6 +61,7 @@ architecture Behavioral of QDBAsicTop is
   -- timestamp and QDBAsic specifics
   signal clk          : std_logic;
   signal fast_clk     : std_logic;
+  signal fast_clk_pll : std_logic;
   signal fake_trg     : std_logic              := '0';
   signal rst          : std_logic              := '0';
   signal localCnt     : unsigned (31 downto 0) := (others => '0');
@@ -96,6 +97,15 @@ architecture Behavioral of QDBAsicTop is
   -- signal TxByteValidArr_out : std_logic_vector(3 downto 0);
   -- signal RxByteValidArr_out : std_logic_vector(3 downto 0);
 
+component qdb_pll is
+    port(
+        ref_clk_i: in std_logic;
+        rst_n_i: in std_logic;
+        outcore_o: out std_logic;
+        outglobal_o: out std_logic
+    );
+end component;
+
 component HSOSC
 GENERIC( CLKHF_DIV :string :="0b00");
 PORT(
@@ -111,7 +121,7 @@ begin
     blu_led <= not pulse_blu;
     gre_led <= not pulse_gre;
     si <= clk;
-    so <= fast_clk;
+    so <= fast_clk_pll;
 
     -- connect Tx/Rx to the signals
     --Tx1 <= TxPortsArr(0);
@@ -139,10 +149,18 @@ begin
         CLKHFPU  => '1',
         CLKHF    => fast_clk
     );
-    process(fast_clk) is
+
+  -- pll to hopefully improve frequency stabilization
+  u_pll : qdb_pll port map(
+    ref_clk_i   =>  fast_clk,
+    rst_n_i     =>  '1', -- active low
+    outcore_o   =>  fast_clk_pll,
+    outglobal_o => open
+);
+    process(fast_clk_pll) is
       variable count : integer range 0 to 2 := 0;
     begin
-      if rising_edge(fast_clk) then
+      if rising_edge(fast_clk_pll) then
         count := count + 1;
         if count = 2 then
           clk <= not clk;
@@ -223,9 +241,9 @@ begin
    ------------------------------------
    -- syncrhonize ASIC internal data --
    ------------------------------------
-   process(fast_clk,rst)
+   process(fast_clk_pll,rst)
    begin
-      if rising_edge(fast_clk) then
+      if rising_edge(fast_clk_pll) then
          if rst = '1' then
            data_fi1 <= '0';
            data_fi2 <= '0';
