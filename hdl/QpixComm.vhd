@@ -132,7 +132,7 @@ begin
             FIFO_U : entity work.fifo_cc
             generic map(
                DATA_WIDTH => NUM_BITS_G,
-               DEPTH      => 2,
+               DEPTH      => 8,
                RAM_TYPE   => "distributed"
             )
             port map(

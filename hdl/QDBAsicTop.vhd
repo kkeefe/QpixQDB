@@ -19,14 +19,14 @@ entity QDBAsicTop is
       X_POS_G      : natural := 0;
       Y_POS_G      : natural := 0;
       pulse_time   : natural :=  1_999_999;
-      fake_trg_cnt : natural := 119_999_999;
+      fake_trg_cnt : natural := 19_999_999;
       RAM_TYPE     : string  := "Lattice"; -- 'Lattice' hardcodes BRAM for lattice, or distributed / block
       TXRX_TYPE    : string  := "ENDEAVOR" -- "DUMMY"/"UART"/"ENDEAVOR"
     );
 port (
     -- internal clock
     --clk : in STD_LOGIC;
-    --rst : in STD_LOGIC;
+--    rst : in STD_LOGIC;
 
     -- Tx/Rx IO
     --Tx1 : out STD_LOGIC; -- North
@@ -120,7 +120,9 @@ begin
     red_led <= not pulse_red;
     blu_led <= not pulse_blu;
     gre_led <= not pulse_gre;
-    si <= clk;
+    
+	-- clock output to physical
+	si <= clk;
     so <= fast_clk_pll;
 
     -- connect Tx/Rx to the signals
@@ -199,7 +201,8 @@ begin
          end if;
 
          -- pulse Blue
-         if regResp.valid = '1' then
+         -- if regResp.valid = '1' then
+		 if data = '1' then
 		 -- if qpixConf.DirMask(2) = '1' then
          -- if route_state(3) = '1' then -- high when REP_REGRSP_S -- does not go low after trg?
          -- if route_state(0) = '1' then -- high when REP_LOCAL_S, does not go low after trg
@@ -218,9 +221,10 @@ begin
 
          -- pulse Green
          -- if route_state(1) = '1' then -- high when REP_REMOTE_S
-         if inData.DataValid = '1' then
-         -- if rst = '1' then
-         -- if TxPortsArr(2) = '1' then
+         -- if inData.DataValid = '1' then
+         -- if enabled = true then
+		 -- if rst = '1' then
+         if TxPortsArr(2) = '1' then
          -- if qpixConf.ManRoute = '1' then
              start_pulse_gre := '1';
              pulse_count_gre := 0;
@@ -238,9 +242,9 @@ begin
      end if;
  end process pulse;
 
-   ------------------------------------
-   -- syncrhonize ASIC internal data --
-   ------------------------------------
+   ----------------------------------------------------------
+   -- syncrhonize ASIC internal data from 50 MHz to 12 MHz --
+   ----------------------------------------------------------
    process(fast_clk_pll,rst)
    begin
       if rising_edge(fast_clk_pll) then
@@ -270,6 +274,7 @@ begin
          end if;
       end if;
    end process;
+
 
     -- connect external IO to QpixDataProc
     slv_localCnt <= std_logic_vector(localCnt);

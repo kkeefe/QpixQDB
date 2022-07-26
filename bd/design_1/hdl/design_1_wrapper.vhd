@@ -1,8 +1,8 @@
 --Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 ----------------------------------------------------------------------------------
---Tool Version: Vivado v.2020.2 (lin64) Build 3064766 Wed Nov 18 09:12:47 MST 2020
---Date        : Wed May 18 12:20:18 2022
---Host        : kevin-Ubuntue running 64-bit Ubuntu 20.04.4 LTS
+--Tool Version: Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
+--Date        : Wed Jul 20 16:14:09 2022
+--Host        : Forerunner running 64-bit major release  (build 9200)
 --Command     : generate_target design_1_wrapper.bd
 --Design      : design_1_wrapper
 --Purpose     : IP block netlist
@@ -67,6 +67,14 @@ end design_1_wrapper;
 architecture STRUCTURE of design_1_wrapper is
   component design_1 is
   port (
+    reset_rtl : in STD_LOGIC;
+    FCLK : out STD_LOGIC;
+    aresetn : out STD_LOGIC_VECTOR ( 0 to 0 );
+    reset_rtl_0 : in STD_LOGIC;
+    sys_clock : in STD_LOGIC;
+    clk_out1_0 : out STD_LOGIC;
+    locked_0 : out STD_LOGIC;
+    clk_out2_0 : out STD_LOGIC;
     DDR_cas_n : inout STD_LOGIC;
     DDR_cke : inout STD_LOGIC;
     DDR_ck_n : inout STD_LOGIC;
@@ -88,14 +96,6 @@ architecture STRUCTURE of design_1_wrapper is
     FIXED_IO_ps_srstb : inout STD_LOGIC;
     FIXED_IO_ps_clk : inout STD_LOGIC;
     FIXED_IO_ps_porb : inout STD_LOGIC;
-    reset_rtl : in STD_LOGIC;
-    FCLK : out STD_LOGIC;
-    aresetn : out STD_LOGIC_VECTOR ( 0 to 0 );
-    reset_rtl_0 : in STD_LOGIC;
-    sys_clock : in STD_LOGIC;
-    clk_out1_0 : out STD_LOGIC;
-    locked_0 : out STD_LOGIC;
-    clk_out2_0 : out STD_LOGIC;
     M_AXI_0_awaddr : out STD_LOGIC_VECTOR ( 31 downto 0 );
     M_AXI_0_awprot : out STD_LOGIC_VECTOR ( 2 downto 0 );
     M_AXI_0_awvalid : out STD_LOGIC;

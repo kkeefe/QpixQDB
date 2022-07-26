@@ -136,7 +136,7 @@ begin
     -- connect the switches to the LEDs
     -- led <= sw;
     je(0) <= fclk;
-    je(1) <= sw(1); 
+    -- je(1) <= sw(1); -- direct pin or switch 
     DaqTx <= s_daqTx;
     s_daqRx <= DaqRx;   
     assgn: for i in 0 to 3 generate
@@ -159,6 +159,39 @@ begin
             end if;
         end if; 
     end process counter;
+    
+    -- 10 us pulse output from the switch
+    pulse_switch: process(fclk, rst) is
+        constant reset : natural := 13;        
+        variable count : natural range 0 to reset := 0;
+        variable pulse : std_logic := '0';
+        variable off   : boolean := false;
+    begin
+        if rising_edge(fclk) then
+            
+            if sw(1) = '1' and off then
+                pulse := '1';
+                count := 0;
+                off := false;   
+            end if;
+            
+            if pulse = '1' and not off then
+                je(1) <= '1';
+            else
+                je(1) <= '0';
+            end if;
+            
+            if count >= reset - 1 then
+                pulse := '0';
+                if sw(1) = '0' then
+                    off := true;
+                end if;
+            else
+                count := count + 1;
+            end if;
+        
+        end if; 
+    end process pulse_switch;
 
    ---------------------------------------------------
    -- 125 MHz clock
@@ -271,7 +304,7 @@ begin
    generic map (
       X_NUM_G => X_NUM_G,
       Y_NUM_G => Y_NUM_G,
-      Version => x"0000_0005"
+      Version => x"0000_0006"
    )
    port map(
       clk          => fclk,

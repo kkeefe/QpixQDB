@@ -125,7 +125,7 @@ begin
       FIFO_LOC_U : entity work.QDBFifo
       generic map(
          DATA_WIDTH => G_N_ANALOG_CHAN + G_TIMESTAMP_BITS, -- 16 + 32 = 48
-         DEPTH      => G_FIFO_LOC_DEPTH,
+         DEPTH      => 9,
          RAM_TYPE   => "Lattice_loc"
       )
       port map(
@@ -175,7 +175,7 @@ begin
       FIFO_EXT_U : entity work.QDBFifo
       generic map(
          DATA_WIDTH => G_DATA_BITS, -- 64
-         DEPTH      => G_FIFO_EXT_DEPTH,
+         DEPTH      => 9,
          RAM_TYPE   => "Lattice_ext"
       )
       port map(

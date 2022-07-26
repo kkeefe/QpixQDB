@@ -177,8 +177,8 @@ set_property -dict {PACKAGE_PIN Y12 IOSTANDARD LVCMOS33} [get_ports led5_b]
 ##Pmod Header JE
 set_property -dict {PACKAGE_PIN V12 IOSTANDARD LVCMOS33} [get_ports {je[0]}]
 set_property -dict {PACKAGE_PIN W16 IOSTANDARD LVCMOS33} [get_ports {je[1]}]
-#set_property -dict { PACKAGE_PIN J15   IOSTANDARD LVCMOS33 } [get_ports { je[2] }]; #IO_25_35 Sch=je[3]
-#set_property -dict { PACKAGE_PIN H15   IOSTANDARD LVCMOS33 } [get_ports { je[3] }]; #IO_L19P_T3_35 Sch=je[4]
+set_property -dict { PACKAGE_PIN J15   IOSTANDARD LVCMOS33 } [get_ports { je[2] }]; #IO_25_35 Sch=je[3]
+set_property -dict { PACKAGE_PIN H15   IOSTANDARD LVCMOS33 } [get_ports { je[3] }]; #IO_L19P_T3_35 Sch=je[4]
 set_property -dict {PACKAGE_PIN V13 IOSTANDARD LVCMOS33} [get_ports DaqRx]
 set_property -dict {PACKAGE_PIN U17 IOSTANDARD LVCMOS33} [get_ports DaqTx]
 #set_property -dict { PACKAGE_PIN T17   IOSTANDARD LVCMOS33 } [get_ports { je[6] }]; #IO_L20P_T3_34 Sch=je[9]
@@ -224,58 +224,3 @@ set_property -dict {PACKAGE_PIN U17 IOSTANDARD LVCMOS33} [get_ports DaqTx]
 #set_property PACKAGE_PIN W11 [get_ports {netic19_w11}]; #IO_L18P_T2_13
 #set_property PACKAGE_PIN W9 [get_ports {netic19_w9}]; #IO_L16N_T2_13
 #set_property PACKAGE_PIN Y9 [get_ports {netic19_y9}]; #IO_L14P_T2_SRCC_13
-
-
-
-
-set_property MARK_DEBUG true [get_nets {QpixDaqCtrl_U/ADDRARDADDR[5]}]
-set_property MARK_DEBUG true [get_nets {QpixDaqCtrl_U/ADDRARDADDR[7]}]
-set_property MARK_DEBUG true [get_nets {QpixDaqCtrl_U/ADDRARDADDR[9]}]
-set_property MARK_DEBUG true [get_nets {QpixDaqCtrl_U/ADDRARDADDR[8]}]
-set_property MARK_DEBUG true [get_nets {QpixDaqCtrl_U/ADDRARDADDR[10]}]
-set_property MARK_DEBUG true [get_nets {QpixDaqCtrl_U/ADDRARDADDR[3]}]
-set_property MARK_DEBUG true [get_nets {QpixDaqCtrl_U/ADDRARDADDR[0]}]
-set_property MARK_DEBUG true [get_nets {QpixDaqCtrl_U/ADDRARDADDR[1]}]
-set_property MARK_DEBUG true [get_nets {QpixDaqCtrl_U/ADDRARDADDR[2]}]
-set_property MARK_DEBUG true [get_nets {QpixDaqCtrl_U/ADDRARDADDR[4]}]
-set_property MARK_DEBUG true [get_nets {QpixDaqCtrl_U/ADDRARDADDR[6]}]
-connect_debug_port u_ila_0/probe0 [get_nets [list {QpixDaqCtrl_U/ADDRARDADDR[0]} {QpixDaqCtrl_U/ADDRARDADDR[1]} {QpixDaqCtrl_U/ADDRARDADDR[2]} {QpixDaqCtrl_U/ADDRARDADDR[3]} {QpixDaqCtrl_U/ADDRARDADDR[4]} {QpixDaqCtrl_U/ADDRARDADDR[5]} {QpixDaqCtrl_U/ADDRARDADDR[6]} {QpixDaqCtrl_U/ADDRARDADDR[7]} {QpixDaqCtrl_U/ADDRARDADDR[8]} {QpixDaqCtrl_U/ADDRARDADDR[9]} {QpixDaqCtrl_U/ADDRARDADDR[10]}]]
-
-create_debug_core u_ila_0 ila
-set_property ALL_PROBE_SAME_MU true [get_debug_cores u_ila_0]
-set_property ALL_PROBE_SAME_MU_CNT 1 [get_debug_cores u_ila_0]
-set_property C_ADV_TRIGGER false [get_debug_cores u_ila_0]
-set_property C_DATA_DEPTH 32768 [get_debug_cores u_ila_0]
-set_property C_EN_STRG_QUAL false [get_debug_cores u_ila_0]
-set_property C_INPUT_PIPE_STAGES 0 [get_debug_cores u_ila_0]
-set_property C_TRIGIN_EN false [get_debug_cores u_ila_0]
-set_property C_TRIGOUT_EN false [get_debug_cores u_ila_0]
-set_property port_width 1 [get_debug_ports u_ila_0/clk]
-connect_debug_port u_ila_0/clk [get_nets [list design_1_U/design_1_i/processing_system7_0/inst/FCLK_CLK0]]
-set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe0]
-set_property port_width 11 [get_debug_ports u_ila_0/probe0]
-connect_debug_port u_ila_0/probe0 [get_nets [list {evtSize[1]} {evtSize[2]} {evtSize[3]} {evtSize[4]} {evtSize[5]} {evtSize[6]} {evtSize[7]} {evtSize[8]} {evtSize[9]} {evtSize[10]} {evtSize[11]}]]
-create_debug_port u_ila_0 probe
-set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe1]
-set_property port_width 1 [get_debug_ports u_ila_0/probe1]
-connect_debug_port u_ila_0/probe1 [get_nets [list DaqRx_IBUF]]
-create_debug_port u_ila_0 probe
-set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe2]
-set_property port_width 1 [get_debug_ports u_ila_0/probe2]
-connect_debug_port u_ila_0/probe2 [get_nets [list QpixDaqCtrl_U/daqRxByteValid]]
-create_debug_port u_ila_0 probe
-set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe3]
-set_property port_width 1 [get_debug_ports u_ila_0/probe3]
-connect_debug_port u_ila_0/probe3 [get_nets [list DaqTx_OBUF]]
-create_debug_port u_ila_0 probe
-set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe4]
-set_property port_width 1 [get_debug_ports u_ila_0/probe4]
-connect_debug_port u_ila_0/probe4 [get_nets [list QpixDaqCtrl_U/daqTxByteValid]]
-create_debug_port u_ila_0 probe
-set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe5]
-set_property port_width 1 [get_debug_ports u_ila_0/probe5]
-connect_debug_port u_ila_0/probe5 [get_nets [list trg]]
-set_property C_CLK_INPUT_FREQ_HZ 300000000 [get_debug_cores dbg_hub]
-set_property C_ENABLE_CLK_DIVIDER false [get_debug_cores dbg_hub]
-set_property C_USER_SCAN_CHAIN 1 [get_debug_cores dbg_hub]
-connect_debug_port dbg_hub/clk [get_nets fclk]
