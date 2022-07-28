@@ -29,6 +29,7 @@ ldc_set_location -site {F4} [get_ports Rx3];# South - Pin 1, Female
 #ldc_set_location -site {F1} [get_ports so];  # so
 #ldc_set_location -site {E1} [get_ports si];  # si
 ldc_set_location -site {D1} [get_ports sck];# sck
+
 # LEDs
 ldc_set_location -site {A5} [get_ports blu_led]
 ldc_set_location -site {B5} [get_ports gre_led]

@@ -21,22 +21,22 @@ entity QpixParser is
       clk                 : in std_logic;
       rst                 : in std_logic;
       
-      -- input to ASIC 
+      -- input data from ASICs / output data to route
       inBytesArr          : in  QpixByteArrType; -- array(3 downto 0) of slv(63 downto 0)
       inFifoEmptyArr      : in  std_logic_vector(3 downto 0); 
       inFifoREnArr        : out std_logic_vector(3 downto 0);
-      inData              : out QpixDataFormatType;
+      parseDataTx         : out QpixDataFormatType;
       
       -- input from QpixRoute, to send to ASIC
-      outData             : in  QpixDataFormatType;
+      parseDataRx         : in  QpixDataFormatType;
       outBytesArr         : out QpixByteArrType; -- array(3 downto 0) of slv(63 downto 0)
       outBytesValidArr    : out std_logic_vector(3 downto 0);
       txReady             : in  std_logic;
 
-   -- Fixme / TODO?? - These ports do nothing in this module, except qpixconf.dirMask
+      -- RefFile configuration
       qpixConf            : in QpixConfigType;
---    qpixReq             : out QpixRequestType;
 
+      -- Comm communication register data
       regData             : out QpixRegDataType;
       regResp             : in QpixRegDataType
    );
@@ -92,6 +92,7 @@ begin
          -- fifoRenOrRR     <= fifoRenOrR;
          for i in 0 to 3 loop
             --fifoRen(i)   <= '0';
+            -- ~think~ - should this be txReady = '1'? why? TODO
             if inFifoEmptyArr(i) = '0' and fifoRen = b"0000" and txReady = '1' then
                inBytesMux      <= inBytesArr(i);
                inBytesMuxValid <= '1';
@@ -151,7 +152,7 @@ begin
    end process;
 
    regData <= regDataR;
-   inData  <= inDataR;
+   parseDataTx  <= inDataR;
 
    process (clk)
    begin
@@ -173,17 +174,19 @@ begin
 
             outBytesValidArr(i)  <= '0';
 
-            if outData.DataValid = '1' then
-               if outData.DirMask(i) = '1' then
+            if parseDataRx.DataValid = '1' then
+              -- construction of DirMask happens here and why it must be four bits
+               if parseDataRx.DirMask(i) = '1' then
                   -- temporary send either d.Data of convert record FIXME
-                  if outData.WordType = G_WORD_TYPE_REGRSP then
-                     outBytesArr(i) <= outData.Data;
+                  if parseDataRx.WordType = G_WORD_TYPE_REGRSP then
+                     outBytesArr(i) <= parseDataRx.Data;
                   else
-                     outBytesArr(i) <= fQpixRecordToByte(outData);
+                     outBytesArr(i) <= fQpixRecordToByte(parseDataRx);
                   end if;
                   outBytesValidArr(i)  <= '1'; 
                end if;
 
+            -- broadcast the register request
             elsif regDataR.Valid = '1'  then 
                outBytesArr(i)      <= fQpixRegToByte(regDataR);
                --thisReqID           <= regDataR.ReqID;

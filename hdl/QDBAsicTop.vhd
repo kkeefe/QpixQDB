@@ -25,18 +25,18 @@ entity QDBAsicTop is
     );
 port (
     -- internal clock
-    --clk : in STD_LOGIC;
---    rst : in STD_LOGIC;
+    clk : in STD_LOGIC;
+    rst : in STD_LOGIC;
 
     -- Tx/Rx IO
-    --Tx1 : out STD_LOGIC; -- North
-    --Rx1 : in STD_LOGIC;
-    --Tx2 : out STD_LOGIC; -- East
-    --Rx2 : in STD_LOGIC;
+    Tx1 : out STD_LOGIC; -- North
+    Rx1 : in STD_LOGIC;
+    Tx2 : out STD_LOGIC; -- East
+    Rx2 : in STD_LOGIC;
     Tx3 : out STD_LOGIC; -- South
     Rx3 : in STD_LOGIC;
-    --Tx4 : out STD_LOGIC; -- West
-    --Rx4 : in STD_LOGIC;
+    Tx4 : out STD_LOGIC; -- West
+    Rx4 : in STD_LOGIC;
 
     -- extra IO, hardcode IO for now
     --IO : in STD_LOGIC_VECTOR(3 downto 0);
@@ -59,11 +59,10 @@ end QDBAsicTop;
 architecture Behavioral of QDBAsicTop is
 
   -- timestamp and QDBAsic specifics
-  signal clk          : std_logic;
+--  signal clk          : std_logic;
   signal fast_clk     : std_logic;
-  signal fast_clk_pll : std_logic;
   signal fake_trg     : std_logic              := '0';
-  signal rst          : std_logic              := '0';
+--  signal rst          : std_logic              := '0';
   signal localCnt     : unsigned (31 downto 0) := (others => '0');
   signal slv_localCnt : std_logic_vector(31 downto 0);
   signal pulse_red    : std_logic              := '0';
@@ -117,59 +116,49 @@ END COMPONENT;
 begin
 
     -- LEDs, active LOW (on when value is '0')
-    red_led <= not pulse_red;
+    red_led <= not '0';
     blu_led <= not pulse_blu;
     gre_led <= not pulse_gre;
-    
-	-- clock output to physical
-	si <= clk;
-    so <= fast_clk_pll;
+    --si <= clk;
+    --so <= fast_clk;
 
     -- connect Tx/Rx to the signals
-    --Tx1 <= TxPortsArr(0);
-    --RxPortsArr(0) <= Rx1;
-    --Tx2 <= TxPortsArr(1);
-    --RxPortsArr(1) <= Rx2;
+    Tx1 <= TxPortsArr(0);
+    RxPortsArr(0) <= Rx1;
+    Tx2 <= TxPortsArr(1);
+    RxPortsArr(1) <= Rx2;
     Tx3 <= TxPortsArr(2);
     RxPortsArr(2) <= Rx3;
-    --Tx4 <= TxPortsArr(3);
-    --RxPortsArr(3) <= Rx4;
-    RxPortsArr(1 downto 0) <= "00";
+    Tx4 <= TxPortsArr(3);
+    RxPortsArr(3) <= Rx4;
+--    RxPortsArr(1 downto 0) <= "00";
     RxPortsArr(3) <= '0';
 
     
     -- used to buffer readout on timing measurement
     -- si <= clk;
-    rst <= QpixReq.AsicReset;
+--    rst <= QpixReq.AsicReset;
 
     -- use the fast clock to read the input of the data
     -- internal oscillator, generate 50 MHz clk
-    u_osc : HSOSC
-    GENERIC MAP(CLKHF_DIV =>"0b00")
-    port map(
-        CLKHFEN  => '1',
-        CLKHFPU  => '1',
-        CLKHF    => fast_clk
-    );
-
-  -- pll to hopefully improve frequency stabilization
-  u_pll : qdb_pll port map(
-    ref_clk_i   =>  fast_clk,
-    rst_n_i     =>  '1', -- active low
-    outcore_o   =>  fast_clk_pll,
-    outglobal_o => open
-);
-    process(fast_clk_pll) is
-      variable count : integer range 0 to 2 := 0;
-    begin
-      if rising_edge(fast_clk_pll) then
-        count := count + 1;
-        if count = 2 then
-          clk <= not clk;
-          count := 0;
-        end if;
-      end if;
-    end process;
+--    u_osc : HSOSC
+--    GENERIC MAP(CLKHF_DIV =>"0b00")
+--    port map(
+--        CLKHFEN  => '1',
+--        CLKHFPU  => '1',
+--        CLKHF    => fast_clk
+--    );
+--    process(fast_clk) is
+--      variable count : integer range 0 to 2 := 0;
+--    begin
+--      if rising_edge(fast_clk) then
+--        count := count + 1;
+--        if count = 2 then
+--          clk <= not clk;
+--          count := 0;
+--        end if;
+--      end if;
+--    end process;
 
 --  -- create a 1 second pulse width when either Tx or Rx goes high
  pulse : process (all) is
@@ -201,9 +190,8 @@ begin
          end if;
 
          -- pulse Blue
-         -- if regResp.valid = '1' then
-		 if data = '1' then
-		 -- if qpixConf.DirMask(2) = '1' then
+         if regResp.valid = '1' then
+		 -- if QpixConf.DirMask(2) = '1' then
          -- if route_state(3) = '1' then -- high when REP_REGRSP_S -- does not go low after trg?
          -- if route_state(0) = '1' then -- high when REP_LOCAL_S, does not go low after trg
              start_pulse_blu := '1';
@@ -221,11 +209,10 @@ begin
 
          -- pulse Green
          -- if route_state(1) = '1' then -- high when REP_REMOTE_S
-         -- if inData.DataValid = '1' then
-         -- if enabled = true then
-		 -- if rst = '1' then
-         if TxPortsArr(2) = '1' then
-         -- if qpixConf.ManRoute = '1' then
+         if inData.DataValid = '1' then
+         -- if rst = '1' then
+         -- if TxPortsArr(2) = '1' then
+         -- if QpixConf.ManRoute = '1' then
              start_pulse_gre := '1';
              pulse_count_gre := 0;
          end if;
@@ -242,45 +229,49 @@ begin
      end if;
  end process pulse;
 
-   ----------------------------------------------------------
-   -- syncrhonize ASIC internal data from 50 MHz to 12 MHz --
-   ----------------------------------------------------------
-   process(fast_clk_pll,rst)
-   begin
-      if rising_edge(fast_clk_pll) then
-         if rst = '1' then
-           data_fi1 <= '0';
-           data_fi2 <= '0';
-           data_f    <= '0';
-         else
-           data_fi1 <= sck;
-           data_fi2 <= data_fi1;
-           data_f   <= data_fi2;
-         end if;
-      end if;
-   end process;
-   -- put sck - data onto the 12 MHz clk
-   process(clk,rst)
-   begin
-      if rising_edge(clk) then
-         if rst = '1' then
-           data_i1 <= '0';
-           data_i2 <= '0';
-           data    <= '0';
-         else
-           data_i1 <= data_f;
-           data_i2 <= data_i1;
-           data    <= data_i2;
-         end if;
-      end if;
-   end process;
-
+   ------------------------------------
+   -- syncrhonize ASIC internal data --
+   ------------------------------------
+   --process(fast_clk,rst)
+   --begin
+      --if rising_edge(fast_clk) then
+         --if rst = '1' then
+           --data_fi1 <= '0';
+           --data_fi2 <= '0';
+           --data_f    <= '0';
+         --else
+           --data_fi1 <= sck;
+           --data_fi2 <= data_fi1;
+           --data_f   <= data_fi2;
+         --end if;
+      --end if;
+   --end process;
+   --put sck - data onto the 12 MHz clk
+   --process(clk,rst)
+   --begin
+      --if rising_edge(clk) then
+         --if rst = '1' then
+           --data_i1 <= '0';
+           --data_i2 <= '0';
+           --data    <= '0';
+         --else
+           --data_i1 <= data_f;
+           --data_i2 <= data_i1;
+           --data    <= data_i2;
+         --end if;
+      --end if;
+   --end process;
+>>>>>>> Stashed changes
 
     -- connect external IO to QpixDataProc
     slv_localCnt <= std_logic_vector(localCnt);
     enabled <= (QpixConf.locEnaSnd = '1' and QpixConf.locEnaRcv = '1' and QpixConf.locEnaReg = '1');
     process (clk)
+<<<<<<< Updated upstream
       variable count : natural range 1 to 16 := 0;
+=======
+      variable count : natural range 0 to 16 := 0;
+>>>>>>> Stashed changes
       begin
          if rising_edge(clk) then
 
@@ -296,6 +287,7 @@ begin
            end if;
 
            -- trigger conditions, only read on rising edge
+<<<<<<< Updated upstream
            if data = '1' and enabled and rising then
              inData.DataValid <= '1';
              inData.TimeStamp <= slv_localCnt;
@@ -303,6 +295,15 @@ begin
            --elsif fake_trg = '1' and not enabled then
              --inData.DataValid <= '1';
              --inData.TimeStamp <= slv_localCnt;
+=======
+           --if data = '1' and enabled and rising then
+             --inData.DataValid <= '1';
+             --inData.TimeStamp <= slv_localCnt;
+             --rising <= false;
+           if fake_trg = '1' and not enabled then
+             inData.DataValid <= '1';
+             inData.TimeStamp <= slv_localCnt;
+>>>>>>> Stashed changes
            else
              inData.DataValid <= '0';
              inData.TimeStamp <= (others => '0');
@@ -332,9 +333,16 @@ begin
     end process counter;
    ---------------------------------------------
 
+<<<<<<< Updated upstream
    -- Q-Pix data tranceiver
    -- data parsing / physical layer
    -------------------------------------------------
+=======
+   -----------------------------------------------
+   -- Q-Pix data tranceiver
+   -- data parsing / physical layer
+   -----------------------------------------------
+>>>>>>> Stashed changes
    QpixComm_U : entity work.QpixComm
    generic map(
       RAM_TYPE      => RAM_TYPE,
@@ -345,9 +353,16 @@ begin
       clk            => clk,
       rst            => rst,
       -- route <-> parser
+<<<<<<< Updated upstream
       outData_i      => txData,  -- record input to parser from route
       inData         => rxData,  -- record output from parser to route
       TxReady        => TxReady, -- sl ready signal to route
+=======
+      parseDataTx    => parseTxData,  -- record input to parser from route
+      parseDataRx    => parseRxData,  -- record output from parser to route
+      parseDataReady => parseTxReady, -- sl ready signal to route
+
+>>>>>>> Stashed changes
       -- physical connections
       TxPortsArr     => TxPortsArr, -- slv output to physical
       RxPortsArr     => RxPortsArr, -- slv input form physical
@@ -355,6 +370,7 @@ begin
       RxByteValidArr_out => open,
       RxFifoEmptyArr_out => open,
       RxFifoFullArr_out  => open,
+<<<<<<< Updated upstream
       -- reg file connections
       QpixConf       => QpixConf, -- record input
       regData        => regData,  -- output from parser
@@ -363,6 +379,17 @@ begin
 
    -- Registers file
    -------------------------------------------------
+=======
+
+      -- reg file connections
+      QpixConf       => QpixConf, -- record input
+      regData        => regData,  -- output from parser to regFile
+      regResp        => regResp); -- input to parser from regFile
+   -----------------------------------------------
+
+   -----------------------------------------------
+   -- Registers file
+   -----------------------------------------------
    QpixRegFile_U : entity work.QpixRegFile
    generic map(
       X_POS_G       => X_POS_G,
@@ -391,15 +418,19 @@ begin
    port map(
       clk           => clk,
       rst           => rst,
+
       -- reg file connections
       QpixReq       => QpixReq,  -- input register from reg file
       QpixConf      => QpixConf, -- input register from reg file
+
       -- analog ASIC trigger connections
       inData        => inData,   -- input Data from Process, NOT inData to comm
-      -- Qpixcomm connections
-      TxReady       => TxReady, -- input ready signal from comm
-      txData        => txData,  -- output record output to parser
-      rxData        => rxData,  -- input record input from parser
+
+      -- Qpixcomm connections, connect Tx of Route to Rx of Parse
+      TxReady       => parseTxReady, -- input ready signal from comm
+      txData        => parseRxData,  -- output record output to parser
+      rxData        => parseTxData,  -- input record input from parser
+
       -- debug words:
       routeErr      => open,                     
       debug         => debug,

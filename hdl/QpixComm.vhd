@@ -27,20 +27,18 @@ entity QpixComm is
       RxPortsArr     : in  std_logic_vector(3 downto 0);
       
       -- tx/rx data to QpixRoute
-      outData_i      : in  QpixDataFormatType; -- Tx from QpixRoute
-      inData         : out QpixDataFormatType; -- Rx to QpixRoute
-      TxReady        : out std_logic;          -- Tx-ready to QpixRoute
-
-      -- -- Fixme / TODO?? - These ports do nothing in QpixParser.vhd
-      -- register info to QpixRoute
-      qpixConf       : in QpixConfigType;
---      qpixReq        : out QpixRequestType;
+      parseDataRx    : in  QpixDataFormatType; -- Tx from QpixRoute
+      parseDataTx    : out QpixDataFormatType; -- Rx to QpixRoute
+      parseDataReady : out std_logic;          -- Tx-ready to QpixRoute
 
       -- Debug
       TxByteValidArr_out : out std_logic_vector(3 downto 0);
       RxByteValidArr_out : out std_logic_vector(3 downto 0);
       RxFifoEmptyArr_out : out std_logic_vector(3 downto 0);
       RxFifoFullArr_out  : out std_logic_vector(3 downto 0);
+
+      -- register from  QpixRegFile
+      qpixConf       : in QpixConfigType;
 
       -- register information to QpixRegFile
       regData        : out QpixRegDataType;
@@ -72,7 +70,7 @@ architecture behav of QpixComm is
 
    signal TxReadyOr        : std_logic := '0';
 
-   --signal InData           : QpixDataFormatType := QpixDataZero_C;
+   --signal parseDataTx           : QpixDataFormatType := QpixDataZero_C;
 
 begin
 
@@ -138,12 +136,12 @@ begin
             port map(
                clk   => clk,
                rst   => rst,
-               din   => RxByteArr(i),
-               wen   => RxByteValidArr(i),
-               ren   => RxFifoREnArr(i),
-               dout  => RxFifoDoutArr(i),
-               empty => RxFifoEmptyArr(i),
-               full  => RxFifoFullArr(i)
+               din   => RxByteArr(i),      -- rxByte
+               wen   => RxByteValidArr(i), -- rxValid
+               ren   => RxFifoREnArr(i),   -- inFifoREnArr
+               dout  => RxFifoDoutArr(i),  -- inBytesArr
+               empty => RxFifoEmptyArr(i), -- inFifoEmptyArr
+               full  => RxFifoFullArr(i)   -- debug
             );
          --end generate;
 
@@ -151,7 +149,7 @@ begin
    ------------------------------------------------------------
 
    TxReadyOr <= '1' when TxByteReadyArr = "1111" else '0';
-   TxReady   <= TxReadyOr;
+   parseDataReady   <= TxReadyOr;
 
    ------------------------------------------------------------
    -- Parser
@@ -166,23 +164,21 @@ begin
       rst          => rst,
 
       -- FIFO data from the Rx port
-      inBytesArr     => RxFifoDoutArr,   -- input
-      inFifoEmptyArr => RxFifoEmptyArr,  -- input
-      inFifoREnArr   => RxFifoREnArr,    -- output
+      inBytesArr     => RxFifoDoutArr,   -- input bytesArr from fifo
+      inFifoEmptyArr => RxFifoEmptyArr,  -- input emptyArr from fifo
+      inFifoREnArr   => RxFifoREnArr,    -- output enArr to fifo
 
       -- Tx Endeavor connections
       outBytesArr      => TxByteArr,       -- output
       outBytesValidArr => TxByteValidArr,  -- output
-      txReady          => TxReady,         -- input
+      txReady          => parseDataReady,  -- input
 
       -- data to route
-      inData  => inData,                -- output
-      outData => outData_i,             -- input
+      parseDataTx => parseDataTx,           -- output
+      parseDataRx => parseDataRx,           -- input
 
       -- regFile configurations
-      -- FixMe / TODO??
       qpixConf => qpixConf,             -- input
-      --qpixReq           => qpixReq,
       regData => regData,               -- output
       regResp => regResp                -- input
    );

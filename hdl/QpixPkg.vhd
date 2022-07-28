@@ -300,9 +300,9 @@ package body QpixPkg is
       --x(63 downto 60) ;  -- reserved
       x.WordType  := d(59 downto 56) ;  -- word type
       x.ChanMask  := d(55 downto 40) ;  -- chan mask
-      x.XPos      := d(39 downto 36) ;           -- x
-      x.YPos      := d(35 downto 32) ;           -- y
-      x.Timestamp := d(31 downto 0 ) ;      -- timestamp
+      x.XPos      := d(39 downto 36) ;  -- x
+      x.YPos      := d(35 downto 32) ;  -- y
+      x.Timestamp := d(31 downto 0 ) ;  -- timestamp
 
       return x;
 
@@ -401,7 +401,3 @@ package body QpixPkg is
    end function;
 
 end package body QpixPkg;
-
-
-
-
