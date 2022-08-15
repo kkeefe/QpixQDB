@@ -1,10 +1,10 @@
-* notes
-** Register notes
-- AXI_reads in
-  - 0x RegMap
-  - 1x Event_Memory
-  - 2x fifo_counters
-  - 3x asic_reg_request
+* QDB Notes
 
-- asic_reads_in
-- more notes to test
+** DONE - Repo management?
+** DONE - (Route) What does (should) timeout do?
+- global / prevent bad ASIC
+** DONE - (Route) What should REGRSP code do?
+** DONE - (Parser) Why only read data when not receiving?
+** DONE - (Parser) What is this 'fixme'?
+** DONE - (Route) What is this 'fixme'?
+** TODO allen variance - frequency stability

@@ -28,9 +28,9 @@ ldc_set_location -site {A1} [get_ports clk]; # IOB_25b, G3
 
 # ice_spi pins North/South
 #ldc_set_location -site {C1} [get_ports ss];  # ss
-ldc_set_location -site {F1} [get_ports so];  # so
-ldc_set_location -site {E1} [get_ports si];  # si
-#ldc_set_location -site {D1} [get_ports sck];# sck
+#ldc_set_location -site {F1} [get_ports so];  # so
+#ldc_set_location -site {E1} [get_ports si];  # si
+ldc_set_location -site {D1} [get_ports sck];# sck
 
 # LEDs
 ldc_set_location -site {A5} [get_ports blu_led]

@@ -89,7 +89,7 @@ begin
       clk => clk,
       rst => asicRst,
 
-      outData_i      => txData,
+      parseDataRx      => txData,
       inData         => rxData,
       --regData        => regData,
 

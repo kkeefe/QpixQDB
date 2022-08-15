@@ -29,14 +29,14 @@ port (
 --    rst : in STD_LOGIC;
 
     -- Tx/Rx IO
-    --Tx1 : out STD_LOGIC; -- North
-    --Rx1 : in STD_LOGIC;
-    --Tx2 : out STD_LOGIC; -- East
-    --Rx2 : in STD_LOGIC;
+    Tx1 : out STD_LOGIC; -- North
+    Rx1 : in STD_LOGIC;
+    Tx2 : out STD_LOGIC; -- East
+    Rx2 : in STD_LOGIC;
     Tx3 : out STD_LOGIC; -- South
     Rx3 : in STD_LOGIC;
-    --Tx4 : out STD_LOGIC; -- West
-    --Rx4 : in STD_LOGIC;
+    Tx4 : out STD_LOGIC; -- West
+    Rx4 : in STD_LOGIC;
 
     -- extra IO, hardcode IO for now
     --IO : in STD_LOGIC_VECTOR(3 downto 0);
@@ -63,7 +63,7 @@ architecture Behavioral of QDBAsicTop is
   signal fast_clk     : std_logic;
   signal pllClk       : std_logic;
   signal fake_trg     : std_logic              := '0';
-  signal rst          : std_logic              := '0';
+--  signal rst          : std_logic              := '0';
   signal localCnt     : unsigned (31 downto 0) := (others => '0');
   signal slv_localCnt : std_logic_vector(31 downto 0);
   signal pulse_red    : std_logic              := '0';
@@ -117,7 +117,7 @@ END COMPONENT;
 begin
 
     -- LEDs, active LOW (on when value is '0')
-    red_led <= not pulse_red;
+    red_led <= not '0';
     blu_led <= not pulse_blu;
     gre_led <= not pulse_gre;
     
@@ -126,21 +126,21 @@ begin
     --so <= pllClk;
 
     -- connect Tx/Rx to the signals
-    --Tx1 <= TxPortsArr(0);
-    --RxPortsArr(0) <= Rx1;
-    --Tx2 <= TxPortsArr(1);
-    --RxPortsArr(1) <= Rx2;
+    Tx1 <= TxPortsArr(0);
+    RxPortsArr(0) <= Rx1;
+    Tx2 <= TxPortsArr(1);
+    RxPortsArr(1) <= Rx2;
     Tx3 <= TxPortsArr(2);
     RxPortsArr(2) <= Rx3;
-    --Tx4 <= TxPortsArr(3);
-    --RxPortsArr(3) <= Rx4;
-    RxPortsArr(1 downto 0) <= "00";
+    Tx4 <= TxPortsArr(3);
+    RxPortsArr(3) <= Rx4;
+--    RxPortsArr(1 downto 0) <= "00";
     RxPortsArr(3) <= '0';
 
     
     -- used to buffer readout on timing measurement
     -- si <= clk;
-    rst <= QpixReq.AsicReset;
+--    rst <= QpixReq.AsicReset;
 
     -- use the fast clock to read the input of the data
     -- internal oscillator, generate 50 MHz clk
@@ -337,9 +337,16 @@ begin
     end process counter;
    ---------------------------------------------
 
+<<<<<<< Updated upstream
    -- Q-Pix data tranceiver
    -- data parsing / physical layer
    -------------------------------------------------
+=======
+   -----------------------------------------------
+   -- Q-Pix data tranceiver
+   -- data parsing / physical layer
+   -----------------------------------------------
+>>>>>>> Stashed changes
    QpixComm_U : entity work.QpixComm
    generic map(
       RAM_TYPE      => RAM_TYPE,
@@ -360,6 +367,7 @@ begin
       RxByteValidArr_out => open,
       RxFifoEmptyArr_out => open,
       RxFifoFullArr_out  => open,
+<<<<<<< Updated upstream
       -- reg file connections
       QpixConf       => QpixConf, -- record input
       regData        => regData,  -- output from parser

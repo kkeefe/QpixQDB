@@ -276,11 +276,11 @@ begin
          -- waiting for interrogation
          when IDLE_S       =>
 
-            nxtReg.stateCnt <= (others => '0');
-            nxtReg.txData <= QpixDataZero_C;
+            nxtReg.stateCnt   <= (others => '0');
+            nxtReg.txData     <= QpixDataZero_C;
             nxtReg.locFifoRen <= '0';
             nxtReg.extFifoRen <= '0';
-            nxtReg.manRoute <= qpixConf.ManRoute;
+            nxtReg.manRoute   <= qpixConf.ManRoute;
             nxtReg.timeout    <= qpixConf.Timeout;
 
             if qpixReq.Interrogation = '1' then
@@ -292,7 +292,9 @@ begin
             else
                nxtReg.respDir <= fQpixGetDirectionMask(X_POS_G, Y_POS_G);
             end if;
-            
+
+            -- NOTE / TODO -- possible place where fifo is empty but higher
+            -- level word is the register response we want
             if extFifoEmpty = '0' and fQpixGetWordType(extFifoDout) = REGRSP_W then
                nxtReg.state <= ROUTE_REGRSP_S;
             end if;
@@ -307,7 +309,7 @@ begin
                      nxtReg.txData.WordType  <= G_WORD_TYPE_REGRSP;
                      nxtReg.txData.Data      <= extFifoDout;
                      nxtReg.txData.DirMask   <= nxtReg.respDir;
-                     nxtReg.extFifoRen <= '1';
+                     nxtReg.extFifoRen       <= '1';
                   end if;
                end if;
             else 
@@ -361,9 +363,9 @@ begin
             nxtReg.extFifoRen <= '0';
             if extFifoEmpty = '0' and txReady = '1' then 
                if curReg.extFifoRen = '0' and curReg.stateCnt(1) = '1' then
-                  nxtReg.extFifoRen <= '1';
+                  nxtReg.extFifoRen       <= '1';
                   --nxtReg.txData.Data <= extFifoDout;
-                  nxtReg.txData <= fQpixByteToRecord(extFifoDout);
+                  nxtReg.txData           <= fQpixByteToRecord(extFifoDout);
                   nxtReg.txData.DataValid <= '1';
                   nxtReg.txData.DirMask   <= nxtReg.respDir;
                   -- replace some data FIXME : temporary
@@ -377,7 +379,9 @@ begin
                nxtReg.extFifoRen <= '0';
                nxtReg.txData <= QpixDataZero_C;
             end if;
-            
+
+            -- TODO / NOTE: where is timeout counting?
+            -- simulate this
             if curReg.timeout /= timeoutZero_C then 
                if curReg.stateCnt(curReg.timeout'range) = curReg.timeout then
                   nxtReg.state <= IDLE_S;

@@ -301,6 +301,7 @@ begin
     port map(
         -- internal clock
         clk => clk12,
+        rst => rst,
         --rst : in STD_LOGIC;
 --        Tx1 => C_Tx1,
 --        Rx1 => C_Rx1,
