@@ -18,6 +18,9 @@ def main(args):
     """
     if args.lower() == "qpix":
         takeQpix = True
+    elif args.lower() == "test":
+        takeQpix = False
+        test = True
     else:
         takeQpix = False
 
@@ -65,6 +68,8 @@ def main(args):
         if takeQpix:
             print(f"copying qpix {f} to ", QDBFilesD[f])
             shutil.copy(QPixFilesD[f], QDBFilesD[f])
+        elif test:
+            print(f"{f} is different")
         else:
             print(f"copying qdb {f} to ", QPixFilesD[f])
             shutil.copy(QDBFilesD[f], QPixFilesD[f])
@@ -82,8 +87,7 @@ if __name__ == "__main__":
     if nargs != 2:
         print("must enter qdb or qpix to select which files to take")
         sys.exit(-1)
-    elif args[1].lower() != "qpix" or args[1].lower() != "qdb":
-        print("must enter qpix or qdb to select which file to take")
+    elif args[1].lower() != "qpix" or args[1].lower() != "qdb" or args[1].lower() != "test":
         main(args[1])
     else:
         print("too many args.. enter qpix or qdb as only second arg")

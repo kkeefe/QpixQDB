@@ -57,22 +57,6 @@ architecture Behavioral of QDBFifo is
    constant BRAM_WIDTH : natural := DATA_WIDTH / 16;
    constant BRAM_DEPTH : natural := DEPTH / 256;
 
-component sdp_ram is
-    port(
-        wr_clk_i: in std_logic;
-        rd_clk_i: in std_logic;
-        rst_i: in std_logic;
-        wr_clk_en_i: in std_logic;
-        rd_en_i: in std_logic;
-        rd_clk_en_i: in std_logic;
-        wr_en_i: in std_logic;
-        wr_data_i: in std_logic_vector(63 downto 0);
-        wr_addr_i: in std_logic_vector(2 downto 0);
-        rd_addr_i: in std_logic_vector(2 downto 0);
-        rd_data_o: out std_logic_vector(63 downto 0)
-    );
-end component;
-
 component sdp_ram_loc is
     port(
         wr_clk_i: in std_logic;
@@ -106,25 +90,6 @@ component sdp_ram_ext is
 end component;
 begin
 
-   -- Use the Lattice RAM
-   def_gen_fifo: if(RAM_TYPE /= "Lattice_loc" and RAM_TYPE /= "Lattice_ext") generate
-	--p_ram: for x in 0 to BRAM_WIDTH - 1 generate
-     ram_ip : sdp_ram 
-		port map(
-			wr_clk_i=> clk,
-			rd_clk_i=> clk,
-			rst_i=> rst,
-			wr_clk_en_i=> '1',
-			rd_en_i=> i_ren,
-			rd_clk_en_i=> '1',
-			wr_en_i=> wen,
-			wr_data_i=> din,
-			wr_addr_i=> i_waddr,
-			rd_addr_i=> i_raddr,
-			rd_data_o=> dout
-		);       
-	--end generate p_ram;
-   end generate;
    -- use RAM_loc IP
    def_gen_fifo_loc: if(RAM_TYPE = "Lattice_loc") generate
      ram_ip_loc : sdp_ram_loc 
