@@ -6,11 +6,21 @@
 # the two running directories
 import os
 import sys
+import filecmp
+import shutil
 
 qpix_digital_path = "../qpix-digital"
 qpixqdb_path = "./hdl"
 
-def testDirs():
+def main(args):
+    """
+    run script to update repos
+    """
+    if args.lower() == "qpix":
+        takeQpix = True
+    else:
+        takeQpix = False
+
     found_digital = os.path.isdir(qpix_digital_path)
     found_qdb = os.path.isdir(qpixqdb_path)
     
@@ -42,29 +52,38 @@ def testDirs():
             found_files.append(f)
         
     for f in found_files:
+        # only update different files
+        different = not filecmp.cmp(QDBFilesD[f], QPixFilesD[f])
+
+        if not different:
+            continue
+
+        # take the newer file and copy it over the older one
         qdbTime = os.path.getmtime(QDBFilesD[f])
         qpixTime = os.path.getmtime(QPixFilesD[f])
 
-        # if qdbTime > qpixTime:
-        #     print(f"{f} is newer in qpix directory")
-        # elif qdbTime == qpixTime:
-        #     print(f"{f} does not need to be updated")
-        # else:
-        #     print(f"{f} is newer in qdb directory")
-    
+        if takeQpix:
+            print(f"copying qpix {f} to ", QDBFilesD[f])
+            shutil.copy(QPixFilesD[f], QDBFilesD[f])
+        else:
+            print(f"copying qdb {f} to ", QPixFilesD[f])
+            shutil.copy(QDBFilesD[f], QPixFilesD[f])
+
     # place the not found files into the generic firmware directory
     # which is in qpix-digital/firmware/src
     for f in not_found:
         found_src = os.path.isdir(qpix_digital_path+"/firmware/src/")
 
-    
-def main():
-    """
-    run script to update repos
-    """
-    testDirs()
-
 
 if __name__ == "__main__":
     print('updating repos..')
-    main()
+    args = sys.argv
+    nargs = len(sys.argv)
+    if nargs != 2:
+        print("must enter qdb or qpix to select which files to take")
+        sys.exit(-1)
+    elif args[1].lower() != "qpix" or args[1].lower() != "qdb":
+        print("must enter qpix or qdb to select which file to take")
+        main(args[1])
+    else:
+        print("too many args.. enter qpix or qdb as only second arg")
