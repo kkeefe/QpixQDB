@@ -28,7 +28,7 @@ port (
    led5_g : out std_logic;
 
    -- I/O ports
-   je    : out STD_LOGIC_VECTOR(1 downto 0);
+   je    : out STD_LOGIC_VECTOR(3 downto 0);
    DaqTx : out STD_LOGIC;
    DaqRx : in  STD_LOGIC;
 
@@ -159,39 +159,6 @@ begin
             end if;
         end if; 
     end process counter;
-    
-    -- 10 us pulse output from the switch
-    pulse_switch: process(fclk, rst) is
-        constant reset : natural := 13;        
-        variable count : natural range 0 to reset := 0;
-        variable pulse : std_logic := '0';
-        variable off   : boolean := false;
-    begin
-        if rising_edge(fclk) then
-            
-            if sw(1) = '1' and off then
-                pulse := '1';
-                count := 0;
-                off := false;   
-            end if;
-            
-            if pulse = '1' and not off then
-                je(1) <= '1';
-            else
-                je(1) <= '0';
-            end if;
-            
-            if count >= reset - 1 then
-                pulse := '0';
-                if sw(1) = '0' then
-                    off := true;
-                end if;
-            else
-                count := count + 1;
-            end if;
-        
-        end if; 
-    end process pulse_switch;
 
    ---------------------------------------------------
    -- 125 MHz clock

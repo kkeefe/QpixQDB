@@ -149,7 +149,7 @@ begin
                      if regData.OpRead = '1' then
                         regResp_r.Addr <= regData.Addr;
                         regResp_r.Data <= (others => '0');
-                        regResp_r.Data(2 downto 0) <= qpixConf_r.locEnaSnd & qpixConf_r.locEnaRcv & qpixConf_r.locEnaReg;
+                        regResp_r.Data(2 downto 0) <= qpixConf_r.locEnaReg & qpixConf_r.locEnaRcv & qpixConf_r.locEnaSnd;
                         regResp_r.XDest <= std_logic_vector(to_unsigned(X_POS_G, G_POS_BITS));
                         regResp_r.YDest <= std_logic_vector(to_unsigned(Y_POS_G, G_POS_BITS));
                         regResp_r.Valid <= '1';

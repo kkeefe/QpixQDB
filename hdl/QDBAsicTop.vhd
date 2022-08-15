@@ -25,7 +25,7 @@ entity QDBAsicTop is
     );
 port (
     -- internal clock
-    --clk : in STD_LOGIC;
+    clk : in STD_LOGIC;
 --    rst : in STD_LOGIC;
 
     -- Tx/Rx IO
@@ -42,10 +42,10 @@ port (
     --IO : in STD_LOGIC_VECTOR(3 downto 0);
 
     -- optional ss pins -- south Top
-    -- ss  : in  std_logic;  -- south 8   /  north 6
-    so  : out std_logic;  -- south 6   /  north 4
+     --ss  : in  std_logic;  -- south 8   /  north 6
+    so  : in std_logic;  -- south 6   /  north 4
     si  : out std_logic;  -- south 4   /  north 2
-    sck : in std_logic;  -- south 2   /  north 8
+    --sck : in std_logic;   -- south 2   /  north 8
 
     -- outputs
     red_led : out STD_LOGIC;
@@ -59,9 +59,9 @@ end QDBAsicTop;
 architecture Behavioral of QDBAsicTop is
 
   -- timestamp and QDBAsic specifics
-  signal clk          : std_logic;
+  --signal clk          : std_logic;
   signal fast_clk     : std_logic;
-  signal fast_clk_pll : std_logic;
+  signal pllClk       : std_logic;
   signal fake_trg     : std_logic              := '0';
   signal rst          : std_logic              := '0';
   signal localCnt     : unsigned (31 downto 0) := (others => '0');
@@ -123,7 +123,7 @@ begin
     
 	-- clock output to physical
 	si <= clk;
-    so <= fast_clk_pll;
+    --so <= pllClk;
 
     -- connect Tx/Rx to the signals
     --Tx1 <= TxPortsArr(0);
@@ -144,32 +144,33 @@ begin
 
     -- use the fast clock to read the input of the data
     -- internal oscillator, generate 50 MHz clk
-    u_osc : HSOSC
-    GENERIC MAP(CLKHF_DIV =>"0b00")
-    port map(
-        CLKHFEN  => '1',
-        CLKHFPU  => '1',
-        CLKHF    => fast_clk
-    );
+    --u_osc : HSOSC
+    --GENERIC MAP(CLKHF_DIV =>"0b00")
+    --port map(
+        --CLKHFEN  => '1',
+        --CLKHFPU  => '1',
+        --CLKHF    => fast_clk
+    --);
 
   -- pll to hopefully improve frequency stabilization
-  u_pll : qdb_pll port map(
-    ref_clk_i   =>  fast_clk,
-    rst_n_i     =>  '1', -- active low
-    outcore_o   =>  fast_clk_pll,
-    outglobal_o => open
-);
-    process(fast_clk_pll) is
-      variable count : integer range 0 to 2 := 0;
-    begin
-      if rising_edge(fast_clk_pll) then
-        count := count + 1;
-        if count = 2 then
-          clk <= not clk;
-          count := 0;
-        end if;
-      end if;
-    end process;
+  --u_pll : qdb_pll port map(
+    --ref_clk_i   =>  fast_clk,
+    --rst_n_i     =>  '1', -- active low
+    --outcore_o   =>  pllClk,
+    --outglobal_o => open
+--);
+
+    --process(pllClk) is
+      --variable count : integer range 0 to 2 := 0;
+    --begin
+      --if rising_edge(pllClk) then
+        --count := count + 1;
+        --if count = 2 then
+          --clk <= not clk;
+          --count := 0;
+        --end if;
+      --end if;
+    --end process;
 
 --  -- create a 1 second pulse width when either Tx or Rx goes high
  pulse : process (all) is
@@ -183,7 +184,8 @@ begin
      if rising_edge(clk) then
 
          -- pulse Red
-         if QpixReq.Interrogation = '1' then -- goes low after trg / this is a trigger
+         -- if QpixReq.Interrogation = '1' then -- goes low after trg / this is a trigger
+		 if QpixConf.locEnaReg = '1' then
          -- if regResp.Valid = '1' then
          -- if route_state(0) = '1' then -- (temp!) high when IDLE_S  -- also loops here continually
          -- if route_state(2) = '1' then -- high when REP_FINISH_S -- does NOT go low after trg
@@ -202,7 +204,9 @@ begin
 
          -- pulse Blue
          -- if regResp.valid = '1' then
-		 if data = '1' then
+		 if QpixConf.locEnaSnd = '1' then
+		 -- if enabled = true then
+		 -- if data = '1' then
 		 -- if qpixConf.DirMask(2) = '1' then
          -- if route_state(3) = '1' then -- high when REP_REGRSP_S -- does not go low after trg?
          -- if route_state(0) = '1' then -- high when REP_LOCAL_S, does not go low after trg
@@ -221,10 +225,11 @@ begin
 
          -- pulse Green
          -- if route_state(1) = '1' then -- high when REP_REMOTE_S
-         -- if inData.DataValid = '1' then
-         -- if enabled = true then
+         -- inData.DataValid = '1' then
+		 if QpixConf.locEnaRcv = '1' then
+         -- if rising = true then
 		 -- if rst = '1' then
-         if TxPortsArr(2) = '1' then
+         -- if TxPortsArr(2) = '1' then
          -- if qpixConf.ManRoute = '1' then
              start_pulse_gre := '1';
              pulse_count_gre := 0;
@@ -245,20 +250,20 @@ begin
    ----------------------------------------------------------
    -- syncrhonize ASIC internal data from 50 MHz to 12 MHz --
    ----------------------------------------------------------
-   process(fast_clk_pll,rst)
-   begin
-      if rising_edge(fast_clk_pll) then
-         if rst = '1' then
-           data_fi1 <= '0';
-           data_fi2 <= '0';
-           data_f    <= '0';
-         else
-           data_fi1 <= sck;
-           data_fi2 <= data_fi1;
-           data_f   <= data_fi2;
-         end if;
-      end if;
-   end process;
+   --process(fast_clk_pll,rst)
+   --begin
+      --if rising_edge(fast_clk_pll) then
+         --if rst = '1' then
+           --data_fi1 <= '0';
+           --data_fi2 <= '0';
+           --data_f    <= '0';
+         --else
+           --data_fi1 <= sck;
+           --data_fi2 <= data_fi1;
+           --data_f   <= data_fi2;
+         --end if;
+      --end if;
+   --end process;
    -- put sck - data onto the 12 MHz clk
    process(clk,rst)
    begin
@@ -268,7 +273,7 @@ begin
            data_i2 <= '0';
            data    <= '0';
          else
-           data_i1 <= data_f;
+           data_i1 <= so;
            data_i2 <= data_i1;
            data    <= data_i2;
          end if;
@@ -278,13 +283,13 @@ begin
 
     -- connect external IO to QpixDataProc
     slv_localCnt <= std_logic_vector(localCnt);
-    enabled <= (QpixConf.locEnaSnd = '1' and QpixConf.locEnaRcv = '1' and QpixConf.locEnaReg = '1');
+    enabled <= boolean(QpixConf.locEnaSnd = '1' and QpixConf.locEnaRcv = '1' and QpixConf.locEnaReg = '1');
     process (clk)
-      variable count : natural range 1 to 16 := 0;
+      variable count : natural range 0 to 16 := 0;
       begin
          if rising_edge(clk) then
 
-           -- keep track of rising edges on sck
+           -- keep track of rising edges on data
            if data = '0' then
              count := count + 1;
              if count >= 15 then
