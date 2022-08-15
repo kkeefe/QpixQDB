@@ -29,14 +29,14 @@ port (
 --    rst : in STD_LOGIC;
 
     -- Tx/Rx IO
-    Tx1 : out STD_LOGIC; -- North
-    Rx1 : in STD_LOGIC;
-    Tx2 : out STD_LOGIC; -- East
-    Rx2 : in STD_LOGIC;
+    --Tx1 : out STD_LOGIC; -- North
+    --Rx1 : in STD_LOGIC;
+    --Tx2 : out STD_LOGIC; -- East
+    --Rx2 : in STD_LOGIC;
     Tx3 : out STD_LOGIC; -- South
     Rx3 : in STD_LOGIC;
-    Tx4 : out STD_LOGIC; -- West
-    Rx4 : in STD_LOGIC;
+    --Tx4 : out STD_LOGIC; -- West
+    --Rx4 : in STD_LOGIC;
 
     -- extra IO, hardcode IO for now
     --IO : in STD_LOGIC_VECTOR(3 downto 0);
@@ -63,7 +63,7 @@ architecture Behavioral of QDBAsicTop is
   signal fast_clk     : std_logic;
   signal pllClk       : std_logic;
   signal fake_trg     : std_logic              := '0';
---  signal rst          : std_logic              := '0';
+  signal rst          : std_logic              := '0';
   signal localCnt     : unsigned (31 downto 0) := (others => '0');
   signal slv_localCnt : std_logic_vector(31 downto 0);
   signal pulse_red    : std_logic              := '0';
@@ -92,11 +92,8 @@ architecture Behavioral of QDBAsicTop is
   signal TxReady            : std_logic          := '0';
   signal debug              : QpixDebugType      := QpixDebugZero_C;
   signal route_state        : std_logic_vector(3 downto 0);
-  -- signal RxFifoEmptyArr_out : std_logic_vector(3 downto 0);
-  -- signal RxFifoFullArr_out  : std_logic_vector(3 downto 0);
-  -- signal TxByteValidArr_out : std_logic_vector(3 downto 0);
-  -- signal RxByteValidArr_out : std_logic_vector(3 downto 0);
-
+  
+  
 component qdb_pll is
     port(
         ref_clk_i: in std_logic;
@@ -126,16 +123,15 @@ begin
     --so <= pllClk;
 
     -- connect Tx/Rx to the signals
-    Tx1 <= TxPortsArr(0);
-    RxPortsArr(0) <= Rx1;
-    Tx2 <= TxPortsArr(1);
-    RxPortsArr(1) <= Rx2;
+    --Tx1 <= TxPortsArr(0);
+    --RxPortsArr(0) <= Rx1;
+    --Tx2 <= TxPortsArr(1);
+    --RxPortsArr(1) <= Rx2;
     Tx3 <= TxPortsArr(2);
     RxPortsArr(2) <= Rx3;
-    Tx4 <= TxPortsArr(3);
-    RxPortsArr(3) <= Rx4;
---    RxPortsArr(1 downto 0) <= "00";
-    RxPortsArr(3) <= '0';
+    --Tx4 <= TxPortsArr(3);
+    --RxPortsArr(3) <= Rx4;
+    --RxPortsArr(3) <= '0';
 
     
     -- used to buffer readout on timing measurement
@@ -337,16 +333,12 @@ begin
     end process counter;
    ---------------------------------------------
 
-<<<<<<< Updated upstream
-   -- Q-Pix data tranceiver
-   -- data parsing / physical layer
-   -------------------------------------------------
-=======
+
    -----------------------------------------------
    -- Q-Pix data tranceiver
    -- data parsing / physical layer
    -----------------------------------------------
->>>>>>> Stashed changes
+
    QpixComm_U : entity work.QpixComm
    generic map(
       RAM_TYPE      => RAM_TYPE,
@@ -357,9 +349,9 @@ begin
       clk            => clk,
       rst            => rst,
       -- route <-> parser
-      outData_i      => txData,  -- record input to parser from route
-      inData         => rxData,  -- record output from parser to route
-      TxReady        => TxReady, -- sl ready signal to route
+      parseDataRx    => txData,  -- record input to parser from route
+      parseDataTx    => rxData,  -- record output from parser to route
+      parseDataReady => TxReady, -- sl ready signal to route
       -- physical connections
       TxPortsArr     => TxPortsArr, -- slv output to physical
       RxPortsArr     => RxPortsArr, -- slv input form physical
@@ -367,7 +359,6 @@ begin
       RxByteValidArr_out => open,
       RxFifoEmptyArr_out => open,
       RxFifoFullArr_out  => open,
-<<<<<<< Updated upstream
       -- reg file connections
       QpixConf       => QpixConf, -- record input
       regData        => regData,  -- output from parser
