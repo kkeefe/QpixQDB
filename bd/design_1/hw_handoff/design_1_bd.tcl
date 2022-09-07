@@ -163,7 +163,7 @@ proc create_root_design { parentCell } {
    CONFIG.ADDR_WIDTH {32} \
    CONFIG.CLK_DOMAIN {design_1_processing_system7_0_0_FCLK_CLK0} \
    CONFIG.DATA_WIDTH {32} \
-   CONFIG.FREQ_HZ {11904762} \
+   CONFIG.FREQ_HZ {11904800} \
    CONFIG.HAS_BURST {0} \
    CONFIG.HAS_CACHE {0} \
    CONFIG.HAS_LOCK {0} \
@@ -176,7 +176,7 @@ proc create_root_design { parentCell } {
   # Create ports
   set FCLK [ create_bd_port -dir O -type clk FCLK ]
   set_property -dict [ list \
-   CONFIG.FREQ_HZ {11904762} \
+   CONFIG.FREQ_HZ {11904800} \
  ] $FCLK
   set aresetn [ create_bd_port -dir O -from 0 -to 0 -type rst aresetn ]
   set clk_out1_0 [ create_bd_port -dir O -type clk clk_out1_0 ]

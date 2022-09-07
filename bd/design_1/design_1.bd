@@ -1,7 +1,7 @@
 {
   "design": {
     "design_info": {
-      "boundary_crc": "0x927AA8092B81FECC",
+      "boundary_crc": "0xCD4BA68A156ABC61",
       "device": "xc7z020clg400-1",
       "name": "design_1",
       "rev_ctrl_bd_flag": "RevCtrlBdOff",
@@ -111,7 +111,7 @@
             "value": "32"
           },
           "FREQ_HZ": {
-            "value": "11904762"
+            "value": "11904800"
           },
           "HAS_BRESP": {
             "value": "1",
@@ -229,7 +229,7 @@
             "value_src": "default_prop"
           },
           "FREQ_HZ": {
-            "value": "11904762"
+            "value": "11904800"
           },
           "FREQ_TOLERANCE_HZ": {
             "value": "0",
@@ -2250,16 +2250,16 @@
               }
             },
             "interface_nets": {
-              "auto_pc_to_s00_couplers": {
-                "interface_ports": [
-                  "M_AXI",
-                  "auto_pc/M_AXI"
-                ]
-              },
               "s00_couplers_to_auto_pc": {
                 "interface_ports": [
                   "S_AXI",
                   "auto_pc/S_AXI"
+                ]
+              },
+              "auto_pc_to_s00_couplers": {
+                "interface_ports": [
+                  "M_AXI",
+                  "auto_pc/M_AXI"
                 ]
               }
             },
