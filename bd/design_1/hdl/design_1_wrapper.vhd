@@ -1,7 +1,7 @@
 --Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 ----------------------------------------------------------------------------------
 --Tool Version: Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
---Date        : Thu Sep 15 14:12:41 2022
+--Date        : Tue Jan 10 14:18:13 2023
 --Host        : Forerunner running 64-bit major release  (build 9200)
 --Command     : generate_target design_1_wrapper.bd
 --Design      : design_1_wrapper
@@ -80,17 +80,6 @@ architecture STRUCTURE of design_1_wrapper is
     clk_out1_0 : out STD_LOGIC;
     locked_0 : out STD_LOGIC;
     clk_out2_0 : out STD_LOGIC;
-    FIXED_IO_mio : inout STD_LOGIC_VECTOR ( 53 downto 0 );
-    FIXED_IO_ddr_vrn : inout STD_LOGIC;
-    FIXED_IO_ddr_vrp : inout STD_LOGIC;
-    FIXED_IO_ps_srstb : inout STD_LOGIC;
-    FIXED_IO_ps_clk : inout STD_LOGIC;
-    FIXED_IO_ps_porb : inout STD_LOGIC;
-    S_AXIS_0_tdata : in STD_LOGIC_VECTOR ( 31 downto 0 );
-    S_AXIS_0_tkeep : in STD_LOGIC_VECTOR ( 3 downto 0 );
-    S_AXIS_0_tlast : in STD_LOGIC;
-    S_AXIS_0_tready : out STD_LOGIC;
-    S_AXIS_0_tvalid : in STD_LOGIC;
     M_AXI_0_awaddr : out STD_LOGIC_VECTOR ( 31 downto 0 );
     M_AXI_0_awprot : out STD_LOGIC_VECTOR ( 2 downto 0 );
     M_AXI_0_awvalid : out STD_LOGIC_VECTOR ( 0 to 0 );
@@ -110,6 +99,17 @@ architecture STRUCTURE of design_1_wrapper is
     M_AXI_0_rresp : in STD_LOGIC_VECTOR ( 1 downto 0 );
     M_AXI_0_rvalid : in STD_LOGIC_VECTOR ( 0 to 0 );
     M_AXI_0_rready : out STD_LOGIC_VECTOR ( 0 to 0 );
+    S_AXIS_0_tdata : in STD_LOGIC_VECTOR ( 31 downto 0 );
+    S_AXIS_0_tkeep : in STD_LOGIC_VECTOR ( 3 downto 0 );
+    S_AXIS_0_tlast : in STD_LOGIC;
+    S_AXIS_0_tready : out STD_LOGIC;
+    S_AXIS_0_tvalid : in STD_LOGIC;
+    FIXED_IO_mio : inout STD_LOGIC_VECTOR ( 53 downto 0 );
+    FIXED_IO_ddr_vrn : inout STD_LOGIC;
+    FIXED_IO_ddr_vrp : inout STD_LOGIC;
+    FIXED_IO_ps_srstb : inout STD_LOGIC;
+    FIXED_IO_ps_clk : inout STD_LOGIC;
+    FIXED_IO_ps_porb : inout STD_LOGIC;
     DDR_cas_n : inout STD_LOGIC;
     DDR_cke : inout STD_LOGIC;
     DDR_ck_n : inout STD_LOGIC;
