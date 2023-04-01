@@ -25,7 +25,7 @@ entity QDBAsicTop is
     );
 port (
     -- internal clock
-    clk : in STD_LOGIC;
+    --clk : in STD_LOGIC;
 --    rst : in STD_LOGIC;
 
     -- Tx/Rx IO
@@ -59,8 +59,8 @@ end QDBAsicTop;
 architecture Behavioral of QDBAsicTop is
 
   -- timestamp and QDBAsic specifics
-  --signal clk          : std_logic;
-  signal fast_clk     : std_logic;
+  signal clk          : std_logic;
+  --signal fast_clk     : std_logic;
   signal pllClk       : std_logic;
   signal fake_trg     : std_logic              := '0';
   signal rst          : std_logic              := '0';
@@ -114,9 +114,9 @@ END COMPONENT;
 begin
 
     -- LEDs, active LOW (on when value is '0')
-    red_led <= not '0';
+    red_led <= not '0'; -- not '0', '1' is off
     blu_led <= not pulse_blu;
-    gre_led <= not pulse_gre;
+    gre_led <= not '0'; -- not '0', '1' is off
     
 	-- clock output to physical
 	si <= clk;
@@ -136,17 +136,17 @@ begin
     
     -- used to buffer readout on timing measurement
     -- si <= clk;
---    rst <= QpixReq.AsicReset;
+	-- rst <= QpixReq.AsicReset;
 
     -- use the fast clock to read the input of the data
     -- internal oscillator, generate 50 MHz clk
-    --u_osc : HSOSC
-    --GENERIC MAP(CLKHF_DIV =>"0b00")
-    --port map(
-        --CLKHFEN  => '1',
-        --CLKHFPU  => '1',
-        --CLKHF    => fast_clk
-    --);
+    u_osc : HSOSC
+    GENERIC MAP(CLKHF_DIV =>"0b00")
+    port map(
+        CLKHFEN  => '1',
+        CLKHFPU  => '1',
+        CLKHF    => clk
+    );
 
   -- pll to hopefully improve frequency stabilization
   --u_pll : qdb_pll port map(
@@ -156,92 +156,92 @@ begin
     --outglobal_o => open
 --);
 
-    --process(pllClk) is
-      --variable count : integer range 0 to 2 := 0;
-    --begin
-      --if rising_edge(pllClk) then
-        --count := count + 1;
-        --if count = 2 then
-          --clk <= not clk;
-          --count := 0;
-        --end if;
-      --end if;
-    --end process;
+    process(clk) is
+      variable count : integer range 0 to 20_000_000 := 0;
+    begin
+      if rising_edge(clk) then
+        count := count + 1;
+        if count = 19_999_999 then
+          pulse_blu <= not pulse_blu;
+          count := 0;
+        end if;
+      end if;
+    end process;
 
 --  -- create a 1 second pulse width when either Tx or Rx goes high
- pulse : process (all) is
-     variable pulse_count_red : integer range 0 to pulse_time := 0;
-     variable start_pulse_red : std_logic := '0';
-     variable pulse_count_blu : integer range 0 to pulse_time := 0;
-     variable start_pulse_blu : std_logic := '0';
-     variable pulse_count_gre : integer range 0 to pulse_time := 0;
-     variable start_pulse_gre : std_logic := '0';
- begin
-     if rising_edge(clk) then
+ --pulse : process (all) is
+     --variable pulse_count_red : integer range 0 to pulse_time := 0;
+     --variable start_pulse_red : std_logic := '0';
+     --variable pulse_count_blu : integer range 0 to pulse_time := 0;
+     --variable start_pulse_blu : std_logic := '0';
+     --variable pulse_count_gre : integer range 0 to pulse_time := 0;
+     --variable start_pulse_gre : std_logic := '0';
+ --begin
+     --if rising_edge(clk) then
 
          -- pulse Red
          -- if QpixReq.Interrogation = '1' then -- goes low after trg / this is a trigger
-		 if QpixConf.locEnaReg = '1' then
+		 --if QpixConf.locEnaReg = '1' then
          -- if regResp.Valid = '1' then
          -- if route_state(0) = '1' then -- (temp!) high when IDLE_S  -- also loops here continually
          -- if route_state(2) = '1' then -- high when REP_FINISH_S -- does NOT go low after trg
-             start_pulse_red := '1';
-             pulse_count_red := 0;
-         end if;
-         if start_pulse_red = '1' then
-             pulse_count_red := pulse_count_red + 1;
-             pulse_red <= '1';
-             if pulse_count_red >= pulse_time then
-                 pulse_red       <= '0';
-                 pulse_count_red := 0;
-                 start_pulse_red := '0';
-             end if;
-         end if;
+             --start_pulse_red := '1';
+             --pulse_count_red := 0;
+         --end if;
+         --if start_pulse_red = '1' then
+             --pulse_count_red := pulse_count_red + 1;
+             --pulse_red <= '1';
+             --if pulse_count_red >= pulse_time then
+                 --pulse_red       <= '0';
+                 --pulse_count_red := 0;
+                 --start_pulse_red := '0';
+             --end if;
+         --end if;
 
          -- pulse Blue
          -- if regResp.valid = '1' then
-		 if QpixConf.locEnaSnd = '1' then
+		 --if QpixConf.locEnaSnd = '1' then
 		 -- if enabled = true then
 		 -- if data = '1' then
 		 -- if qpixConf.DirMask(2) = '1' then
          -- if route_state(3) = '1' then -- high when REP_REGRSP_S -- does not go low after trg?
          -- if route_state(0) = '1' then -- high when REP_LOCAL_S, does not go low after trg
-             start_pulse_blu := '1';
-             pulse_count_blu := 0;
-         end if;
-         if start_pulse_blu = '1' then
-             pulse_count_blu := pulse_count_blu + 1;
-             pulse_blu <= '1';
-             if pulse_count_blu >= pulse_time then
-                 pulse_blu       <= '0';
-                 pulse_count_blu := 0;
-                 start_pulse_blu := '0';
-             end if;
-         end if;
+             --start_pulse_blu := '1';
+             --pulse_count_blu := 0;
+         --end if;
+         --if start_pulse_blu = '1' then
+             --pulse_count_blu := pulse_count_blu + 1;
+             --pulse_blu <= '1';
+             --if pulse_count_blu >= pulse_time then
+                 --pulse_blu       <= '0';
+                 --pulse_count_blu := 0;
+                 --start_pulse_blu := '0';
+             --end if;
+         --end if;
 
          -- pulse Green
          -- if route_state(1) = '1' then -- high when REP_REMOTE_S
          -- inData.DataValid = '1' then
-		 if QpixConf.locEnaRcv = '1' then
+		 --if QpixConf.locEnaRcv = '1' then
          -- if rising = true then
 		 -- if rst = '1' then
          -- if TxPortsArr(2) = '1' then
          -- if qpixConf.ManRoute = '1' then
-             start_pulse_gre := '1';
-             pulse_count_gre := 0;
-         end if;
-         if start_pulse_gre = '1' then
-             pulse_count_gre := pulse_count_gre + 1;
-             pulse_gre <= '1';
-             if pulse_count_gre >= pulse_time then
-                 pulse_gre <= '0';
-                 pulse_count_gre := 0;
-                 start_pulse_gre := '0';
-             end if;
-         end if;
+             --start_pulse_gre := '1';
+             --pulse_count_gre := 0;
+         --end if;
+         --if start_pulse_gre = '1' then
+             --pulse_count_gre := pulse_count_gre + 1;
+             --pulse_gre <= '1';
+             --if pulse_count_gre >= pulse_time then
+                 --pulse_gre <= '0';
+                 --pulse_count_gre := 0;
+                 --start_pulse_gre := '0';
+             --end if;
+         --end if;
 
-     end if;
- end process pulse;
+     --end if;
+ --end process pulse;
 
    ----------------------------------------------------------
    -- syncrhonize ASIC internal data from 50 MHz to 12 MHz --
@@ -260,6 +260,7 @@ begin
          --end if;
       --end if;
    --end process;
+   
    -- put sck - data onto the 12 MHz clk
    process(clk,rst)
    begin
@@ -331,7 +332,6 @@ begin
           end if;
         end if;
     end process counter;
-   ---------------------------------------------
 
 
    -----------------------------------------------
