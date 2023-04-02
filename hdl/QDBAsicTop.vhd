@@ -25,7 +25,7 @@ entity QDBAsicTop is
     );
 port (
     -- internal clock
-    --clk : in STD_LOGIC;
+    clk : in STD_LOGIC;
 --    rst : in STD_LOGIC;
 
     -- Tx/Rx IO
@@ -42,10 +42,10 @@ port (
     --IO : in STD_LOGIC_VECTOR(3 downto 0);
 
     -- optional ss pins -- south Top
-     --ss  : in  std_logic;  -- south 8   /  north 6
-    so  : in std_logic;  -- south 6   /  north 4
-    si  : out std_logic;  -- south 4   /  north 2
-    --sck : in std_logic;   -- south 2   /  north 8
+    -- ss  : in  std_logic;  -- south 8   /  north 6
+    -- so  : in std_logic;  -- south 6   /  north 4
+    -- si  : out std_logic;  -- south 4   /  north 2
+    -- sck : in std_logic;   -- south 2   /  north 8
 
     -- outputs
     red_led : out STD_LOGIC;
@@ -59,7 +59,7 @@ end QDBAsicTop;
 architecture Behavioral of QDBAsicTop is
 
   -- timestamp and QDBAsic specifics
-  signal clk          : std_logic;
+  --signal clk          : std_logic;
   --signal fast_clk     : std_logic;
   signal pllClk       : std_logic;
   signal fake_trg     : std_logic              := '0';
@@ -94,22 +94,22 @@ architecture Behavioral of QDBAsicTop is
   signal route_state        : std_logic_vector(3 downto 0);
   
   
-component qdb_pll is
-    port(
-        ref_clk_i: in std_logic;
-        rst_n_i: in std_logic;
-        outcore_o: out std_logic;
-        outglobal_o: out std_logic
-    );
-end component;
+--component qdb_pll is
+    --port(
+        --ref_clk_i: in std_logic;
+        --rst_n_i: in std_logic;
+        --outcore_o: out std_logic;
+        --outglobal_o: out std_logic
+    --);
+--end component;
 
-component HSOSC
-GENERIC( CLKHF_DIV :string :="0b00");
-PORT(
-       CLKHFEN : IN  STD_LOGIC;
-       CLKHFPU : IN  STD_LOGIC;
-       CLKHF   : OUT STD_LOGIC);
-END COMPONENT;
+--component HSOSC
+--GENERIC( CLKHF_DIV :string :="0b00");
+--PORT(
+       --CLKHFEN : IN  STD_LOGIC;
+       --CLKHFPU : IN  STD_LOGIC;
+       --CLKHF   : OUT STD_LOGIC);
+--END COMPONENT;
 
 begin
 
@@ -119,7 +119,7 @@ begin
     gre_led <= not '0'; -- not '0', '1' is off
     
 	-- clock output to physical
-	si <= clk;
+	--si <= clk;
     --so <= pllClk;
 
     -- connect Tx/Rx to the signals
@@ -140,13 +140,13 @@ begin
 
     -- use the fast clock to read the input of the data
     -- internal oscillator, generate 50 MHz clk
-    u_osc : HSOSC
-    GENERIC MAP(CLKHF_DIV =>"0b00")
-    port map(
-        CLKHFEN  => '1',
-        CLKHFPU  => '1',
-        CLKHF    => clk
-    );
+    --u_osc : HSOSC
+    --GENERIC MAP(CLKHF_DIV =>"0b00")
+    --port map(
+        --CLKHFEN  => '1',
+        --CLKHFPU  => '1',
+        --CLKHF    => clk
+    --);
 
   -- pll to hopefully improve frequency stabilization
   --u_pll : qdb_pll port map(
@@ -262,20 +262,20 @@ begin
    --end process;
    
    -- put sck - data onto the 12 MHz clk
-   process(clk,rst)
-   begin
-      if rising_edge(clk) then
-         if rst = '1' then
-           data_i1 <= '0';
-           data_i2 <= '0';
-           data    <= '0';
-         else
-           data_i1 <= so;
-           data_i2 <= data_i1;
-           data    <= data_i2;
-         end if;
-      end if;
-   end process;
+   --process(clk,rst)
+   --begin
+      --if rising_edge(clk) then
+         --if rst = '1' then
+           --data_i1 <= '0';
+           --data_i2 <= '0';
+           --data    <= '0';
+         --else
+           --data_i1 <= so;
+           --data_i2 <= data_i1;
+           --data    <= data_i2;
+         --end if;
+      --end if;
+   --end process;
 
 
     -- connect external IO to QpixDataProc
@@ -338,7 +338,6 @@ begin
    -- Q-Pix data tranceiver
    -- data parsing / physical layer
    -----------------------------------------------
-
    QpixComm_U : entity work.QpixComm
    generic map(
       RAM_TYPE      => RAM_TYPE,
