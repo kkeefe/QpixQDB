@@ -18,7 +18,7 @@ entity QDBAsicTop is
    generic (
       X_POS_G      : natural := 0;
       Y_POS_G      : natural := 0;
-      pulse_time   : natural :=  1_999_999;
+      pulse_time   : natural := 14_999_999;
       fake_trg_cnt : natural := 19_999_999;
       RAM_TYPE     : string  := "Lattice"; -- 'Lattice' hardcodes BRAM for lattice, or distributed / block
       TXRX_TYPE    : string  := "ENDEAVOR" -- "DUMMY"/"UART"/"ENDEAVOR"
@@ -92,7 +92,27 @@ architecture Behavioral of QDBAsicTop is
   signal TxReady            : std_logic          := '0';
   signal debug              : QpixDebugType      := QpixDebugZero_C;
   signal route_state        : std_logic_vector(3 downto 0);
-  
+
+   procedure pulseLED(variable flag : in boolean;
+                      variable start_pulse : inout std_logic;
+                      variable count_pulse : inout integer;
+                      signal output : out std_logic) is
+      begin
+         if flag then
+             start_pulse := '1';
+             count_pulse := 0;
+         end if;
+         if start_pulse = '1' then
+             count_pulse := count_pulse + 1;
+             output <= '1';
+             if count_pulse >= pulse_time then
+                 output      <= '0';
+                 count_pulse := 0;
+                 start_pulse := '0';
+             end if;
+         end if;
+      end procedure pulseLED;
+
   
 --component qdb_pll is
     --port(
@@ -111,6 +131,8 @@ architecture Behavioral of QDBAsicTop is
        --CLKHF   : OUT STD_LOGIC);
 --END COMPONENT;
 
+
+-----------------------------ARCH------------------------------------------
 begin
 
     -- LEDs, active LOW (on when value is '0')
@@ -118,8 +140,8 @@ begin
     blu_led <= not pulse_blu;
     gre_led <= not '0'; -- not '0', '1' is off
     
-	-- clock output to physical
-	--si <= clk;
+    -- clock output to physical
+    --si <= clk;
     --so <= pllClk;
 
     -- connect Tx/Rx to the signals
@@ -136,25 +158,11 @@ begin
     
     -- used to buffer readout on timing measurement
     -- si <= clk;
-	-- rst <= QpixReq.AsicReset;
+    -- rst <= QpixReq.AsicReset;
 
-    -- use the fast clock to read the input of the data
-    -- internal oscillator, generate 50 MHz clk
-    --u_osc : HSOSC
-    --GENERIC MAP(CLKHF_DIV =>"0b00")
-    --port map(
-        --CLKHFEN  => '1',
-        --CLKHFPU  => '1',
-        --CLKHF    => clk
-    --);
-
-  -- pll to hopefully improve frequency stabilization
-  --u_pll : qdb_pll port map(
-    --ref_clk_i   =>  fast_clk,
-    --rst_n_i     =>  '1', -- active low
-    --outcore_o   =>  pllClk,
-    --outglobal_o => open
---);
+   ----------------------------------------------------------
+   --          top level processes to flag for LEDs        --
+   ----------------------------------------------------------
 
     process(clk) is
       variable count : integer range 0 to 20_000_000 := 0;
@@ -167,116 +175,6 @@ begin
         end if;
       end if;
     end process;
-
---  -- create a 1 second pulse width when either Tx or Rx goes high
- --pulse : process (all) is
-     --variable pulse_count_red : integer range 0 to pulse_time := 0;
-     --variable start_pulse_red : std_logic := '0';
-     --variable pulse_count_blu : integer range 0 to pulse_time := 0;
-     --variable start_pulse_blu : std_logic := '0';
-     --variable pulse_count_gre : integer range 0 to pulse_time := 0;
-     --variable start_pulse_gre : std_logic := '0';
- --begin
-     --if rising_edge(clk) then
-
-         -- pulse Red
-         -- if QpixReq.Interrogation = '1' then -- goes low after trg / this is a trigger
-		 --if QpixConf.locEnaReg = '1' then
-         -- if regResp.Valid = '1' then
-         -- if route_state(0) = '1' then -- (temp!) high when IDLE_S  -- also loops here continually
-         -- if route_state(2) = '1' then -- high when REP_FINISH_S -- does NOT go low after trg
-             --start_pulse_red := '1';
-             --pulse_count_red := 0;
-         --end if;
-         --if start_pulse_red = '1' then
-             --pulse_count_red := pulse_count_red + 1;
-             --pulse_red <= '1';
-             --if pulse_count_red >= pulse_time then
-                 --pulse_red       <= '0';
-                 --pulse_count_red := 0;
-                 --start_pulse_red := '0';
-             --end if;
-         --end if;
-
-         -- pulse Blue
-         -- if regResp.valid = '1' then
-		 --if QpixConf.locEnaSnd = '1' then
-		 -- if enabled = true then
-		 -- if data = '1' then
-		 -- if qpixConf.DirMask(2) = '1' then
-         -- if route_state(3) = '1' then -- high when REP_REGRSP_S -- does not go low after trg?
-         -- if route_state(0) = '1' then -- high when REP_LOCAL_S, does not go low after trg
-             --start_pulse_blu := '1';
-             --pulse_count_blu := 0;
-         --end if;
-         --if start_pulse_blu = '1' then
-             --pulse_count_blu := pulse_count_blu + 1;
-             --pulse_blu <= '1';
-             --if pulse_count_blu >= pulse_time then
-                 --pulse_blu       <= '0';
-                 --pulse_count_blu := 0;
-                 --start_pulse_blu := '0';
-             --end if;
-         --end if;
-
-         -- pulse Green
-         -- if route_state(1) = '1' then -- high when REP_REMOTE_S
-         -- inData.DataValid = '1' then
-		 --if QpixConf.locEnaRcv = '1' then
-         -- if rising = true then
-		 -- if rst = '1' then
-         -- if TxPortsArr(2) = '1' then
-         -- if qpixConf.ManRoute = '1' then
-             --start_pulse_gre := '1';
-             --pulse_count_gre := 0;
-         --end if;
-         --if start_pulse_gre = '1' then
-             --pulse_count_gre := pulse_count_gre + 1;
-             --pulse_gre <= '1';
-             --if pulse_count_gre >= pulse_time then
-                 --pulse_gre <= '0';
-                 --pulse_count_gre := 0;
-                 --start_pulse_gre := '0';
-             --end if;
-         --end if;
-
-     --end if;
- --end process pulse;
-
-   ----------------------------------------------------------
-   -- syncrhonize ASIC internal data from 50 MHz to 12 MHz --
-   ----------------------------------------------------------
-   --process(fast_clk_pll,rst)
-   --begin
-      --if rising_edge(fast_clk_pll) then
-         --if rst = '1' then
-           --data_fi1 <= '0';
-           --data_fi2 <= '0';
-           --data_f    <= '0';
-         --else
-           --data_fi1 <= sck;
-           --data_fi2 <= data_fi1;
-           --data_f   <= data_fi2;
-         --end if;
-      --end if;
-   --end process;
-   
-   -- put sck - data onto the 12 MHz clk
-   --process(clk,rst)
-   --begin
-      --if rising_edge(clk) then
-         --if rst = '1' then
-           --data_i1 <= '0';
-           --data_i2 <= '0';
-           --data    <= '0';
-         --else
-           --data_i1 <= so;
-           --data_i2 <= data_i1;
-           --data    <= data_i2;
-         --end if;
-      --end if;
-   --end process;
-
 
     -- connect external IO to QpixDataProc
     slv_localCnt <= std_logic_vector(localCnt);
@@ -334,6 +232,64 @@ begin
     end process counter;
 
 
+   ----------------------------------------------------------
+   --          optional ICs for the lattice FPGA           --
+   ----------------------------------------------------------
+    -- use the fast clock to read the input of the data
+    -- internal oscillator, generate 50 MHz clk
+    --u_osc : HSOSC
+    --GENERIC MAP(CLKHF_DIV =>"0b00")
+    --port map(
+        --CLKHFEN  => '1',
+        --CLKHFPU  => '1',
+        --CLKHF    => clk
+    --);
+
+  -- pll to hopefully improve frequency stabilization
+  --u_pll : qdb_pll port map(
+    --ref_clk_i   =>  fast_clk,
+    --rst_n_i     =>  '1', -- active low
+    --outcore_o   =>  pllClk,
+    --outglobal_o => open
+--);
+
+   ----------------------------------------------------------
+   -- syncrhonize ASIC internal data from 50 MHz to 12 MHz --
+   ----------------------------------------------------------
+   --process(fast_clk_pll,rst)
+   --begin
+      --if rising_edge(fast_clk_pll) then
+         --if rst = '1' then
+           --data_fi1 <= '0';
+           --data_fi2 <= '0';
+           --data_f    <= '0';
+         --else
+           --data_fi1 <= sck;
+           --data_fi2 <= data_fi1;
+           --data_f   <= data_fi2;
+         --end if;
+      --end if;
+   --end process;
+   
+   -- put sck - data onto the 12 MHz clk
+   --process(clk,rst)
+   --begin
+      --if rising_edge(clk) then
+         --if rst = '1' then
+           --data_i1 <= '0';
+           --data_i2 <= '0';
+           --data    <= '0';
+         --else
+           --data_i1 <= so;
+           --data_i2 <= data_i1;
+           --data    <= data_i2;
+         --end if;
+      --end if;
+   --end process;
+
+
+
+   ------------MODULES----------------------------
    -----------------------------------------------
    -- Q-Pix data tranceiver
    -- data parsing / physical layer
