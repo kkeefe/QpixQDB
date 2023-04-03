@@ -80,6 +80,12 @@ architecture Behavioral of QDBAsicTop is
   signal data_fi2 : std_logic := '0';
   signal data_f   : std_logic := '0';
 
+  signal  clkCntRst : std_logic;
+  signal  extInterS : std_logic;
+  signal  extInterH : std_logic;
+  signal  intrNum   : std_logic_vector(15 downto 0);
+  signal  clkCnt    : std_logic_vector(31 downto 0);
+
   signal TxPortsArr         : std_logic_vector(3 downto 0);
   signal RxPortsArr         : std_logic_vector(3 downto 0);
   signal inData             : QpixDataFormatType := QpixDataZero_C;
@@ -90,8 +96,10 @@ architecture Behavioral of QDBAsicTop is
   signal qpixConf           : QpixConfigType     := QpixConfigDef_C;
   signal QpixReq            : QpixRequestType    := QpixRequestZero_C;
   signal TxReady            : std_logic          := '0';
-  signal debug              : QpixDebugType      := QpixDebugZero_C;
-  signal route_state        : std_logic_vector(3 downto 0);
+  signal fsmState           : std_logic_vector(2 downto 0);
+  
+  signal locFifoFull : std_logic := '0';
+  signal extFifoFull : std_logic := '0';
 
    procedure pulseLED(variable flag : in boolean;
                       variable start_pulse : inout std_logic;
@@ -176,60 +184,60 @@ begin
       end if;
     end process;
 
-    -- connect external IO to QpixDataProc
-    slv_localCnt <= std_logic_vector(localCnt);
-    enabled <= boolean(QpixConf.locEnaSnd = '1' and QpixConf.locEnaRcv = '1' and QpixConf.locEnaReg = '1');
-    process (clk)
-      variable count : natural range 0 to 16 := 0;
-      begin
-         if rising_edge(clk) then
+    -- -- connect external IO to QpixDataProc
+    -- slv_localCnt <= std_logic_vector(localCnt);
+    -- enabled <= boolean(QpixConf.locEnaSnd = '1' and QpixConf.locEnaRcv = '1' and QpixConf.locEnaReg = '1');
+    -- process (clk)
+    --   variable count : natural range 0 to 16 := 0;
+    --   begin
+    --      if rising_edge(clk) then
 
-           -- keep track of rising edges on data
-           if data = '0' then
-             count := count + 1;
-             if count >= 15 then
-               rising <= true;
-               count  := 0;
-             end if;
-           else
-               count  := 0;
-           end if;
+    --        -- keep track of rising edges on data
+    --        if data = '0' then
+    --          count := count + 1;
+    --          if count >= 15 then
+    --            rising <= true;
+    --            count  := 0;
+    --          end if;
+    --        else
+    --            count  := 0;
+    --        end if;
 
-           -- trigger conditions, only read on rising edge
-           if data = '1' and enabled and rising then
-             inData.DataValid <= '1';
-             inData.TimeStamp <= slv_localCnt;
-             rising <= false;
-           --elsif fake_trg = '1' and not enabled then
-             --inData.DataValid <= '1';
-             --inData.TimeStamp <= slv_localCnt;
-           else
-             inData.DataValid <= '0';
-             inData.TimeStamp <= (others => '0');
-           end if;
-         end if;
-    end process;
-    inData.wordtype  <= "1111"; -- inData word type is NOT used
-    inData.ChanMask <=  (others => '1');
-	inData.xpos     <= toslv(X_POS_G, 4);
-    inData.ypos     <= toslv(Y_POS_G, 4);
-    inData.data     <= x"aaaa_bbbb_cccc_dddd"; -- unused by fQpixRecordToByte
-    inData.dirMask  <= DirDown;
+    --        -- trigger conditions, only read on rising edge
+    --        if data = '1' and enabled and rising then
+    --          inData.DataValid <= '1';
+    --          inData.TimeStamp <= slv_localCnt;
+    --          rising <= false;
+    --        --elsif fake_trg = '1' and not enabled then
+    --          --inData.DataValid <= '1';
+    --          --inData.TimeStamp <= slv_localCnt;
+    --        else
+    --          inData.DataValid <= '0';
+    --          inData.TimeStamp <= (others => '0');
+    --        end if;
+    --      end if;
+    -- end process;
+    -- inData.wordtype  <= "1111"; -- inData word type is NOT used
+    -- inData.ChanMask <=  (others => '1');
+	-- inData.xpos     <= toslv(X_POS_G, 4);
+    -- inData.ypos     <= toslv(Y_POS_G, 4);
+    -- inData.data     <= x"aaaa_bbbb_cccc_dddd"; -- unused by fQpixRecordToByte
+    -- inData.dirMask  <= DirDown;
 
-    counter: process (clk) is
-      variable count : integer := 0;
-    begin
-        if clk'event and clk = '1' then     -- rising clock edge
-            count := count + 1;
-            localCnt <= localCnt + 1;
-          if count >= fake_trg_cnt then
-            fake_trg <= '1';
-            count := 0;
-          else
-            fake_trg <= '0';
-          end if;
-        end if;
-    end process counter;
+    -- counter: process (clk) is
+    --   variable count : integer := 0;
+    -- begin
+    --     if clk'event and clk = '1' then     -- rising clock edge
+    --         count := count + 1;
+    --         localCnt <= localCnt + 1;
+    --       if count >= fake_trg_cnt then
+    --         fake_trg <= '1';
+    --         count := 0;
+    --       else
+    --         fake_trg <= '0';
+    --       end if;
+    --     end if;
+    -- end process counter;
 
 
    ----------------------------------------------------------
@@ -297,27 +305,32 @@ begin
    QpixComm_U : entity work.QpixComm
    generic map(
       RAM_TYPE      => RAM_TYPE,
-      TXRX_TYPE     => TXRX_TYPE,
-      X_POS_G       => X_POS_G,
-      Y_POS_G       => Y_POS_G)
+      TXRX_TYPE     => TXRX_TYPE)
    port map(
       clk            => clk,
       rst            => rst,
-      -- route <-> parser
-      parseDataRx    => txData,  -- record input to parser from route
-      parseDataTx    => rxData,  -- record output from parser to route
-      parseDataReady => TxReady, -- sl ready signal to route
-      -- physical connections
+      
+	  EndeavorScale => "001",
+	  fifoFull => locFifoFull or extFifoFull,
+	  
+	  -- route <-> parser
+      inData     => txData,  -- record input to parser from route
+      outData    => rxData,  -- record output from parser to route
+      txReady    => TxReady, -- sl ready signal to route
+      
+	  -- physical connections
       TxPortsArr     => TxPortsArr, -- slv output to physical
       RxPortsArr     => RxPortsArr, -- slv input form physical
       TxByteValidArr_out => open,
       RxByteValidArr_out => open,
       RxFifoEmptyArr_out => open,
       RxFifoFullArr_out  => open,
-      -- reg file connections
+      
+	  -- reg file connections
       QpixConf       => QpixConf, -- record input
       regData        => regData,  -- output from parser
-      regResp        => regResp); -- input from parser
+      regResp        => regResp   -- input from parser
+	  );
    -----------------------------------------------
 
    -- Registers file
@@ -330,10 +343,18 @@ begin
       clk      => clk,
       rst      => rst,
 
+	  clkCntRst => clkCntRst,
+      extInterS => extInterS,
+      extInterH => extInterH,
+      intrNum   => intrNum,
+	  clkCnt    => clkCnt,
+
       -- comm connections
-      regData  => regData,  -- input record regData type, from parser
+      txReady  => txReady,
+	  regData  => regData,  -- input record regData type, from parser
       regResp  => regResp,  -- output record regData type, to parser
-      -- route connections
+      
+	  -- route connections
       QpixConf => QpixConf, -- record qpixConfigType
       QpixReq  => QpixReq   -- record qpixRequestType
       );
@@ -351,7 +372,8 @@ begin
       clk           => clk,
       rst           => rst,
       -- reg file connections
-      QpixReq       => QpixReq,  -- input register from reg file
+      clkCnt 		=> clkCnt,   -- input register from reg file
+	  QpixReq       => QpixReq,  -- input register from reg file
       QpixConf      => QpixConf, -- input register from reg file
       -- analog ASIC trigger connections
       inData        => inData,   -- input Data from Process, NOT inData to comm
@@ -360,10 +382,12 @@ begin
       txData        => txData,  -- output record output to parser
       rxData        => rxData,  -- input record input from parser
       -- debug words:
-      routeErr      => open,                     
-      debug         => debug,
-      state         => route_state,
-      routeStateInt => open);
+	  busy 			   => open,
+	  intrNum          => open,
+	  extFifoFull 	   => extFifoFull,
+	  locFifoFull 	   => locFifoFull,
+      fsmState         => fsmState
+	  );
    -----------------------------------------------
 
 end Behavioral;

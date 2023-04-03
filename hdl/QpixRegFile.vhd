@@ -205,20 +205,20 @@ begin
                      end if;
 
                   -- Enable register - used to turn on taking real data
-                  when toslv(5, G_REG_ADDR_BITS) =>
-                     if regData.OpWrite = '1' then
-                        qpixConf_r.locEnaSnd <= regData.Data(0);
-                        qpixConf_r.locEnaRcv <= regData.Data(1);
-                        qpixConf_r.locEnaReg <= regData.Data(2);
-                     end if;
-                     if regData.OpRead = '1' then
-                        regResp_r.Addr <= regData.Addr;
-                        regResp_r.Data <= (others => '0');
-                        regResp_r.Data(2 downto 0) <= qpixConf_r.locEnaReg & qpixConf_r.locEnaRcv & qpixConf_r.locEnaSnd;
-                        regResp_r.XDest <= std_logic_vector(to_unsigned(X_POS_G, G_POS_BITS));
-                        regResp_r.YDest <= std_logic_vector(to_unsigned(Y_POS_G, G_POS_BITS));
-                        regResp_r.Valid <= '1';
-                     end if;
+                  --when toslv(5, G_REG_ADDR_BITS) =>
+                     --if regData.OpWrite = '1' then
+                        --qpixConf_r.locEnaSnd <= regData.Data(0);
+                        --qpixConf_r.locEnaRcv <= regData.Data(1);
+                        --qpixConf_r.locEnaReg <= regData.Data(2);
+                     --end if;
+                     --if regData.OpRead = '1' then
+                        --regResp_r.Addr <= regData.Addr;
+                        --regResp_r.Data <= (others => '0');
+                        --regResp_r.Data(2 downto 0) <= qpixConf_r.locEnaReg & qpixConf_r.locEnaRcv & qpixConf_r.locEnaSnd;
+                        --regResp_r.XDest <= std_logic_vector(to_unsigned(X_POS_G, G_POS_BITS));
+                        --regResp_r.YDest <= std_logic_vector(to_unsigned(Y_POS_G, G_POS_BITS));
+                        --regResp_r.Valid <= '1';
+                     --end if;
                   
                   -- Disable specific receivers
                   when x"0006" =>

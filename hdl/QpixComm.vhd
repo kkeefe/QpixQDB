@@ -1,3 +1,4 @@
+
 ----------------------------------------------------------------------------------
 -- QPix communication with neighbour ASICs
 ----------------------------------------------------------------------------------
@@ -39,19 +40,23 @@ entity QpixComm is
       fifoFull       : in std_logic;
 
       -- external ASIC ports
+      TxRxDisable    : in  std_logic_vector(3 downto 0) := (others => '0');
       TxPortsArr     : out std_logic_vector(3 downto 0);
       RxPortsArr     : in  std_logic_vector(3 downto 0);
       
       -- tx/rx data to QpixRoute
-      parseDataRx    : in  QpixDataFormatType; -- Tx from QpixRoute
-      parseDataTx    : out QpixDataFormatType; -- Rx to QpixRoute
-      parseDataReady : out std_logic;          -- Tx-ready to QpixRoute
+      outData        : in  QpixDataFormatType; -- Tx from QpixRoute
+      inData         : out QpixDataFormatType; -- Rx to QpixRoute
+      TxReady        : out std_logic;          -- Tx-ready to QpixRoute
 
       -- Debug
       TxByteValidArr_out : out std_logic_vector(3 downto 0);
       RxByteValidArr_out : out std_logic_vector(3 downto 0);
       RxFifoEmptyArr_out : out std_logic_vector(3 downto 0);
       RxFifoFullArr_out  : out std_logic_vector(3 downto 0);
+      RxValidDbg     : out std_logic;
+      RxBusy         : out std_logic;
+      RxError        : out std_logic;
 
       -- register from  QpixRegFile
       qpixConf       : in QpixConfigType;
@@ -74,7 +79,7 @@ architecture behav of QpixComm is
    ------------------------------------------------------------
    signal TxBytesArr      : QpixByteArrType              := (others => (others => '0'));
    signal TxBytesValid    : std_logic_vector(3 downto 0) := (others => '0');
-   signal TxBytesReadyArr : std_logic_vector(3 downto 0) := (others => '0');
+   signal TxBytesReady    : std_logic_vector(3 downto 0) := (others => '0');
 
    signal RxBytesArr        : QpixByteArrType      := (others => (others => '0'));
 
@@ -83,7 +88,7 @@ architecture behav of QpixComm is
    signal RxBusyArr        : std_logic_vector(3 downto 0) := (others => '0');
    signal RxErrorArr       : std_logic_vector(3 downto 0) := (others => '0');
 
-   signal TxReadyOr        : std_logic := '0';
+   signal TxReadyMask        : std_logic;
 
    --signal parseDataTx           : QpixDataFormatType := QpixDataZero_C;
 
@@ -112,7 +117,7 @@ begin
             --txValid     => TxPortsArr(i).Valid,
             txByte      => TxBytesArr(i), 
             txByteValid => TxBytesValid(i), 
-            txByteReady => TxBytesReadyArr(i),
+            txByteReady => TxBytesReady(i),
 
             --rxValid     => RxPortsArr(i).Valid,
             rxByte      => RxBytesArr(i),
@@ -151,8 +156,8 @@ begin
                TxRxDisable  => TxRxDisable(i),
                             
                txByte       => TxBytesArr(i), 
-               txByteValid  => TxBytesValidArr(i), 
-               txByteReady  => TxBytesReadyArr(i),
+               txByteValid  => TxBytesValid(i),
+               txByteReady  => TxBytesReady(i),
 
                rxByte       => RxBytesArr(i),
                rxByteValid  => RxBytesValid(i),
@@ -181,9 +186,9 @@ begin
    RxBusy  <= '0' when RxBusyArr  = b"0000" else '1';
    RxError <= '0' when RxErrorArr = b"0000" else '1';
 
-   process (qpixConf.DirMask, TxBytesReadyArr)
+   process (qpixConf.DirMask, TxBytesReady)
    begin
-         if (qpixConf.DirMask and TxBytesReadyArr) = qpixConf.DirMask then
+         if (qpixConf.DirMask and TxBytesReady) = qpixConf.DirMask then
             TxReadyMask <= '1';
          else
             TxReadyMask <= '0';
@@ -209,14 +214,10 @@ begin
       inData            => inData,
 
       -- Tx connections to Phys Layer
-      outData           => outData_i,
+      outData           => outData,
       outBytesArr       => TxBytesArr,
-      outBytesValidArr  => TxBytesValidArr,
+      outBytesValidArr  => TxBytesValid,
       txReady           => TxReadyMask,
-
-      -- data to route
-      parseDataTx => parseDataTx,           -- output
-      parseDataRx => parseDataRx,           -- input
 
       -- regFile configurations
       regData => regData,               -- output

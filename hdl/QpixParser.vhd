@@ -19,11 +19,11 @@ entity QpixParser is
       inBytesArr          : in  QpixByteArrType; -- array(3 downto 0) of slv(63 downto 0)
       inBytesValid        : in  std_logic_vector(3 downto 0); 
       inBytesAck          : out std_logic_vector(3 downto 0);
-      parseDataTx         : out QpixDataFormatType;
+      inData              : out QpixDataFormatType;
       
-      -- input from QpixRoute, to send to ASIC
-      parseDataRx         : in  QpixDataFormatType;
-      outBytesArr         : out QpixByteArrType; -- array(3 downto 0) of slv(63 downto 0)
+      -- output from ASIC
+      outData             : in  QpixDataFormatType;
+      outBytesArr         : out QpixByteArrType;
       outBytesValidArr    : out std_logic_vector(3 downto 0);
       txReady             : in  std_logic;
 
@@ -143,7 +143,7 @@ begin
    end process;
 
    regData <= regDataR;
-   parseDataTx  <= inDataR;
+   inData  <= inDataR;
 
    ------------------------------------------------------------
    -- TX
@@ -156,14 +156,14 @@ begin
 
             outBytesValidArr(i)  <= '0';
 
-            if parseDataRx.DataValid = '1' then
+            if outData.DataValid = '1' then
               -- construction of DirMask happens here and why it must be four bits
-               if parseDataRx.DirMask(i) = '1' then
+               if outData.DirMask(i) = '1' then
                   -- temporary send either d.Data of convert record FIXME
-                  if parseDataRx.WordType = G_WORD_TYPE_REGRSP then
-                     outBytesArr(i) <= parseDataRx.Data;
+                  if outData.WordType = G_WORD_TYPE_REGRSP then
+                     outBytesArr(i) <= outData.Data;
                   else
-                     outBytesArr(i) <= fQpixRecordToByte(parseDataRx);
+                     outBytesArr(i) <= fQpixRecordToByte(outData);
                   end if;
                   outBytesValidArr(i)  <= '1'; 
                end if;
