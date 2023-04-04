@@ -36,4 +36,3 @@ ldc_set_location -site {A1} [get_ports clk]; # IOB_25b, G3
 ldc_set_location -site {A5} [get_ports blu_led]
 ldc_set_location -site {B5} [get_ports gre_led]
 ldc_set_location -site {C5} [get_ports red_led]
-ldc_set_port -iobuf {PULLMODE=100K} [get_ports clk]

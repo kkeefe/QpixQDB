@@ -42,10 +42,10 @@ port (
     --IO : in STD_LOGIC_VECTOR(3 downto 0);
 
     -- optional ss pins -- south Top
-    -- ss  : in  std_logic;  -- south 8   /  north 6
-    -- so  : in std_logic;  -- south 6   /  north 4
-    -- si  : out std_logic;  -- south 4   /  north 2
-    -- sck : in std_logic;   -- south 2   /  north 8
+     --ss  : in  std_logic;  -- south 8   /  north 6
+   --  so  : in std_logic;  -- south 6   /  north 4
+   --  si  : out std_logic;  -- south 4   /  north 2
+    --sck : in std_logic;   -- south 2   /  north 8
 
     -- outputs
     red_led : out STD_LOGIC;
@@ -60,9 +60,12 @@ architecture Behavioral of QDBAsicTop is
 
   -- timestamp and QDBAsic specifics
   --signal clk          : std_logic;
+  signal fast_clk     : std_logic;
+  signal pllClk       : std_logic;
+  signal fake_trg     : std_logic              := '0';
   signal rst          : std_logic              := '0';
   signal localCnt     : unsigned (31 downto 0) := (others => '0');
-  --signal slv_localCnt : std_logic_vector(31 downto 0);
+  signal slv_localCnt : std_logic_vector(31 downto 0);
   signal pulse_red    : std_logic              := '0';
   signal pulse_blu    : std_logic              := '0';
   signal pulse_gre    : std_logic              := '0';
@@ -136,32 +139,23 @@ begin
     red_led <= not pulse_red; -- not '0', '1' is off
     blu_led <= not pulse_blu;
     gre_led <= not pulse_gre; -- not '0', '1' is off
-
+    
     -- clock output to physical
-    --si <= clk;
+	--si <= clk;
     --so <= pllClk;
 
-  -- connect Tx/Rx to the signals
-  Tx3 <= TxPortsArr(2);
-  RxPortsArr(2) <= Rx3;
+    -- connect Tx/Rx to the signals
+    Tx3 <= TxPortsArr(2);
+    RxPortsArr(2) <= Rx3;
 
   RxPortsArr(0) <= '0';
   RxPortsArr(1) <= '0';
-  RxPortsArr(3) <= '0';
+    RxPortsArr(3) <= '0';
 
-  inData.DirMask <= "0100";
-  inData.ChanMask <= x"1234";
-  inData.xpos <= (others => '0');
-  inData.ypos <= (others => '0');
-
-  TxRxDisable <= (others => '0');
-
-    --Tx1 <= TxPortsArr(0);
-    --Tx2 <= TxPortsArr(1);    --Tx4 <= TxPortsArr(3);
-
+    
     -- used to buffer readout on timing measurement
     -- si <= clk;
-    -- rst <= QpixReq.AsicReset;
+    rst <= QpixReq.AsicReset;
 
    ----------------------------------------------------------
    --          top level processes to flag for LEDs        --
@@ -171,48 +165,32 @@ begin
       variable cg5 : boolean := false;
       variable cr5 : boolean := false;
       variable count : integer range 0 to 20_000_000 := 0;
-      variable pulse_count_red : integer range 0 to pulse_time := 0;
-      variable start_pulse_red : std_logic := '0';
-      variable pulse_count_gre : integer range 0 to pulse_time := 0;
-      variable start_pulse_gre : std_logic := '0';
+     variable pulse_count_red : integer range 0 to pulse_time := 0;
+     variable start_pulse_red : std_logic := '0';
+     variable pulse_count_gre : integer range 0 to pulse_time := 0;
+     variable start_pulse_gre : std_logic := '0';
       variable trg : boolean := false;
       variable clk_cnt : std_logic_vector(31 downto 0) := (others => '0');
 	  variable force_reset : boolean := false;
-    begin
-      if rising_edge(clk) then
+ begin
+     if rising_edge(clk) then
 
     inData.DataValid <= '0';
         count := count + 1;
         if count = 19_999_999 then
           pulse_blu <= not pulse_blu;
           count := 0;
-		  
-		  if not force_reset then
-			force_reset := true;
-			rst <= '1';
-		  else
-			rst <= '0';
-		  end if;
-        
 		end if;
 
         -- flash LED conditions for Rx and Tx
-        cg5 := rxBytesValid(0) = '1';
-        cr5 := rxBytesValid(1) = '1';
+        cg5 := qpixConf.Manroute = '1';
+        cr5 := rst = '1';
 
         pulseLED(cg5, start_pulse_gre, pulse_count_gre, pulse_gre);
         pulseLED(cr5, start_pulse_red, pulse_count_red, pulse_red);
 
-    if cr5 and trg then
-      inData.DataValid <= '1';
-      inData.timestamp <= clk_cnt;
-      trg := false;
-    else
-      trg := true;
-    end if;
 
-
-      end if;
+        end if;
     end process;
 
    ----------------------------------------------------------
@@ -249,51 +227,40 @@ begin
       TxRxDisable => (others => '0'), -- external in prototype
 
       -- route <-> parser
-      inData      => rxData,  -- output to route
-      outData     => txData,  -- input from route
-      txReady     => TxReady, -- sl ready signal to route
-
+      outData        => txData,  -- record input to parser from route
+      inData         => rxData,  -- record output from parser to route
+      TxReady        => TxReady, -- sl ready signal to route
       -- physical connections
       TxPortsArr     => TxPortsArr, -- slv output to physical
       RxPortsArr     => RxPortsArr, -- slv input form physical
-
-      -- debug
-      -- RxError            => RxError,
-      RxBusy             => RxBusy,
-      RxValidDbg         => RxValidDbg,
       TxByteValidArr_out => txBytesValid,
       RxByteValidArr_out => rxBytesValid,
       RxFifoEmptyArr_out => open,
       RxFifoFullArr_out  => open,
+	  rxBusy => open,
+	  rxvaliddbg => open,
 
       -- reg file connections
       QpixConf       => QpixConf, -- record input
       regData        => regData,  -- output from parser
-      regResp        => regResp   -- input from parser
-      );
+      regResp        => regResp); -- input from parser
    -----------------------------------------------
 
    -- Registers file
    -------------------------------------------------
    QpixRegFile_U : entity work.QpixRegFile
-   generic map(
-      X_POS_G       => X_POS_G,
-      Y_POS_G       => Y_POS_G)
    port map(
       clk      => clk,
       rst      => rst,
 
-      clkCntRst => '0',
-      extInterS => '0',
-      extInterH => '0',
-      intrNum   => intrNum,
-      clkCnt    => clkCnt,
-
       -- comm connections
-      txReady  => txReady,
       regData  => regData,  -- input record regData type, from parser
       regResp  => regResp,  -- output record regData type, to parser
-
+      TxReady => open,
+      intrNum => open,
+      extinterh => open,
+      extinters => open,
+      clkcntrst => open,
       -- route connections
       QpixConf => QpixConf, -- record qpixConfigType
       QpixReq  => QpixReq   -- record qpixRequestType
@@ -311,27 +278,26 @@ begin
    port map(
       clk           => clk,
       rst           => rst,
-
       -- reg file connections
-      clkCnt        => clkCnt,   -- input register from reg file
       QpixReq       => QpixReq,  -- input register from reg file
       QpixConf      => QpixConf, -- input register from reg file
-
       -- analog ASIC trigger connections
-      inData        => inData,   -- input Data from Process, NOT inData to comm.
-
+      inData        => inData,   -- input Data from Process, NOT inData to comm
       -- Qpixcomm connections
       TxReady       => TxReady, -- input ready signal from comm
       txData        => txData,  -- output record output to parser
       rxData        => rxData,  -- input record input from parser
-
       -- debug words:
-      intrNum          => intrNum,     -- sent to QpixRegFile
-      busy             => open,
-      fsmState         => fsmState,
-      extFifoFull      => extFifoFull, -- sent to Qpixcomm
-      locFifoFull      => locFifoFull  -- sent to QpixDataProc
-      );
+      --routeErr      => open,                     
+      --debug         => debug,
+	  clkCnt 		=> x"0000_0000",
+	  intrNum       => open,
+	  extFifoFull => open,
+	  locFifoFull => open,
+	  fsmState    => open
+      -- state         => route_state,
+      -- routeStateInt => open
+	  );
    -----------------------------------------------
 
 end Behavioral;

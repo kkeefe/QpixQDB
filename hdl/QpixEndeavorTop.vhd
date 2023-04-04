@@ -89,7 +89,7 @@ begin
          rxByte      => rxByte,      -- output
          rxByteValid => rxByteValid, -- output
          -- rxState     => rxState,     -- output
-         rxByteAck   => rxByteAck,
+         rxByteAck   => '1',
          
        -- Error statuses out
          bitError    => rxFrameErr, -- output
