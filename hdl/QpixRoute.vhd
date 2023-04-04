@@ -49,7 +49,6 @@ architecture behav of QpixRoute is
    ---------------------------------------------------
    -- Types defenitions
    ---------------------------------------------------
-   
    type RegType is record
       state        :  RouteStatesType;
       stateCnt     :  unsigned(G_REG_DATA_BITS-1 downto 0);

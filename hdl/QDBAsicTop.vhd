@@ -60,33 +60,22 @@ architecture Behavioral of QDBAsicTop is
 
   -- timestamp and QDBAsic specifics
   --signal clk          : std_logic;
-  --signal fast_clk     : std_logic;
-  signal pllClk       : std_logic;
-  signal fake_trg     : std_logic              := '0';
   signal rst          : std_logic              := '0';
   signal localCnt     : unsigned (31 downto 0) := (others => '0');
-  signal slv_localCnt : std_logic_vector(31 downto 0);
+  --signal slv_localCnt : std_logic_vector(31 downto 0);
   signal pulse_red    : std_logic              := '0';
   signal pulse_blu    : std_logic              := '0';
   signal pulse_gre    : std_logic              := '0';
-  signal data_i1      : std_logic              := '0';
-  signal data_i2      : std_logic              := '0';
-  signal data         : std_logic              := '0';
-  signal enabled      : boolean                := false;
-  signal rising       : boolean                := false;
-  -- fast signals which sample the input of channel data and need to be
-  -- synchronized back to 12 MHz
-  signal data_fi1 : std_logic := '0';
-  signal data_fi2 : std_logic := '0';
-  signal data_f   : std_logic := '0';
+
 
   -- extra debugs
   signal rxBytesValid : std_logic_vector(3 downto 0);
+  signal txBytesValid : std_logic_vector(3 downto 0);
 
   -- extra signals to QpixRegFile.vhd
-  signal  clkCntRst : std_logic;
-  signal  extInterS : std_logic;
-  signal  extInterH : std_logic;
+  --signal  clkCntRst : std_logic;
+  --signal  extInterS : std_logic;
+  --signal  extInterH : std_logic;
   signal  intrNum   : std_logic_vector(15 downto 0);
   signal  clkCnt    : std_logic_vector(31 downto 0);
 
@@ -101,7 +90,7 @@ architecture Behavioral of QDBAsicTop is
   signal QpixReq            : QpixRequestType    := QpixRequestZero_C;
   signal TxReady            : std_logic          := '0';
   signal fsmState           : std_logic_vector(2 downto 0);
-  
+
   signal locFifoFull : std_logic := '0';
   signal extFifoFull : std_logic := '0';
 
@@ -130,15 +119,6 @@ architecture Behavioral of QDBAsicTop is
          end if;
       end procedure pulseLED;
 
-  
---component qdb_pll is
-    --port(
-        --ref_clk_i: in std_logic;
-        --rst_n_i: in std_logic;
-        --outcore_o: out std_logic;
-        --outglobal_o: out std_logic
-    --);
---end component;
 
 --component HSOSC
 --GENERIC( CLKHF_DIV :string :="0b00");
@@ -152,27 +132,29 @@ architecture Behavioral of QDBAsicTop is
 -----------------------------ARCH------------------------------------------
 begin
 
+	rst <= '0';
+	
     -- LEDs, active LOW (on when value is '0')
-    red_led <= not '0'; -- not '0', '1' is off
+    red_led <= not pulse_red; -- not '0', '1' is off
     blu_led <= not pulse_blu;
     gre_led <= not pulse_gre; -- not '0', '1' is off
-    
+
     -- clock output to physical
     --si <= clk;
     --so <= pllClk;
 
     -- connect Tx/Rx to the signals
-    --Tx1 <= TxPortsArr(0);
-    --RxPortsArr(0) <= Rx1;
-    --Tx2 <= TxPortsArr(1);
-    --RxPortsArr(1) <= Rx2;
+
     Tx3 <= TxPortsArr(2);
     RxPortsArr(2) <= Rx3;
-    --Tx4 <= TxPortsArr(3);
-    --RxPortsArr(3) <= Rx4;
-    --RxPortsArr(3) <= '0';
 
-    
+	RxPortsArr(0) <= '0';
+	RxPortsArr(1) <= '0';
+    RxPortsArr(3) <= '0';
+
+    --Tx1 <= TxPortsArr(0);
+    --Tx2 <= TxPortsArr(1);    --Tx4 <= TxPortsArr(3);
+
     -- used to buffer readout on timing measurement
     -- si <= clk;
     -- rst <= QpixReq.AsicReset;
@@ -199,59 +181,14 @@ begin
         end if;
 
         -- flash LED conditions for Rx and Tx
-        cg5 := RxPortsArr(2) = '1';
-        cr5 := TxPortsArr(2) = '1';
+        cg5 := qpixConf.DirMaskMan = "0000";
+        cr5 := RxPortsArr(2) = '1';
 
         pulseLED(cg5, start_pulse_gre, pulse_count_gre, pulse_gre);
         pulseLED(cr5, start_pulse_red, pulse_count_red, pulse_red);
 
       end if;
     end process;
-
-    -- -- connect external IO to QpixDataProc
-    -- slv_localCnt <= std_logic_vector(localCnt);
-    -- enabled <= boolean(QpixConf.locEnaSnd = '1' and QpixConf.locEnaRcv = '1' and QpixConf.locEnaReg = '1');
-    -- process (clk)
-    --   variable count : natural range 0 to 16 := 0;
-    --   begin
-    --      if rising_edge(clk) then
-
-    --        -- trigger conditions, only read on rising edge
-    --        if data = '1' and enabled and rising then
-    --          inData.DataValid <= '1';
-    --          inData.TimeStamp <= slv_localCnt;
-    --          rising <= false;
-    --        --elsif fake_trg = '1' and not enabled then
-    --          --inData.DataValid <= '1';
-    --          --inData.TimeStamp <= slv_localCnt;
-    --        else
-    --          inData.DataValid <= '0';
-    --          inData.TimeStamp <= (others => '0');
-    --        end if;
-    --      end if;
-    -- end process;
-    -- inData.wordtype  <= "1111"; -- inData word type is NOT used
-    -- inData.ChanMask <=  (others => '1');
-    -- inData.xpos     <= toslv(X_POS_G, 4);
-    -- inData.ypos     <= toslv(Y_POS_G, 4);
-    -- inData.data     <= x"aaaa_bbbb_cccc_dddd"; -- unused by fQpixRecordToByte
-    -- inData.dirMask  <= DirDown;
-
-    -- counter: process (clk) is
-    --   variable count : integer := 0;
-    -- begin
-    --     if clk'event and clk = '1' then     -- rising clock edge
-    --         count := count + 1;
-    --         localCnt <= localCnt + 1;
-    --       if count >= fake_trg_cnt then
-    --         fake_trg <= '1';
-    --         count := 0;
-    --       else
-    --         fake_trg <= '0';
-    --       end if;
-    --     end if;
-    -- end process counter;
-
 
    ----------------------------------------------------------
    --          optional ICs for the lattice FPGA           --
@@ -266,50 +203,6 @@ begin
         --CLKHF    => clk
     --);
 
-  -- pll to hopefully improve frequency stabilization
-  --u_pll : qdb_pll port map(
-    --ref_clk_i   =>  fast_clk,
-    --rst_n_i     =>  '1', -- active low
-    --outcore_o   =>  pllClk,
-    --outglobal_o => open
---);
-
-   ----------------------------------------------------------
-   -- syncrhonize ASIC internal data from 50 MHz to 12 MHz --
-   ----------------------------------------------------------
-   --process(fast_clk_pll,rst)
-   --begin
-      --if rising_edge(fast_clk_pll) then
-         --if rst = '1' then
-           --data_fi1 <= '0';
-           --data_fi2 <= '0';
-           --data_f    <= '0';
-         --else
-           --data_fi1 <= sck;
-           --data_fi2 <= data_fi1;
-           --data_f   <= data_fi2;
-         --end if;
-      --end if;
-   --end process;
-   
-   -- put sck - data onto the 12 MHz clk
-   --process(clk,rst)
-   --begin
-      --if rising_edge(clk) then
-         --if rst = '1' then
-           --data_i1 <= '0';
-           --data_i2 <= '0';
-           --data    <= '0';
-         --else
-           --data_i1 <= so;
-           --data_i2 <= data_i1;
-           --data    <= data_i2;
-         --end if;
-      --end if;
-   --end process;
-
-
-
    ------------MODULES----------------------------
    -----------------------------------------------
    -- Q-Pix data tranceiver
@@ -323,9 +216,9 @@ begin
    port map(
       clk            => clk,
       rst            => rst,
-      
+
       EndeavorScale => "000",
-      fifoFull => extFifoFull, -- route fifo full
+      fifoFull      => '0', -- route fifo full
 
       -- prototype
       TxRxDisable => (others => '0'), -- external in prototype
@@ -340,14 +233,14 @@ begin
       RxPortsArr     => RxPortsArr, -- slv input form physical
 
       -- debug
-      RxError        => RxError,
-      RxBusy         => RxBusy,
-      RxValidDbg     => RxValidDbg,
-      TxByteValidArr_out => open,
+      RxError            => RxError,
+      RxBusy             => RxBusy,
+      RxValidDbg         => RxValidDbg,
+      TxByteValidArr_out => txBytesValid,
       RxByteValidArr_out => rxBytesValid,
       RxFifoEmptyArr_out => open,
       RxFifoFullArr_out  => open,
-      
+
       -- reg file connections
       QpixConf       => QpixConf, -- record input
       regData        => regData,  -- output from parser
@@ -375,7 +268,7 @@ begin
       txReady  => txReady,
       regData  => regData,  -- input record regData type, from parser
       regResp  => regResp,  -- output record regData type, to parser
-      
+
       -- route connections
       QpixConf => QpixConf, -- record qpixConfigType
       QpixReq  => QpixReq   -- record qpixRequestType
@@ -393,20 +286,20 @@ begin
    port map(
       clk           => clk,
       rst           => rst,
-      
+
       -- reg file connections
       clkCnt        => clkCnt,   -- input register from reg file
       QpixReq       => QpixReq,  -- input register from reg file
       QpixConf      => QpixConf, -- input register from reg file
-      
+
       -- analog ASIC trigger connections
       inData        => inData,   -- input Data from Process, NOT inData to comm.
-      
+
       -- Qpixcomm connections
       TxReady       => TxReady, -- input ready signal from comm
       txData        => txData,  -- output record output to parser
       rxData        => rxData,  -- input record input from parser
-      
+
       -- debug words:
       intrNum          => intrNum,     -- sent to QpixRegFile
       busy             => open,
