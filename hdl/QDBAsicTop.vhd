@@ -80,6 +80,10 @@ architecture Behavioral of QDBAsicTop is
   signal data_fi2 : std_logic := '0';
   signal data_f   : std_logic := '0';
 
+  -- extra debugs
+  signal rxBytesValid : std_logic_vector(3 downto 0);
+
+  -- extra signals to QpixRegFile.vhd
   signal  clkCntRst : std_logic;
   signal  extInterS : std_logic;
   signal  extInterH : std_logic;
@@ -100,6 +104,11 @@ architecture Behavioral of QDBAsicTop is
   
   signal locFifoFull : std_logic := '0';
   signal extFifoFull : std_logic := '0';
+
+  signal TxRxDisable : std_logic_vector(3 downto 0) := (others => '0');
+  signal RxError       : std_logic := '0';
+  signal RxBusy        : std_logic := '0';
+  signal RxValidDbg    : std_logic := '0';
 
    procedure pulseLED(variable flag : in boolean;
                       variable start_pulse : inout std_logic;
@@ -146,7 +155,7 @@ begin
     -- LEDs, active LOW (on when value is '0')
     red_led <= not '0'; -- not '0', '1' is off
     blu_led <= not pulse_blu;
-    gre_led <= not '0'; -- not '0', '1' is off
+    gre_led <= not pulse_gre; -- not '0', '1' is off
     
     -- clock output to physical
     --si <= clk;
@@ -173,14 +182,29 @@ begin
    ----------------------------------------------------------
 
     process(clk) is
+      variable cg5 : boolean := false;
+      variable cr5 : boolean := false;
       variable count : integer range 0 to 20_000_000 := 0;
+      variable pulse_count_red : integer range 0 to pulse_time := 0;
+      variable start_pulse_red : std_logic := '0';
+      variable pulse_count_gre : integer range 0 to pulse_time := 0;
+      variable start_pulse_gre : std_logic := '0';
     begin
       if rising_edge(clk) then
+
         count := count + 1;
         if count = 19_999_999 then
           pulse_blu <= not pulse_blu;
           count := 0;
         end if;
+
+        -- flash LED conditions for Rx and Tx
+        cg5 := RxPortsArr(2) = '1';
+        cr5 := TxPortsArr(2) = '1';
+
+        pulseLED(cg5, start_pulse_gre, pulse_count_gre, pulse_gre);
+        pulseLED(cr5, start_pulse_red, pulse_count_red, pulse_red);
+
       end if;
     end process;
 
@@ -191,17 +215,6 @@ begin
     --   variable count : natural range 0 to 16 := 0;
     --   begin
     --      if rising_edge(clk) then
-
-    --        -- keep track of rising edges on data
-    --        if data = '0' then
-    --          count := count + 1;
-    --          if count >= 15 then
-    --            rising <= true;
-    --            count  := 0;
-    --          end if;
-    --        else
-    --            count  := 0;
-    --        end if;
 
     --        -- trigger conditions, only read on rising edge
     --        if data = '1' and enabled and rising then
@@ -219,7 +232,7 @@ begin
     -- end process;
     -- inData.wordtype  <= "1111"; -- inData word type is NOT used
     -- inData.ChanMask <=  (others => '1');
-	-- inData.xpos     <= toslv(X_POS_G, 4);
+    -- inData.xpos     <= toslv(X_POS_G, 4);
     -- inData.ypos     <= toslv(Y_POS_G, 4);
     -- inData.data     <= x"aaaa_bbbb_cccc_dddd"; -- unused by fQpixRecordToByte
     -- inData.dirMask  <= DirDown;
@@ -305,32 +318,41 @@ begin
    QpixComm_U : entity work.QpixComm
    generic map(
       RAM_TYPE      => RAM_TYPE,
-      TXRX_TYPE     => TXRX_TYPE)
+      TXRX_TYPE     => TXRX_TYPE
+      )
    port map(
       clk            => clk,
       rst            => rst,
       
-	  EndeavorScale => "001",
-	  fifoFull => locFifoFull or extFifoFull,
-	  
-	  -- route <-> parser
-      inData     => txData,  -- record input to parser from route
-      outData    => rxData,  -- record output from parser to route
-      txReady    => TxReady, -- sl ready signal to route
-      
-	  -- physical connections
+      EndeavorScale => "000",
+      fifoFull => extFifoFull, -- route fifo full
+
+      -- prototype
+      TxRxDisable => (others => '0'), -- external in prototype
+
+      -- route <-> parser
+      inData      => rxData,  -- output to route
+      outData     => txData,  -- input from route
+      txReady     => TxReady, -- sl ready signal to route
+
+      -- physical connections
       TxPortsArr     => TxPortsArr, -- slv output to physical
       RxPortsArr     => RxPortsArr, -- slv input form physical
+
+      -- debug
+      RxError        => RxError,
+      RxBusy         => RxBusy,
+      RxValidDbg     => RxValidDbg,
       TxByteValidArr_out => open,
-      RxByteValidArr_out => open,
+      RxByteValidArr_out => rxBytesValid,
       RxFifoEmptyArr_out => open,
       RxFifoFullArr_out  => open,
       
-	  -- reg file connections
+      -- reg file connections
       QpixConf       => QpixConf, -- record input
       regData        => regData,  -- output from parser
       regResp        => regResp   -- input from parser
-	  );
+      );
    -----------------------------------------------
 
    -- Registers file
@@ -343,18 +365,18 @@ begin
       clk      => clk,
       rst      => rst,
 
-	  clkCntRst => clkCntRst,
-      extInterS => extInterS,
-      extInterH => extInterH,
+      clkCntRst => '0',
+      extInterS => '0',
+      extInterH => '0',
       intrNum   => intrNum,
-	  clkCnt    => clkCnt,
+      clkCnt    => clkCnt,
 
       -- comm connections
       txReady  => txReady,
-	  regData  => regData,  -- input record regData type, from parser
+      regData  => regData,  -- input record regData type, from parser
       regResp  => regResp,  -- output record regData type, to parser
       
-	  -- route connections
+      -- route connections
       QpixConf => QpixConf, -- record qpixConfigType
       QpixReq  => QpixReq   -- record qpixRequestType
       );
@@ -371,23 +393,27 @@ begin
    port map(
       clk           => clk,
       rst           => rst,
+      
       -- reg file connections
-      clkCnt 		=> clkCnt,   -- input register from reg file
-	  QpixReq       => QpixReq,  -- input register from reg file
+      clkCnt        => clkCnt,   -- input register from reg file
+      QpixReq       => QpixReq,  -- input register from reg file
       QpixConf      => QpixConf, -- input register from reg file
+      
       -- analog ASIC trigger connections
-      inData        => inData,   -- input Data from Process, NOT inData to comm
+      inData        => inData,   -- input Data from Process, NOT inData to comm.
+      
       -- Qpixcomm connections
       TxReady       => TxReady, -- input ready signal from comm
       txData        => txData,  -- output record output to parser
       rxData        => rxData,  -- input record input from parser
+      
       -- debug words:
-	  busy 			   => open,
-	  intrNum          => open,
-	  extFifoFull 	   => extFifoFull,
-	  locFifoFull 	   => locFifoFull,
-      fsmState         => fsmState
-	  );
+      intrNum          => intrNum,     -- sent to QpixRegFile
+      busy             => open,
+      fsmState         => fsmState,
+      extFifoFull      => extFifoFull, -- sent to Qpixcomm
+      locFifoFull      => locFifoFull  -- sent to QpixDataProc
+      );
    -----------------------------------------------
 
 end Behavioral;
