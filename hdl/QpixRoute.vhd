@@ -100,12 +100,12 @@ architecture behav of QpixRoute is
    signal locFull        : std_logic := '0';
 
    signal extFifoEmpty   : std_logic := '0';
-   signal extFifoRen     : std_logic := '0';
+   -- signal extFifoRen     : std_logic := '0';
    signal extFifoDout    : std_logic_vector (G_DATA_BITS-1 downto 0);
    signal extFull        : std_logic := '0';
 
 
-   signal respDir        : std_logic_vector(3 downto 0) := (others => '0');
+   -- signal respDir        : std_logic_vector(3 downto 0) := (others => '0');
 
    ---------------------------------------------------
 

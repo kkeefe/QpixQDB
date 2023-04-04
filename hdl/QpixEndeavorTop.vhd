@@ -36,14 +36,14 @@ entity QpixEndeavorTop is
       -- RX out
       rxByte      : out std_logic_vector(NUM_BITS_G-1 downto 0);
       rxByteValid : out std_logic;
-      rxState     : out std_logic_vector(2 downto 0);
+      -- rxState     : out std_logic_vector(2 downto 0);
       rxByteAck   : in  std_logic;   
       -- RX Error statuses out
       rxFrameErr  : out std_logic; -- No valid stop bit found
       rxBreakErr  : out std_logic; -- Line low for longer than a character time
 
       rxBusy      : out std_logic;
-      rxError     : out std_logic;
+      -- rxError     : out std_logic;
       rxGapErr    : out std_logic; -- ??
 
       -- TX in 

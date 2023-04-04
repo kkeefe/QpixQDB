@@ -95,7 +95,7 @@ architecture Behavioral of QDBAsicTop is
   signal extFifoFull : std_logic := '0';
 
   signal TxRxDisable : std_logic_vector(3 downto 0) := (others => '0');
-  signal RxError       : std_logic := '0';
+  -- signal RxError       : std_logic := '0';
   signal RxBusy        : std_logic := '0';
   signal RxValidDbg    : std_logic := '0';
 
@@ -132,8 +132,6 @@ architecture Behavioral of QDBAsicTop is
 -----------------------------ARCH------------------------------------------
 begin
 
-	rst <= '0';
-	
     -- LEDs, active LOW (on when value is '0')
     red_led <= not pulse_red; -- not '0', '1' is off
     blu_led <= not pulse_blu;
@@ -143,14 +141,20 @@ begin
     --si <= clk;
     --so <= pllClk;
 
-    -- connect Tx/Rx to the signals
+  -- connect Tx/Rx to the signals
+  Tx3 <= TxPortsArr(2);
+  RxPortsArr(2) <= Rx3;
 
-    Tx3 <= TxPortsArr(2);
-    RxPortsArr(2) <= Rx3;
+  RxPortsArr(0) <= '0';
+  RxPortsArr(1) <= '0';
+  RxPortsArr(3) <= '0';
 
-	RxPortsArr(0) <= '0';
-	RxPortsArr(1) <= '0';
-    RxPortsArr(3) <= '0';
+  inData.DirMask <= "0100";
+  inData.ChanMask <= x"1234";
+  inData.xpos <= (others => '0');
+  inData.ypos <= (others => '0');
+
+  TxRxDisable <= (others => '0');
 
     --Tx1 <= TxPortsArr(0);
     --Tx2 <= TxPortsArr(1);    --Tx4 <= TxPortsArr(3);
@@ -171,21 +175,42 @@ begin
       variable start_pulse_red : std_logic := '0';
       variable pulse_count_gre : integer range 0 to pulse_time := 0;
       variable start_pulse_gre : std_logic := '0';
+      variable trg : boolean := false;
+      variable clk_cnt : std_logic_vector(31 downto 0) := (others => '0');
+	  variable force_reset : boolean := false;
     begin
       if rising_edge(clk) then
 
+    inData.DataValid <= '0';
         count := count + 1;
         if count = 19_999_999 then
           pulse_blu <= not pulse_blu;
           count := 0;
-        end if;
+		  
+		  if not force_reset then
+			force_reset := true;
+			rst <= '1';
+		  else
+			rst <= '0';
+		  end if;
+        
+		end if;
 
         -- flash LED conditions for Rx and Tx
-        cg5 := qpixConf.DirMaskMan = "0000";
-        cr5 := RxPortsArr(2) = '1';
+        cg5 := rxBytesValid(0) = '1';
+        cr5 := rxBytesValid(1) = '1';
 
         pulseLED(cg5, start_pulse_gre, pulse_count_gre, pulse_gre);
         pulseLED(cr5, start_pulse_red, pulse_count_red, pulse_red);
+
+    if cr5 and trg then
+      inData.DataValid <= '1';
+      inData.timestamp <= clk_cnt;
+      trg := false;
+    else
+      trg := true;
+    end if;
+
 
       end if;
     end process;
@@ -233,7 +258,7 @@ begin
       RxPortsArr     => RxPortsArr, -- slv input form physical
 
       -- debug
-      RxError            => RxError,
+      -- RxError            => RxError,
       RxBusy             => RxBusy,
       RxValidDbg         => RxValidDbg,
       TxByteValidArr_out => txBytesValid,

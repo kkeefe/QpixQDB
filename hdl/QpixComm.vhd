@@ -56,7 +56,7 @@ entity QpixComm is
       RxFifoFullArr_out  : out std_logic_vector(3 downto 0);
       RxValidDbg     : out std_logic;
       RxBusy         : out std_logic;
-      RxError        : out std_logic;
+      -- RxError        : out std_logic;
 
       -- register from  QpixRegFile
       qpixConf       : in QpixConfigType;
@@ -86,7 +86,7 @@ architecture behav of QpixComm is
    signal RxBytesAck       : std_logic_vector(3 downto 0) := (others => '0');
    signal RxBytesValid     : std_logic_vector(3 downto 0) := (others => '0');
    signal RxBusyArr        : std_logic_vector(3 downto 0) := (others => '0');
-   signal RxErrorArr       : std_logic_vector(3 downto 0) := (others => '0');
+   -- signal RxErrorArr       : std_logic_vector(3 downto 0) := (others => '0');
 
    signal TxReadyMask        : std_logic;
 
@@ -163,7 +163,7 @@ begin
                rxByteValid  => RxBytesValid(i),
                RxByteAck    => RxBytesAck(i),
                rxBusy       => RxBusyArr(i),
-               rxError      => RxErrorArr(i),
+               -- rxError      => RxErrorArr(i),
 
                Rx           => RxPortsArr(i),
                Tx           => TxPortsArr(i)
@@ -184,7 +184,7 @@ begin
    end process;
 
    RxBusy  <= '0' when RxBusyArr  = b"0000" else '1';
-   RxError <= '0' when RxErrorArr = b"0000" else '1';
+   -- RxError <= '0' when RxErrorArr = b"0000" else '1';
 
    process (qpixConf.DirMask, TxBytesReady)
    begin
