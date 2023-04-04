@@ -1,7 +1,7 @@
 --Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 ----------------------------------------------------------------------------------
 --Tool Version: Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
---Date        : Sat Apr  1 15:22:04 2023
+--Date        : Mon Apr  3 17:47:25 2023
 --Host        : Forerunner running 64-bit major release  (build 9200)
 --Command     : generate_target design_1_wrapper.bd
 --Design      : design_1_wrapper
@@ -80,11 +80,25 @@ architecture STRUCTURE of design_1_wrapper is
     clk_out1_0 : out STD_LOGIC;
     locked_0 : out STD_LOGIC;
     clk_out2_0 : out STD_LOGIC;
-    S_AXIS_0_tdata : in STD_LOGIC_VECTOR ( 31 downto 0 );
-    S_AXIS_0_tkeep : in STD_LOGIC_VECTOR ( 3 downto 0 );
-    S_AXIS_0_tlast : in STD_LOGIC;
-    S_AXIS_0_tready : out STD_LOGIC;
-    S_AXIS_0_tvalid : in STD_LOGIC;
+    M_AXI_0_awaddr : out STD_LOGIC_VECTOR ( 31 downto 0 );
+    M_AXI_0_awprot : out STD_LOGIC_VECTOR ( 2 downto 0 );
+    M_AXI_0_awvalid : out STD_LOGIC_VECTOR ( 0 to 0 );
+    M_AXI_0_awready : in STD_LOGIC_VECTOR ( 0 to 0 );
+    M_AXI_0_wdata : out STD_LOGIC_VECTOR ( 31 downto 0 );
+    M_AXI_0_wstrb : out STD_LOGIC_VECTOR ( 3 downto 0 );
+    M_AXI_0_wvalid : out STD_LOGIC_VECTOR ( 0 to 0 );
+    M_AXI_0_wready : in STD_LOGIC_VECTOR ( 0 to 0 );
+    M_AXI_0_bresp : in STD_LOGIC_VECTOR ( 1 downto 0 );
+    M_AXI_0_bvalid : in STD_LOGIC_VECTOR ( 0 to 0 );
+    M_AXI_0_bready : out STD_LOGIC_VECTOR ( 0 to 0 );
+    M_AXI_0_araddr : out STD_LOGIC_VECTOR ( 31 downto 0 );
+    M_AXI_0_arprot : out STD_LOGIC_VECTOR ( 2 downto 0 );
+    M_AXI_0_arvalid : out STD_LOGIC_VECTOR ( 0 to 0 );
+    M_AXI_0_arready : in STD_LOGIC_VECTOR ( 0 to 0 );
+    M_AXI_0_rdata : in STD_LOGIC_VECTOR ( 31 downto 0 );
+    M_AXI_0_rresp : in STD_LOGIC_VECTOR ( 1 downto 0 );
+    M_AXI_0_rvalid : in STD_LOGIC_VECTOR ( 0 to 0 );
+    M_AXI_0_rready : out STD_LOGIC_VECTOR ( 0 to 0 );
     FIXED_IO_mio : inout STD_LOGIC_VECTOR ( 53 downto 0 );
     FIXED_IO_ddr_vrn : inout STD_LOGIC;
     FIXED_IO_ddr_vrp : inout STD_LOGIC;
@@ -106,25 +120,11 @@ architecture STRUCTURE of design_1_wrapper is
     DDR_dq : inout STD_LOGIC_VECTOR ( 31 downto 0 );
     DDR_dqs_n : inout STD_LOGIC_VECTOR ( 3 downto 0 );
     DDR_dqs_p : inout STD_LOGIC_VECTOR ( 3 downto 0 );
-    M_AXI_0_awaddr : out STD_LOGIC_VECTOR ( 31 downto 0 );
-    M_AXI_0_awprot : out STD_LOGIC_VECTOR ( 2 downto 0 );
-    M_AXI_0_awvalid : out STD_LOGIC_VECTOR ( 0 to 0 );
-    M_AXI_0_awready : in STD_LOGIC_VECTOR ( 0 to 0 );
-    M_AXI_0_wdata : out STD_LOGIC_VECTOR ( 31 downto 0 );
-    M_AXI_0_wstrb : out STD_LOGIC_VECTOR ( 3 downto 0 );
-    M_AXI_0_wvalid : out STD_LOGIC_VECTOR ( 0 to 0 );
-    M_AXI_0_wready : in STD_LOGIC_VECTOR ( 0 to 0 );
-    M_AXI_0_bresp : in STD_LOGIC_VECTOR ( 1 downto 0 );
-    M_AXI_0_bvalid : in STD_LOGIC_VECTOR ( 0 to 0 );
-    M_AXI_0_bready : out STD_LOGIC_VECTOR ( 0 to 0 );
-    M_AXI_0_araddr : out STD_LOGIC_VECTOR ( 31 downto 0 );
-    M_AXI_0_arprot : out STD_LOGIC_VECTOR ( 2 downto 0 );
-    M_AXI_0_arvalid : out STD_LOGIC_VECTOR ( 0 to 0 );
-    M_AXI_0_arready : in STD_LOGIC_VECTOR ( 0 to 0 );
-    M_AXI_0_rdata : in STD_LOGIC_VECTOR ( 31 downto 0 );
-    M_AXI_0_rresp : in STD_LOGIC_VECTOR ( 1 downto 0 );
-    M_AXI_0_rvalid : in STD_LOGIC_VECTOR ( 0 to 0 );
-    M_AXI_0_rready : out STD_LOGIC_VECTOR ( 0 to 0 )
+    S_AXIS_0_tdata : in STD_LOGIC_VECTOR ( 31 downto 0 );
+    S_AXIS_0_tkeep : in STD_LOGIC_VECTOR ( 3 downto 0 );
+    S_AXIS_0_tlast : in STD_LOGIC;
+    S_AXIS_0_tready : out STD_LOGIC;
+    S_AXIS_0_tvalid : in STD_LOGIC
   );
   end component design_1;
 begin
