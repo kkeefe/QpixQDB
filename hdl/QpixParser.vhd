@@ -165,7 +165,7 @@ begin
                   else
                      outBytesArr(i) <= fQpixRecordToByte(outData);
                   end if;
-                  outBytesValidArr(i)  <= '1'; 
+                  outBytesValidArr(i)  <= '1';
                end if;
 
             -- broadcast the register request

@@ -36,6 +36,20 @@ end QpixEndeavorTx;
 
 architecture Behavioral of QpixEndeavorTx is
 
+   -- signal zeroNum   : unsigned(7 downto 0) := (others => '0');
+   -- signal oneNum    : unsigned(7 downto 0) := (others => '0');
+   -- signal gapNum    : unsigned(7 downto 0) := (others => '0');
+   -- signal finNum    : unsigned(7 downto 0) := (others => '0');
+
+   -- signal scale0    : unsigned(7 downto 0);
+   -- signal scale1    : unsigned(7 downto 0);
+   -- signal scale15   : unsigned(7 downto 0);
+   -- signal scale2    : unsigned(7 downto 0);
+   -- signal scale3    : unsigned(7 downto 0);
+   -- signal scale4    : unsigned(7 downto 0);
+   -- signal scale8    : unsigned(7 downto 0);
+
+
    type StateType is (IDLE_S, DATA_S, GAP_S, FINISH_S);
 
    type RegType is record
@@ -63,26 +77,37 @@ architecture Behavioral of QpixEndeavorTx is
    signal curReg : RegType := REG_INIT_C;
    signal nxtReg : RegType := REG_INIT_C;
 
-   function fValueToClocks(x : std_logic) return unsigned is
-
-   begin
-      if x = '1' then 
-         return to_unsigned(N_ONE_CLK_G-1, 8);
-      else
-         return to_unsigned(N_ZER_CLK_G-1, 8);
-      end if;
-   end function;
-
-
 begin
 
+--   process (clk)
+--   begin
+--      if rising_edge(clk) then
+--         scale0  <= RESIZE(unsigned(scale),scale0'length);
+--         scale1  <= scale0; 
+--         scale2  <= unsigned(scale0(scale0'left-1 downto 0)) & '0';
+--         scale3  <= scale1 + scale2;
+--         scale15 <= '0' & scale3(scale3'left downto 1);
+--         scale4  <= scale0(scale0'left-2 downto 0) & B"00";
+--         scale8  <= scale0(scale0'left-3 downto 0) & B"000";
+
+--         zeroNum <= to_unsigned(N_ZER_CLK_G-1, 7) + scale15; 
+--         oneNum  <= to_unsigned(N_ONE_CLK_G-1, 7) + scale3;
+--         gapNum  <= to_unsigned(N_GAP_CLK_G-1, 7) + scale15;
+--         finNum  <= to_unsigned(N_FIN_CLK_G-1, 7) + scale8;
+
+         
+--      end if;
+--   end process;
+
    -- Asynchronous state logic
+   -- process(curReg, txByteValid, txByte, zeroNum, oneNum, gapNum, finNum, disable) begin
    process(curReg, txByteValid, txByte, disable) begin
       -- Set defaults
-      nxtReg        <= curReg;
-      txByteReady   <= '0';
-      nxtReg.phase  <= curReg.phase + 1;
-      nxtReg.tx     <= '0';
+      nxtReg         <= curReg;
+      nxtReg.ready   <= '0';
+      nxtReg.phase   <= curReg.phase + 1;
+      nxtReg.tx      <= '0';
+      nxtReg.Disable <= disable;
       -- Actual state definitions
       case(curReg.state) is
          when IDLE_S  =>
@@ -115,7 +140,7 @@ begin
 
          when GAP_S => 
             nxtReg.tx <= '0';
-            if to_integer(curReg.phase) = N_GAP_CLK_G then
+            if to_integer(curReg.phase) = to_unsigned(N_GAP_CLK_G, 8) then
                if txByte(to_integer(curReg.counter)) = '1' then 
                   nxtReg.phase_max <= to_unsigned(N_ONE_CLK_G, 8);
                else
@@ -127,7 +152,7 @@ begin
 
          when FINISH_S  =>
             nxtReg.tx <= '0';
-            if to_integer(curReg.phase) = N_FIN_CLK_G then
+            if to_integer(curReg.phase) = to_unsigned(N_FIN_CLK_G, 8) then
                nxtReg.state <= IDLE_S;
             end if;
 
@@ -154,6 +179,8 @@ begin
          tx <= curReg.tx;
       end if;
    end process;
+
+   txByteReady <= curReg.ready;
 
 
 end Behavioral;

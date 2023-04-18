@@ -56,7 +56,8 @@ entity QpixComm is
       RxFifoFullArr_out  : out std_logic_vector(3 downto 0);
       RxValidDbg     : out std_logic;
       RxBusy         : out std_logic;
-      -- RxError        : out std_logic;
+      RxError        : out std_logic;
+      RxState        : out std_logic_vector(2 downto 0);
 
       -- register from  QpixRegFile
       qpixConf       : in QpixConfigType;
@@ -86,7 +87,7 @@ architecture behav of QpixComm is
    signal RxBytesAck       : std_logic_vector(3 downto 0) := (others => '0');
    signal RxBytesValid     : std_logic_vector(3 downto 0) := (others => '0');
    signal RxBusyArr        : std_logic_vector(3 downto 0) := (others => '0');
-   -- signal RxErrorArr       : std_logic_vector(3 downto 0) := (others => '0');
+   signal RxErrorArr       : std_logic_vector(3 downto 0) := (others => '0');
 
    signal TxReadyMask        : std_logic;
 
@@ -105,31 +106,31 @@ begin
    ------------------------------------------------------------
    GEN_TXRX : for i in 0 to 3 generate
 
-      UART_GEN : if TXRX_TYPE = "UART" generate 
-         QpixTxRx_U : entity work.UartTop
-         generic map (
-            NUM_BITS_G => NUM_BITS_G
-         )
-         port map (
-            clk         => clk,
-            sRst        => rst,
+      --UART_GEN : if TXRX_TYPE = "UART" generate 
+         --QpixTxRx_U : entity work.UartTop
+         --generic map (
+            --NUM_BITS_G => NUM_BITS_G
+         --)
+         --port map (
+            --clk         => clk,
+            --sRst        => rst,
 
             --txValid     => TxPortsArr(i).Valid,
-            txByte      => TxBytesArr(i), 
-            txByteValid => TxBytesValid(i), 
-            txByteReady => TxBytesReady(i),
+            --txByte      => TxBytesArr(i), 
+            --txByteValid => TxBytesValid(i), 
+            --txByteReady => TxBytesReady(i),
 
             --rxValid     => RxPortsArr(i).Valid,
-            rxByte      => RxBytesArr(i),
-            rxByteValid => RxBytesValid(i),
-            rxFrameErr  => open,
-            rxBreakErr  => open,
+            --rxByte      => RxBytesArr(i),
+            --rxByteValid => RxBytesValid(i),
+            --rxFrameErr  => open,
+            --rxBreakErr  => RxError,
 
-            uartRx      => RxPortsArr(i),
-            uartTx      => TxPortsArr(i)
+            --uartRx      => RxPortsArr(i),
+            --uartTx      => TxPortsArr(i)
             
-         );
-      end generate UART_GEN;
+         --);
+      --end generate UART_GEN;
 
       ENDEAROV_GEN : if TXRX_TYPE = "ENDEAVOR" generate
             QpixTXRx_U : entity work.QpixEndeavorTop
@@ -139,7 +140,7 @@ begin
                N_ONE_CLK_G   => N_ONE_CLK_G,
                N_GAP_CLK_G   => N_GAP_CLK_G,
                N_FIN_CLK_G   => N_FIN_CLK_G,
-                                         
+
                N_ZER_MIN_G   => N_ZER_MIN_G,
                N_ZER_MAX_G   => N_ZER_MAX_G,
                N_ONE_MIN_G   => N_ONE_MIN_G,
@@ -154,16 +155,17 @@ begin
 
                scale        => EndeavorScale,
                TxRxDisable  => TxRxDisable(i),
-                            
-               txByte       => TxBytesArr(i), 
+
+               txByte       => TxBytesArr(i),
                txByteValid  => TxBytesValid(i),
                txByteReady  => TxBytesReady(i),
 
                rxByte       => RxBytesArr(i),
                rxByteValid  => RxBytesValid(i),
-               RxByteAck    => RxBytesAck(i),
+               RxByteAck    => '1',
                rxBusy       => RxBusyArr(i),
-               -- rxError      => RxErrorArr(i),
+               rxError      => RxErrorArr(i),
+               RxState      => open,
 
                Rx           => RxPortsArr(i),
                Tx           => TxPortsArr(i)
@@ -183,8 +185,9 @@ begin
       end if;
    end process;
 
-   RxBusy  <= '0' when RxBusyArr  = b"0000" else '1';
-   -- RxError <= '0' when RxErrorArr = b"0000" else '1';
+   RxBusy <= RxBusyArr(0);
+   --RxBusy  <= '0' when RxBusyArr  = b"0000" else '1';
+   RxError <= '0' when RxErrorArr = b"0000" else '1';
 
    process (qpixConf.DirMask, TxBytesReady)
    begin

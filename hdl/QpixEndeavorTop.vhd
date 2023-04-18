@@ -36,15 +36,16 @@ entity QpixEndeavorTop is
       -- RX out
       rxByte      : out std_logic_vector(NUM_BITS_G-1 downto 0);
       rxByteValid : out std_logic;
-      -- rxState     : out std_logic_vector(2 downto 0);
+      --rxState     : out std_logic_vector(2 downto 0);
       rxByteAck   : in  std_logic;   
       -- RX Error statuses out
       rxFrameErr  : out std_logic; -- No valid stop bit found
       rxBreakErr  : out std_logic; -- Line low for longer than a character time
 
       rxBusy      : out std_logic;
-      -- rxError     : out std_logic;
+      rxError     : out std_logic;
       rxGapErr    : out std_logic; -- ??
+      rxState     : out   std_logic_vector(2 downto 0);
 
       -- TX in 
       txByte      : in  std_logic_vector(NUM_BITS_G-1 downto 0) := (others => '0');
@@ -83,21 +84,21 @@ begin
          scale       => scale,
          disable     => TxRxDisable,
          rxBusy      => rxBusy,
+         rxState     => rxState,
 
-         
-       -- Byte signal out
+         -- Byte signal out
          rxByte      => rxByte,      -- output
          rxByteValid => rxByteValid, -- output
-         -- rxState     => rxState,     -- output
-         rxByteAck   => '1',
+
+         rxByteAck   => rxByteAck,
+         rxError     => rxError,
          
-       -- Error statuses out
+         -- Error statuses out
          bitError    => rxFrameErr, -- output
          lenError    => rxBreakErr, -- output
          gapError    => rxGapErr,   -- output
 
          Rx          => Rx -- input
-
       );
    
    -- Transmit UART TX bytes
@@ -115,14 +116,15 @@ begin
          clk         => clk,
          sRst        => sRst,
          scale       => scale,
-         disable     => TxRxDisable, 
+         disable     => TxRxDisable,
+
          -- Ready to send new byte (data is sent on txByteValid AND txByteReady)
          txByteReady => txByteReady,
+
          -- Byte data to send out
          txByte      => txByte,
          txByteValid => txByteValid,
          tx          => Tx      
-
       );
 
 end Behavioral;
