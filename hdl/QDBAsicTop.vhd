@@ -34,8 +34,8 @@ port (
     Rx2 : in STD_LOGIC;
     --Tx3 : out STD_LOGIC; -- South
     --Rx3 : in STD_LOGIC;
-    --Tx4 : out STD_LOGIC; -- West
-    --Rx4 : in STD_LOGIC;
+    Tx4 : out STD_LOGIC; -- West
+    Rx4 : in STD_LOGIC;
 
     -- extra IO, hardcode IO for now
     --IO : in STD_LOGIC_VECTOR(3 downto 0);
@@ -68,20 +68,20 @@ architecture Behavioral of QDBAsicTop is
   signal pulse_gre    : std_logic              := '0';
 
   -- extra debugs
-  signal rxByteValid : std_logic := '0';
+  --signal rxByteValid : std_logic := '0';
   signal rxBytesValid : std_logic_vector(3 downto 0);
   signal txBytesValid : std_logic_vector(3 downto 0);
 
   -- extra signals to QpixRegFile.vhd
-  signal  clkCntRst : std_logic;
-  signal  extInterS : std_logic;
-  signal  extInterH : std_logic;
+  --signal  clkCntRst : std_logic;
+  --signal  extInterS : std_logic;
+  --signal  extInterH : std_logic;
   signal  intrNum   : std_logic_vector(15 downto 0);
   signal  clkCnt    : std_logic_vector(31 downto 0);
 
   signal TxPortsArr         : std_logic_vector(3 downto 0);
   signal RxPortsArr         : std_logic_vector(3 downto 0);
-  signal inData             : QpixDataFormatType := QpixDataZero_C;
+  --signal inData             : QpixDataFormatType := QpixDataZero_C;
   signal txData             : QpixDataFormatType := QpixDataZero_C;
   signal rxData             : QpixDataFormatType := QpixDataZero_C;
   signal regData            : QpixRegDataType    := QpixRegDataZero_C;
@@ -89,16 +89,16 @@ architecture Behavioral of QDBAsicTop is
   signal qpixConf           : QpixConfigType     := QpixConfigDef_C;
   signal qpixreq            : QpixRequestType    := QpixRequestZero_C;
   signal TxReady            : std_logic          := '0';
-  signal fsmState           : std_logic_vector(2 downto 0);
+  --signal fsmState           : std_logic_vector(2 downto 0);
 
-  signal locFifoFull : std_logic := '0';
-  signal extFifoFull : std_logic := '0';
-  signal RxState : std_logic_vector(2 downto 0);
+  --signal locFifoFull : std_logic := '0';
+  --signal extFifoFull : std_logic := '0';
+  --signal RxState : std_logic_vector(2 downto 0);
 
-  signal TxRxDisable : std_logic_vector(3 downto 0) := (others => '0');
-  signal RxError       : std_logic := '0';
-  signal RxBusy        : std_logic := '0';
-  signal RxValidDbg    : std_logic := '0';
+  --signal TxRxDisable : std_logic_vector(3 downto 0) := (others => '0');
+  --signal RxError       : std_logic := '0';
+  --signal RxBusy        : std_logic := '0';
+  --signal RxValidDbg    : std_logic := '0';
 
    procedure pulseLED(variable flag : in boolean;
                       variable start_pulse : inout std_logic;
@@ -149,7 +149,8 @@ begin
     
     -- connect Tx to Rx to probe what it thinks it's seeing on scope
     Tx2 <= TxPortsArr(1);
-    Tx1 <= RxBytesValid(1);
+	Tx4 <= TxPortsArr(3);
+    Tx1 <= TxPortsArr(3);
 
     -- clock output to physical
     --si <= clk;
@@ -161,7 +162,7 @@ begin
 
     RxPortsArr(0) <= '0';
     RxPortsArr(2) <= '0';
-    RxPortsArr(3) <= '0';
+    RxPortsArr(3) <= Rx4;
 
     --pulse_red <= Rx1;
     
@@ -216,9 +217,9 @@ begin
         --end if;
 
         -- flash LED conditions for Rx and Tx
-        cr5 := qpixconf.ManRoute = '1';
+        cr5 := rst = '1';
         cg5 := TxPortsArr(1) = '1';
-        cb5 := RxBytesValid /= "0000";
+        cb5 := RxPortsArr(1) = '1';
 
         pulseLED(cb5, start_pulse_blu, pulse_count_blu, pulse_blu);
         pulseLED(cg5, start_pulse_gre, pulse_count_gre, pulse_gre);
@@ -337,7 +338,7 @@ begin
       qpixreq       => qpixreq,  -- input register from reg file
       qpixconf      => qpixconf, -- input register from reg file
       -- analog ASIC trigger connections
-      inData        => inData,   -- input Data from Process, NOT inData to comm
+      inData        => open,   -- input Data from Process, NOT inData to comm
        -- Qpixcomm connections
       TxReady       => TxReady, -- input ready signal from comm
       txData        => txData,  -- output record output to parser

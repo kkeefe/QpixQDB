@@ -243,6 +243,7 @@ begin
             nxtReg.locFifoRen <= '0';
             nxtReg.extFifoRen <= '0';
 
+            -- this should probably be above the interrogationS/H check
             if extFifoEmpty = '0' then
                if fQpixGetWordType(extFifoDout) = REGRSP_W then
                   nxtReg.state <= ROUTE_REGRSP_S;

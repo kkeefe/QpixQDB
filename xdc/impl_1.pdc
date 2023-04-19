@@ -6,8 +6,8 @@ ldc_set_location -site {F5} [get_ports Tx2];# East  - Pin 1, Female
 ldc_set_location -site {E4} [get_ports Rx2];# East  - Pin 3, Female
 #ldc_set_location -site {C3} [get_ports Tx3];# South - Pin 3, Female
 #ldc_set_location -site {F4} [get_ports Rx3];# South - Pin 1, Female
-#ldc_set_location -site {E3} [get_ports Tx4];# West  - Pin 3, Male
-#ldc_set_location -site {B1} [get_ports Rx4];# West  - Pin 1, Male
+ldc_set_location -site {E3} [get_ports Tx4];# West  - Pin 3, Male
+ldc_set_location -site {B1} [get_ports Rx4];# West  - Pin 1, Male
 # done and rest
 # ldc_set_location -site {D3} [get_ports CDONE];
 # ldc_set_location -site {F3} [get_ports sysRst]; # shouldn't be used..

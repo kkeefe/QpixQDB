@@ -144,7 +144,7 @@ begin
 
             regResp_r.OpWrite <= '0';
             regResp_r.OpRead  <= '0';
-            -- regResp_r.Addr    <= regData.Addr;
+
             regResp_r.XDest   <= qpixConf_r.XPos;
             regResp_r.YDest   <= qpixConf_r.YPos;
 
@@ -177,6 +177,7 @@ begin
                      if regData.OpRead = '1' then
                         regResp_r.Data <= (others => '0');
                         regResp_r.Data(4 downto 0) <= qpixConf_r.ManRoute & qpixConf_r.DirMask;
+					  	 regResp_r.Addr    <= regData.Addr;
                      end if;
 
                   -- analog channel masking
@@ -187,6 +188,7 @@ begin
                      if regData.OpRead = '1' then
                         regResp_r.Data <= (others => '0');
                         regResp_r.Data(G_N_ANALOG_CHAN-1 downto 0) <= qpixConf_r.chanEna;
+						 regResp_r.Addr    <= regData.Addr;
                      end if;
 
                   -- set the chip coordinates
@@ -195,11 +197,13 @@ begin
                      qpixConf_r.YPos <= regData.YHops;
                      regResp_r.XDest <= qpixConf_r.XPos;
                      regResp_r.YDest <= qpixConf_r.YPos;
+
                      --if regData.OpWrite = '1' then
                      --end if;
                      if regData.OpRead = '1' then
                         regResp_r.Data <= (others => '0');
-                     end if;
+						 regResp_r.Addr <= regData.Addr;
+					 end if;
                  
                   -- Disable specific receivers
                   when x"0006" =>
@@ -209,6 +213,7 @@ begin
                      if regData.OpRead = '1' then
                         regResp_r.Data <= (others => '0');
                         regResp_r.Data(3 downto 0) <= qpixConf_r.RxDisable;
+						 regResp_r.Addr <= regData.Addr;
                      end if;
 
                   -- Disable local data when transferring data
@@ -219,6 +224,7 @@ begin
                      if regData.OpRead = '1' then
                         regResp_r.Data <= (others => '0');
                         regResp_r.Data(0) <= qpixConf_r.disIfBusy;
+						 regResp_r.Addr <= regData.Addr;
                      end if;
 
                   -- Read interrogation number
@@ -226,6 +232,7 @@ begin
                      if regData.OpRead = '1' then
                         regResp_r.Data <= (others => '0');
                         regResp_r.Data <= intrNum;
+						 regResp_r.Addr <= regData.Addr;
                      end if;
 
                   -- defaults
