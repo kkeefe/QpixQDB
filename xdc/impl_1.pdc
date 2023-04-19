@@ -13,10 +13,10 @@ ldc_set_location -site {B1} [get_ports Rx4];# West  - Pin 1, Male
 # ldc_set_location -site {F3} [get_ports sysRst]; # shouldn't be used..
 ldc_set_location -site {B3} [get_ports pllclk]
 # other I/O East/West only
-#ldc_set_location -site {F2} [get_ports {IO[0]}]
-#ldc_set_location -site {A1} [get_ports {IO[1]}]
-#ldc_set_location -site {A2} [get_ports {IO[2]}]
-#ldc_set_location -site {A4} [get_ports {IO[3]}]
+ldc_set_location -site {F2} [get_ports {IO[0]}]
+ldc_set_location -site {A1} [get_ports {IO[1]}]
+ldc_set_location -site {A2} [get_ports {IO[2]}]
+ldc_set_location -site {A4} [get_ports {IO[3]}]
 # ice_spi pins North/South
 #ldc_set_location -site {C1} [get_ports ss];# ss
 #ldc_set_location -site {F1} [get_ports so];# so

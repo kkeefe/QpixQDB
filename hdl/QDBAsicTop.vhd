@@ -38,7 +38,7 @@ port (
     Rx4 : in STD_LOGIC;
 
     -- extra IO, hardcode IO for now
-    --IO : in STD_LOGIC_VECTOR(3 downto 0);
+    IO : in STD_LOGIC_VECTOR(3 downto 0);
 
     -- optional ss pins -- south Top
     --ss  : in  std_logic;  -- south 8   /  north 6
@@ -81,7 +81,7 @@ architecture Behavioral of QDBAsicTop is
 
   signal TxPortsArr         : std_logic_vector(3 downto 0);
   signal RxPortsArr         : std_logic_vector(3 downto 0);
-  --signal inData             : QpixDataFormatType := QpixDataZero_C;
+  signal inData             : QpixDataFormatType := QpixDataZero_C;
   signal txData             : QpixDataFormatType := QpixDataZero_C;
   signal rxData             : QpixDataFormatType := QpixDataZero_C;
   signal regData            : QpixRegDataType    := QpixRegDataZero_C;
@@ -91,8 +91,9 @@ architecture Behavioral of QDBAsicTop is
   signal TxReady            : std_logic          := '0';
   --signal fsmState           : std_logic_vector(2 downto 0);
 
-  --signal locFifoFull : std_logic := '0';
-  --signal extFifoFull : std_logic := '0';
+  signal locFifoFull : std_logic := '0';
+  signal extFifoFull : std_logic := '0';
+  signal routeBusy        : std_logic := '0';
   --signal RxState : std_logic_vector(2 downto 0);
 
   --signal TxRxDisable : std_logic_vector(3 downto 0) := (others => '0');
@@ -272,7 +273,7 @@ begin
       rst            => rst,
 
       EndeavorScale => "000",
-      fifoFull      => '0', -- route fifo full
+      fifoFull      => extFifoFull, -- route fifo full
 
        -- prototype
       TxRxDisable => "0000", -- external in prototype
@@ -338,7 +339,7 @@ begin
       qpixreq       => qpixreq,  -- input register from reg file
       qpixconf      => qpixconf, -- input register from reg file
       -- analog ASIC trigger connections
-      inData        => open,   -- input Data from Process, NOT inData to comm
+      inData        => inData,   -- input Data from Process, NOT inData to comm
        -- Qpixcomm connections
       TxReady       => TxReady, -- input ready signal from comm
       txData        => txData,  -- output record output to parser
@@ -346,14 +347,35 @@ begin
        -- debug words:
       --  routeErr      => open,
       --  debug         => debug,
-      clkCnt        => x"0000_0000",
+      clkCnt      => clkCnt,
       intrNum     => intrNum,
-      extFifoFull => open,
-      locFifoFull => open,
+      extFifoFull => extFifoFull,
+      locFifoFull => locFifoFull,
+      busy        => routeBusy,
       fsmState    => open
         -- state         => route_state,
         -- routeStateInt => open
      );
    -----------------------------------------------
+
+   -------------------------------------------------
+   -- Process ASIC internal data with defined format
+   ---------------------------------------------------
+   QpixDataProc_U : entity work.QpixDataProc
+   port map(
+      clk            => clk,
+      rst            => rst,
+
+      disIfRouteBusy => qpixConf.disIfBusy,
+      routeBusy      => routeBusy,
+      chanEna        => qpixConf.chanEna,
+      clkCnt         => clkCnt,
+      fifoFull       => locFifoFull,
+
+      testEna => '0',
+      qpixRstPulses => x"000" & IO,
+      outData => inData
+
+   );
 
 end Behavioral;
