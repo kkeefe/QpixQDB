@@ -53,6 +53,7 @@ architecture behav of QpixRegFile is
 
    signal cnt       : unsigned (31 downto 0) := (others => '0');
    signal thisAsicDest : std_logic := '0';
+   signal asicScratch : std_logic_vector(31 downto 0);
 
    type RegFileState is (IDLE_S, WRITE_S, READ_S);
    signal state : RegFileState := IDLE_S;
@@ -143,9 +144,9 @@ begin
 
             regResp_r.OpWrite <= '0';
             regResp_r.OpRead  <= '0';
-            regResp_r.Addr    <= regData.Addr;
+            -- regResp_r.Addr    <= regData.Addr;
             regResp_r.XDest   <= qpixConf_r.XPos;
-            regResp_r.YDest     <= qpixConf_r.YPos;
+            regResp_r.YDest   <= qpixConf_r.YPos;
 
             if regData.Valid = '1' and thisAsicDest = '1' then
                case regData.Addr is
@@ -160,12 +161,8 @@ begin
                      qpixConf_r.XPos <= regData.XHops;
                      qpixConf_r.YPos <= regData.YHops;
 
-                  -- TIMEOUT reg
+                  -- time reg
                   when toslv(2, G_REG_ADDR_BITS) =>
-                     if regData.OpWrite = '1' then
-                        qpixConf_r.Timeout <= regData.Data;
-                     end if;
-
                      if regData.OpRead = '1' then
                         regResp_r.Addr  <= std_logic_vector(cnt(31 downto 16));
                         regResp_r.Data  <= std_logic_vector(cnt(15 downto 0));
@@ -203,23 +200,7 @@ begin
                      if regData.OpRead = '1' then
                         regResp_r.Data <= (others => '0');
                      end if;
-
-                  -- Enable register - used to turn on taking real data
-                  --when toslv(5, G_REG_ADDR_BITS) =>
-                     --if regData.OpWrite = '1' then
-                        --qpixConf_r.locEnaSnd <= regData.Data(0);
-                        --qpixConf_r.locEnaRcv <= regData.Data(1);
-                        --qpixConf_r.locEnaReg <= regData.Data(2);
-                     --end if;
-                     --if regData.OpRead = '1' then
-                        --regResp_r.Addr <= regData.Addr;
-                        --regResp_r.Data <= (others => '0');
-                        --regResp_r.Data(2 downto 0) <= qpixConf_r.locEnaReg & qpixConf_r.locEnaRcv & qpixConf_r.locEnaSnd;
-                        --regResp_r.XDest <= std_logic_vector(to_unsigned(X_POS_G, G_POS_BITS));
-                        --regResp_r.YDest <= std_logic_vector(to_unsigned(Y_POS_G, G_POS_BITS));
-                        --regResp_r.Valid <= '1';
-                     --end if;
-                  
+                 
                   -- Disable specific receivers
                   when x"0006" =>
                      if regData.OpWrite = '1' then
