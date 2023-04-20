@@ -40,7 +40,7 @@ architecture behav of QpixDataProc is
    signal qpixRstPulsesE : std_logic_vector(N_ANALOG_CHAN_G-1 downto 0) := (others => '0');
    signal qpixRstPulsesM : std_logic_vector(N_ANALOG_CHAN_G-1 downto 0) := (others => '0');
 
-   signal testData  : QPixDataFormatType := QpixDataZero_C;
+   --signal testData  : QPixDataFormatType := QpixDataZero_C;
    signal inData    : QPixDataFormatType := QpixDataZero_C;
 
    signal TimeStamp : std_logic_vector(G_TIMESTAMP_BITS-1 downto 0) := (others => '0');

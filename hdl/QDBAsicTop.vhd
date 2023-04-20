@@ -32,8 +32,8 @@ port (
     Rx1 : in STD_LOGIC;
     Tx2 : out STD_LOGIC; -- East
     Rx2 : in STD_LOGIC;
-    --Tx3 : out STD_LOGIC; -- South
-    --Rx3 : in STD_LOGIC;
+    Tx3 : out STD_LOGIC; -- South
+    Rx3 : in STD_LOGIC;
     Tx4 : out STD_LOGIC; -- West
     Rx4 : in STD_LOGIC;
 
@@ -152,6 +152,7 @@ begin
     Tx2 <= TxPortsArr(1);
 	Tx4 <= TxPortsArr(3);
     Tx1 <= TxPortsArr(3);
+	Tx3 <= TxportsArr(2);
 
     -- clock output to physical
     --si <= clk;
@@ -159,14 +160,11 @@ begin
 
      --connect Tx/Rx to the signals
     --Tx3 <= TxPortsArr(2);
+    RxPortsArr(0) <= Rx1;
     RxPortsArr(1) <= Rx2;
-
-    RxPortsArr(0) <= '0';
-    RxPortsArr(2) <= '0';
+    RxPortsArr(2) <= Rx3;
     RxPortsArr(3) <= Rx4;
 
-    --pulse_red <= Rx1;
-    
     -- used to buffer readout on timing measurement
     -- si <= clk;
     rst <= qpixreq.AsicReset;
@@ -310,6 +308,7 @@ begin
       clk      => clk,
       rst      => rst,
 
+	  clkCnt   => clkCnt,
       -- comm connections
       regData  => regData,  -- input record regData type, from parser
       regResp  => regResp,  -- output record regData type, to parser
@@ -318,6 +317,7 @@ begin
       extinterh => '0',
       extinters => '0',
       clkcntrst => '0',
+	  
       -- route connections
       qpixconf => qpixconf, -- record qpixConfigType
       qpixreq  => qpixreq   -- record qpixRequestType
