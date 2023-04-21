@@ -48,6 +48,7 @@ architecture Behavioral of QDBFifo is
    signal i_waddr     : std_logic_vector(DEPTH-1 downto 0) := (others => '0');
    signal i_raddr     : std_logic_vector(DEPTH-1 downto 0) := (others => '0');
    signal i_cnt       : std_logic_vector(DEPTH-1 downto 0) := (others => '0');
+   signal aempty      : std_logic;
 
   -- design copied from mem.vhd fifo_cc
    constant MAX_ADDR  : std_logic_vector(DEPTH-1 downto 0) := (others =>'1');
@@ -129,8 +130,9 @@ begin
    ---- generate full and empty signals
    i_full   <= '1' when i_cnt = MAX_ADDR  else '0';
    i_empty  <= '1' when i_cnt = ZERO_ADDR else '0';
+   aempty   <= '1' when i_cnt = std_logic_vector(to_unsigned(1,DEPTH)) else '0';
    full     <= i_full;
-   empty    <= i_empty or i_empty_r;
+   empty    <= i_empty or (aempty and (ren));
    i_ren    <= ren;
 
    process(clk)
@@ -166,18 +168,18 @@ begin
             i_raddr <= (others => '0');
          else
             if (wen = '1' and i_full = '0') then
-               if i_waddr = MAX_ADDR then
+               if i_waddr = std_logic_vector(MAX_ADDR) then
                   i_waddr <= (others => '0');
                else
-                  i_waddr <= i_waddr + 1;
+                  i_waddr <= std_logic_vector(unsigned(i_waddr) + 1);
                end if;
             end if;
 
             if (i_ren = '1' and i_empty = '0') then
-               if i_raddr = MAX_ADDR then
+               if i_raddr = std_logic_vector(MAX_ADDR) then
                   i_raddr <= (others => '0');
                else
-                  i_raddr <= i_raddr + 1;
+                  i_raddr <= std_logic_vector(unsigned(i_raddr) + 1);
                end if;
             end if;
 

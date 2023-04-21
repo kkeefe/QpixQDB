@@ -37,6 +37,8 @@ entity QpixRoute is
       intrNum         : out std_logic_vector(15 downto 0);
       extFifoFull     : out std_logic;
       locFifoFull     : out std_logic;
+      extFifoEmpty    : out std_logic;
+      locFifoEmpty    : out std_logic;
       fsmState        : out std_logic_vector(2 downto 0)
                       
    );
@@ -94,12 +96,12 @@ architecture behav of QpixRoute is
    signal curReg : RegType := REG_INIT_C;
    signal nxtReg : RegType := REG_INIT_C;
 
-   signal locFifoEmpty   : std_logic := '0';
+   --signal locFifoEmpty   : std_logic := '0';
    signal locFifoDin     : std_logic_vector (G_N_ANALOG_CHAN+G_TIMESTAMP_BITS-1 downto 0);
    signal locFifoDout    : std_logic_vector (G_N_ANALOG_CHAN+G_TIMESTAMP_BITS-1 downto 0);
    signal locFull        : std_logic := '0';
 
-   signal extFifoEmpty   : std_logic := '0';
+   --signal extFifoEmpty   : std_logic := '0';
    -- signal extFifoRen     : std_logic := '0';
    signal extFifoDout    : std_logic_vector (G_DATA_BITS-1 downto 0);
    signal extFull        : std_logic := '0';
@@ -193,7 +195,6 @@ begin
    );
    end generate;
    ---------------------------------------------------
-
 
 
    ---------------------------------------------------

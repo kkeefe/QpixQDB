@@ -48,6 +48,7 @@ entity QpixComm is
       outData        : in  QpixDataFormatType; -- Tx from QpixRoute
       inData         : out QpixDataFormatType; -- Rx to QpixRoute
       TxReady        : out std_logic;          -- Tx-ready to QpixRoute
+      TxReadyMaskV   : out std_logic_vector(3 downto 0); -- Tx-ready to QpixRoute
 
       -- Debug
       TxByteValidArr_out : out std_logic_vector(3 downto 0);
@@ -159,12 +160,15 @@ begin
                txByte       => TxBytesArr(i),
                txByteValid  => TxBytesValid(i),
                txByteReady  => TxBytesReady(i),
+               rxFrameErr => open,
+               rxBreakErr => open,
 
                rxByte       => RxBytesArr(i),
                rxByteValid  => RxBytesValid(i),
-               RxByteAck    => '1',
+               RxByteAck    => RxBytesAck(i),
                rxBusy       => RxBusyArr(i),
                rxError      => RxErrorArr(i),
+               rxGapErr     => open,
                RxState      => open,
 
                Rx           => RxPortsArr(i),
@@ -185,8 +189,8 @@ begin
       end if;
    end process;
 
-   RxBusy <= RxBusyArr(0);
-   --RxBusy  <= '0' when RxBusyArr  = b"0000" else '1';
+   -- RxBusy <= RxBusyArr(0);
+   RxBusy  <= '0' when RxBusyArr  = b"0000" else '1';
    RxError <= '0' when RxErrorArr = b"0000" else '1';
 
    process (qpixConf.DirMask, TxBytesReady)
@@ -198,6 +202,7 @@ begin
          end if;
    end process;
    TxReady <= TxReadyMask;
+   TxReadyMaskV <= TxBytesReady;
 
    ------------------------------------------------------------
    -- Parser

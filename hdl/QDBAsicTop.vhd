@@ -42,8 +42,8 @@ port (
 
     -- optional ss pins -- south Top
     --ss  : in  std_logic;  -- south 8   /  north 6
-    --so  : in std_logic;  -- south 6   /  north 4
-    --si  : out std_logic;  -- south 4   /  north 2
+    so  : out std_logic;  -- south 6   /  north 4
+    si  : out std_logic;  -- south 4   /  north 2
     --sck : in std_logic;   -- south 2   /  north 8
 
     -- outputs
@@ -60,12 +60,16 @@ architecture Behavioral of QDBAsicTop is
   -- timestamp and QDBAsic specifics
   signal clk          : std_logic;
   signal rst          : std_logic              := '0';
+  signal routeRst          : std_logic              := '0';
   --signal pllclk       : std_logic              := '0';  
-  --signal localCnt     : unsigned (31 downto 0) := (others => '0');
-  --signal slv_localCnt : std_logic_vector(31 downto 0);
+
   signal pulse_red    : std_logic              := '0';
   signal pulse_blu    : std_logic              := '0';
   signal pulse_gre    : std_logic              := '0';
+  signal pulse_red_buf    : std_logic              := '0';
+  signal pulse_blu_buf    : std_logic              := '0';
+  signal pulse_gre_buf    : std_logic              := '0';
+  signal slv_led_buf   : std_logic_vector(2 downto 0);
 
   -- extra debugs
   --signal rxByteValid : std_logic := '0';
@@ -79,21 +83,24 @@ architecture Behavioral of QDBAsicTop is
   signal  intrNum   : std_logic_vector(15 downto 0);
   signal  clkCnt    : std_logic_vector(31 downto 0);
 
-  signal TxPortsArr         : std_logic_vector(3 downto 0);
-  signal RxPortsArr         : std_logic_vector(3 downto 0);
-  signal inData             : QpixDataFormatType := QpixDataZero_C;
-  signal txData             : QpixDataFormatType := QpixDataZero_C;
-  signal rxData             : QpixDataFormatType := QpixDataZero_C;
-  signal regData            : QpixRegDataType    := QpixRegDataZero_C;
-  signal regResp            : QpixRegDataType    := QpixRegDataZero_C;
-  signal qpixConf           : QpixConfigType     := QpixConfigDef_C;
-  signal qpixreq            : QpixRequestType    := QpixRequestZero_C;
-  signal TxReady            : std_logic          := '0';
+  signal TxPortsArr   : std_logic_vector(3 downto 0);
+  signal RxPortsArr   : std_logic_vector(3 downto 0);
+  signal inData       : QpixDataFormatType := QpixDataZero_C;
+  signal txData       : QpixDataFormatType := QpixDataZero_C;
+  signal rxData       : QpixDataFormatType := QpixDataZero_C;
+  signal regData      : QpixRegDataType    := QpixRegDataZero_C;
+  signal regResp      : QpixRegDataType    := QpixRegDataZero_C;
+  signal qpixConf     : QpixConfigType     := QpixConfigDef_C;
+  signal qpixreq      : QpixRequestType    := QpixRequestZero_C;
+  signal TxReady      : std_logic          := '0';
+  signal TxReadyMaskV : std_logic_vector(3 downto 0);
   --signal fsmState           : std_logic_vector(2 downto 0);
 
-  signal locFifoFull : std_logic := '0';
-  signal extFifoFull : std_logic := '0';
-  signal routeBusy        : std_logic := '0';
+  signal locFifoFull  : std_logic := '0';
+  signal extFifoFull  : std_logic := '0';
+  signal locFifoEmpty : std_logic := '0';
+  signal extFifoEmpty : std_logic := '0';
+  signal routeBusy    : std_logic := '0';
   --signal RxState : std_logic_vector(2 downto 0);
 
   --signal TxRxDisable : std_logic_vector(3 downto 0) := (others => '0');
@@ -142,23 +149,19 @@ end component;
 
 -----------------------------ARCH------------------------------------------
 begin
-
-    -- LEDs, active LOW (on when value is '0')
-    red_led <= not pulse_red; -- not '0' = off, '1' is off
-    blu_led <= not pulse_blu;
-    gre_led <= not pulse_gre; -- not '0' = off, '1' is off
     
     -- connect Tx to Rx to probe what it thinks it's seeing on scope
+    Tx1 <= TxPortsArr(0);
+    --Rx1 <= TxPortsArr(3);
     Tx2 <= TxPortsArr(1);
-	Tx4 <= TxPortsArr(3);
-    Tx1 <= TxPortsArr(3);
-	Tx3 <= TxportsArr(2);
+    Tx3 <= TxportsArr(2);
+    Tx4 <= TxPortsArr(3);
 
-    -- clock output to physical
-    --si <= clk;
-    --so <= pllClk;
+	-- scope probes
+	so <= TxPortsArr(1); -- pin 4 A | pin 4 B 
+	si <= TxPortsArr(3); -- pin 6 A | pin 2 B
 
-     --connect Tx/Rx to the signals
+    --connect Tx/Rx to the signals
     --Tx3 <= TxPortsArr(2);
     RxPortsArr(0) <= Rx1;
     RxPortsArr(1) <= Rx2;
@@ -166,8 +169,8 @@ begin
     RxPortsArr(3) <= Rx4;
 
     -- used to buffer readout on timing measurement
-    -- si <= clk;
-    rst <= qpixreq.AsicReset;
+    rst      <= qpixreq.AsicReset;
+    routeRst <= qpixreq.ResetState;
 
    ----------------------------------------------------------
    --          optional ICs for the lattice FPGA           --
@@ -186,74 +189,36 @@ begin
   u_pll : qdb_pll port map(
     ref_clk_i   =>  pllclk,
     rst_n_i     =>  '1', -- active low
-    outcore_o   =>  clk,
-    outglobal_o => open
+    outcore_o   =>  open,
+    outglobal_o =>  clk
   );
 
 
    ----------------------------------------------------------
    --          top level processes to flag for LEDs        --
    ----------------------------------------------------------
+   QDBLed_U : entity work.QDBLed
+   generic map(
+      pulse_time     => pulse_time
+      )
+   port map(
+      clk            => clk,
+      rst            => rst,
 
-    process(clk) is
-      variable cb5 : boolean := false;
-      variable cg5 : boolean := false;
-      variable cr5 : boolean := false;
-      variable count : integer range 0 to pulse_time := 0;
-      variable pulse_count_red : integer range 0 to pulse_time := 0;
-      variable start_pulse_red : std_logic := '0';
-      variable pulse_count_gre : integer range 0 to pulse_time := 0;
-      variable start_pulse_gre : std_logic := '0';
-      variable pulse_count_blu : integer range 0 to pulse_time := 0;
-      variable start_pulse_blu : std_logic := '0';
-    begin
-     if rising_edge(clk) then
+      -- conditional inputs
+      cond_red_led => regdata.dest = '1' and regdata.valid = '1',
+      cond_gre_led => (regdata.ydest = qpixconf.ypos and regdata.xdest = qpixconf.xpos and regdata.valid = '1') and not regdata.dest = '1',
+      cond_blu_led => false,
 
-        count := count + 1;
-        --if count = 19_999_999 then
-          --pulse_blu <= not pulse_blu;
-          --count := 0;
-        --end if;
-
-        -- flash LED conditions for Rx and Tx
-        cr5 := rst = '1';
-        cg5 := TxPortsArr(1) = '1';
-        cb5 := RxPortsArr(1) = '1';
-
-        pulseLED(cb5, start_pulse_blu, pulse_count_blu, pulse_blu);
-        pulseLED(cg5, start_pulse_gre, pulse_count_gre, pulse_gre);
-        pulseLED(cr5, start_pulse_red, pulse_count_red, pulse_red);
-
-
-        end if;
-    end process;
-
-   ------------TEST MODULES-----------------------
-   --U_Rx : entity work.QpixEndeavorRx
-      --port map (
-          -- Clock and reset
-         --clk         => clk,
-         --sRst        => '0',
-
-         --scale       => "000",
-         --disable     => '0',
-         --rxBusy      => open,
-         --rxState     => rxState,
-
-          -- Byte signal out
-         --rxByte      => open,      -- output
-         --rxByteValid => rxByteValid, -- output
-
-         --rxByteAck   => '1',
-         --rxError     => open,
-         
-          -- Error statuses out
-         --bitError    => open, -- output
-         --lenError    => open, -- output
-         --gapError    => open,   -- output
-
-         --Rx          => Rx2 -- input
-      --);
+      -- outputs
+      red_led => pulse_red,
+      gre_led => pulse_gre,
+      blu_led => pulse_blu
+      );
+    -- LEDs, active LOW (on when value is '0')
+    red_led <= not pulse_red; -- not '0' = off, '1' is off
+    blu_led <= not pulse_blu;
+    gre_led <= not pulse_gre; -- not '0' = off, '1' is off
 
 
    ------------MODULES----------------------------
@@ -268,7 +233,7 @@ begin
       )
    port map(
       clk            => clk,
-      rst            => rst,
+      rst            => routeRst,
 
       EndeavorScale => "000",
       fifoFull      => extFifoFull, -- route fifo full
@@ -281,9 +246,10 @@ begin
       RxPortsArr     => RxPortsArr, -- slv input form physical
 
       -- route <-> parser
-      outData        => txData,  -- record input to parser from route
-      inData         => rxData,  -- record output from parser to route
-      TxReady        => TxReady, -- sl ready signal to route
+      outData      => txData,           -- record input to parser from route
+      inData       => rxData,           -- record output from parser to route
+      TxReady      => TxReady,          -- sl ready signal to route
+      TxReadyMaskV => TxReadyMaskV,     -- sl ready signal to route
 
       -- debug
       TxByteValidArr_out => open,
@@ -334,7 +300,7 @@ begin
       Y_POS_G       => Y_POS_G)
    port map(
       clk           => clk,
-      rst           => rst,
+      rst           => routeRst,
        -- reg file connections
       qpixreq       => qpixreq,  -- input register from reg file
       qpixconf      => qpixconf, -- input register from reg file
@@ -347,12 +313,14 @@ begin
        -- debug words:
       --  routeErr      => open,
       --  debug         => debug,
-      clkCnt      => clkCnt,
-      intrNum     => intrNum,
-      extFifoFull => extFifoFull,
-      locFifoFull => locFifoFull,
-      busy        => routeBusy,
-      fsmState    => open
+      clkcnt       => clkcnt,
+      intrnum      => intrnum,
+      extfifofull  => extfifofull,
+      locfifofull  => locfifofull,
+      extfifoempty => extfifoempty,
+      locfifoempty => locfifoempty,
+      busy         => routebusy,
+      fsmState     => open
         -- state         => route_state,
         -- routeStateInt => open
      );

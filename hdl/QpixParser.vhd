@@ -25,7 +25,7 @@ entity QpixParser is
       outData             : in  QpixDataFormatType;
       outBytesArr         : out QpixByteArrType;
       outBytesValidArr    : out std_logic_vector(3 downto 0);
-      txReady             : in  std_logic;
+      TxReady             : in  std_logic;
 
       -- RefFile configuration
       qpixConf            : in QpixConfigType;
@@ -122,9 +122,9 @@ begin
                      -- increment X-Y position depending on where the data came from
                      case rx_ind is
                         when b"00" => regDataR.YHops <= std_logic_vector(unsigned(reg.YHops) + 1); 
-                        when b"01" => regDataR.XHops <= std_logic_vector(unsigned(reg.XHops) - 1); 
+                        when b"01" => regDataR.XHops <= std_logic_vector(unsigned(reg.XHops) + 1);
                         when b"10" => regDataR.YHops <= std_logic_vector(unsigned(reg.YHops) - 1); 
-                        when b"11" => regDataR.XHops <= std_logic_vector(unsigned(reg.XHops) + 1); 
+                        when b"11" => regDataR.XHops <= std_logic_vector(unsigned(reg.XHops) - 1);
                         when others =>
                      end case;
                   end if;

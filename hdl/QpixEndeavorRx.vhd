@@ -157,7 +157,7 @@ begin
 
   -- Asynchronous state logic
   -- process (curreg, rx_r, rxbyteack, zeromin, zeromax, onemin, onemax, gapmin, finmin, disable) is
-  process (nxtreg, curreg, rx_r, rxbyteack, disable) is
+  process (nxtreg, curreg, rx_r, rxbyteack) is
   begin
 
     -- Set defaults
