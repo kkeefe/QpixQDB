@@ -36,21 +36,23 @@ architecture Behavioral of QDBLed is
   signal pulse_blu     : std_logic := '0';
   signal pulse_gre     : std_logic := '0';
 
+  signal red_buf     : std_logic := '0';
+  signal blu_buf     : std_logic := '0';
+  signal gre_buf     : std_logic := '0';
+
+
   signal pulse_red_buf : std_logic := '0';
   signal pulse_blu_buf : std_logic := '0';
   signal pulse_gre_buf : std_logic := '0';
 
   signal slv_led_buf   : std_logic_vector(2 downto 0);
+  signal slv_led_buf_o : std_logic_vector(2 downto 0);
 
    procedure pulseLED(variable flag : in boolean;
                       variable start_pulse : inout std_logic;
                       variable count_pulse : inout integer;
                       signal output : out std_logic) is
       begin
-         if flag then
-             start_pulse := '1';
-             count_pulse := 0;
-         end if;
          if start_pulse = '1' then
              count_pulse := count_pulse + 1;
 			 output <= '1';
@@ -60,6 +62,10 @@ architecture Behavioral of QDBLed is
              end if;
          else
             output <= '0';
+         end if;
+		 if flag then
+             start_pulse := '1';
+             count_pulse := 0;
          end if;
       end procedure pulseLED;
 
@@ -119,9 +125,15 @@ begin
         pulse_gre_buf <= slv_led_buf(1);
         pulse_blu_buf <= slv_led_buf(2);
 
-        pwm(pwm_red, pulse_red_buf, red_led);
-        pwm(pwm_gre, pulse_gre_buf, gre_led);
-        pwm(pwm_blu, pulse_blu_buf, blu_led);
+        pwm(pwm_red, pulse_red_buf, red_buf);
+        pwm(pwm_gre, pulse_gre_buf, gre_buf);
+        pwm(pwm_blu, pulse_blu_buf, blu_buf);
+
+        slv_led_buf_o <= blu_buf & gre_buf & red_buf;
+
+		red_led <= slv_led_buf_o(0);
+        gre_led <= slv_led_buf_o(1);
+        blu_led <= slv_led_buf_o(2);
 
         end if;
     end process;

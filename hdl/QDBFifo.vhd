@@ -89,6 +89,39 @@ component sdp_ram_ext is
         rd_data_o: out std_logic_vector(63 downto 0)
     );
 end component;
+
+component LQDBFifo is
+    port(
+        clk_i: in std_logic;
+        rst_i: in std_logic;
+
+        rd_en_i: in std_logic;
+        wr_en_i: in std_logic;
+        wr_data_i: in std_logic_vector(63 downto 0);
+        rd_data_o: out std_logic_vector(63 downto 0);
+		
+		empty_o : out std_logic;
+		almost_empty_o : out std_logic;
+		full_o : out std_logic
+    );
+end component;
+
+component LQDBFifo_loc is
+    port(
+        clk_i: in std_logic;
+        rst_i: in std_logic;
+
+        rd_en_i: in std_logic;
+        wr_en_i: in std_logic;
+        wr_data_i: in std_logic_vector(47 downto 0);
+        rd_data_o: out std_logic_vector(47 downto 0);
+		
+		empty_o : out std_logic;
+		almost_empty_o : out std_logic;
+		full_o : out std_logic
+    );
+end component;
+
 begin
 
    -- use RAM_loc IP
@@ -123,10 +156,47 @@ begin
 			wr_addr_i=> i_waddr,
 			rd_addr_i=> i_raddr,
 			rd_data_o=> dout
-		);       
+		); 
+   end generate;
+   def_gen_qfifo_ext: if(RAM_TYPE = "Lattice_fifo_ext") generate
+     ram_fifoip_ext : LQDBFifo
+		port map(
+			clk_i=> clk,
+			rst_i=> rst,
+
+			rd_en_i=> ren,
+			rd_data_o=> dout,
+
+			wr_en_i=> wen,
+			wr_data_i=> din,
+			
+			-- fifo signals
+			empty_o => empty,
+			almost_empty_o => aempty,
+			full_o => full
+		);       		
+   end generate;
+   def_gen_qfifo_loc: if(RAM_TYPE = "Lattice_fifo_loc") generate
+     ram_fifoip_ext : LQDBFifo_loc
+		port map(
+			clk_i=> clk,
+			rst_i=> rst,
+
+			rd_en_i=> ren,
+			rd_data_o=> dout,
+
+			wr_en_i=> wen,
+			wr_data_i=> din,
+			
+			-- fifo signals
+			empty_o => empty,
+			almost_empty_o => aempty,
+			full_o => full
+		);       		
    end generate;
    ---------------------------------------------------
-
+	
+def_logic : if(RAM_TYPE = "Lattice_ext" or RAM_TYPE = "Lattice_loc") generate
    ---- generate full and empty signals
    i_full   <= '1' when i_cnt = MAX_ADDR  else '0';
    i_empty  <= '1' when i_cnt = ZERO_ADDR else '0';
@@ -186,5 +256,6 @@ begin
          end if;
       end if;
    end process RW_ADDR_PROC;
+   end generate;
 
 end Behavioral;

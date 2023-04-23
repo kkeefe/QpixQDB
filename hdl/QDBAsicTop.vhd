@@ -108,28 +108,6 @@ architecture Behavioral of QDBAsicTop is
   --signal RxBusy        : std_logic := '0';
   --signal RxValidDbg    : std_logic := '0';
 
-   procedure pulseLED(variable flag : in boolean;
-                      variable start_pulse : inout std_logic;
-                      variable count_pulse : inout integer;
-                      signal output : out std_logic) is
-      begin
-         if flag then
-             start_pulse := '1';
-             count_pulse := 0;
-         end if;
-         if start_pulse = '1' then
-             count_pulse := count_pulse + 1;
-             output <= '1';
-             if count_pulse >= pulse_time then
-                 count_pulse := 0;
-                 start_pulse := '0';
-             end if;
-         else
-            output <= '0';
-         end if;
-      end procedure pulseLED;
-
-
 --component HSOSC
 --GENERIC( CLKHF_DIV :string :="0b00");
 --PORT(
@@ -209,7 +187,7 @@ begin
       cond_red_led => (not regdata.dest = '1') and regdata.valid = '1', -- received a broadcast
       -- received a specific regreq
       cond_gre_led => regdata.ydest = qpixconf.ypos and regdata.xdest = qpixconf.xpos and regdata.valid = '1' and regdata.dest = '1',
-      cond_blu_led => extFifoFull = '1', -- received remote data
+      cond_blu_led => extFifoEmpty = '0', -- received remote data
 
       -- outputs
       red_led => pulse_red,
