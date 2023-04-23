@@ -5,6 +5,7 @@ use ieee.std_logic_unsigned.all;
 
 entity QDBLed is
    generic (
+      PWM_BITS     : natural := 8;
       pulse_time   : natural := 9_999_999
     );
 port (
@@ -62,6 +63,24 @@ architecture Behavioral of QDBLed is
          end if;
       end procedure pulseLED;
 
+   procedure pwm(variable count : inout unsigned(PWM_BITS-1 downto 0);
+                 signal input : in std_logic;
+                 signal output : out std_logic) is
+      begin
+         if input = '1' then
+             count := count + 1;
+             if count(PWM_BITS-1) = '1' then
+                output <= '1';
+                count := (others => '0');
+             else
+               output <= '0';
+             end if;
+         else
+           count := (others => '0');
+           output <= '0';
+         end if;
+      end procedure pwm;
+
 -----------------------------ARCH------------------------------------------
 begin
 
@@ -76,9 +95,9 @@ begin
        variable pulse_count_blu : integer range 0 to pulse_time := 0;
        variable start_pulse_blu : std_logic                     := '0';
        -- pwm variables
-       variable pwm_red : unsigned(8 downto 0) := (others => '0');
-       variable pwm_gre : unsigned(8 downto 0) := (others => '0');
-       variable pwm_blu : unsigned(8 downto 0) := (others => '0');
+       variable pwm_red : unsigned(PWM_BITS-1 downto 0) := (others => '0');
+       variable pwm_gre : unsigned(PWM_BITS-1 downto 0) := (others => '0');
+       variable pwm_blu : unsigned(PWM_BITS-1 downto 0) := (others => '0');
     begin
      if rising_edge(clk) then
 
@@ -100,9 +119,9 @@ begin
         pulse_gre_buf <= slv_led_buf(1);
         pulse_blu_buf <= slv_led_buf(2);
 
-        red_led <= pulse_red_buf;
-        gre_led <= pulse_gre_buf;
-        blu_led <= pulse_blu_buf;
+        pwm(pwm_red, pulse_red_buf, red_led);
+        pwm(pwm_gre, pulse_gre_buf, gre_led);
+        pwm(pwm_blu, pulse_blu_buf, blu_led);
 
         end if;
     end process;
