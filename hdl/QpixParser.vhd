@@ -169,7 +169,7 @@ begin
                end if;
 
             -- broadcast the register request
-            elsif regDataR.Valid = '1'  then 
+            elsif regDataR.Valid = '1' and (regData.dest = '0' or not (regData.XDest = qpixconf.xpos and regData.YDest = qpixconf.ypos)) then
                outBytesArr(i)      <= fQpixRegToByte(regDataR);
                outBytesValidArr(i) <= not inBytesMuxValidR(i);
 

@@ -53,7 +53,6 @@ architecture behav of QpixRegFile is
 
    signal cnt       : unsigned (31 downto 0) := (others => '0');
    signal thisAsicDest : std_logic := '0';
-   signal asicScratch : std_logic_vector(31 downto 0);
 
    type RegFileState is (IDLE_S, WRITE_S, READ_S);
    signal state : RegFileState := IDLE_S;
@@ -151,25 +150,27 @@ begin
             if regData.Valid = '1' and thisAsicDest = '1' then
                case regData.Addr is
                   -- CMD reg
-                  when toslv(1, G_REG_ADDR_BITS) => 
+                  when x"0001" =>
                      qpixReq_r.InterrogationHard <= regData.Data(0);
                      qpixReq_r.InterrogationSoft <= regData.Data(1);
                      qpixReq_r.AsicReset         <= regData.Data(2);
                      qpixReq_r.ResetState        <= regData.Data(3);
                      qpixReq_r.ReqID             <= regData.ReqID;
                      
-                     qpixConf_r.XPos <= regData.XHops;
-                     qpixConf_r.YPos <= regData.YHops;
+                     -- this forces a dynamic position update on every cmd broadcast
+                     -- reserve this feature for cmd 5
+                     -- qpixConf_r.XPos <= regData.XHops;
+                     -- qpixConf_r.YPos <= regData.YHops;
 
                   -- time reg
-                  when toslv(2, G_REG_ADDR_BITS) =>
+                  when x"0002" =>
                      if regData.OpRead = '1' then
                         regResp_r.Addr  <= std_logic_vector(cnt(31 downto 16));
                         regResp_r.Data  <= std_logic_vector(cnt(15 downto 0));
                      end if;
 
                   -- DirMask and Manual routing
-                  when toslv(3, G_REG_ADDR_BITS) =>
+                  when x"0003" =>
                      if regData.OpWrite = '1' then
                         qpixConf_r.DirMaskMan <= regData.Data(3 downto 0);
                         qpixConf_r.ManRoute   <= regData.Data(4);
@@ -198,10 +199,8 @@ begin
                      regResp_r.XDest <= qpixConf_r.XPos;
                      regResp_r.YDest <= qpixConf_r.YPos;
 
-                     --if regData.OpWrite = '1' then
-                     --end if;
                      if regData.OpRead = '1' then
-                        regResp_r.Data <= (others => '0');
+                        regResp_r.Data <= x"add5";
                         regResp_r.Addr <= regData.Addr;
                      end if;
                  

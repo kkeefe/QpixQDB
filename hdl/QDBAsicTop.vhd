@@ -206,9 +206,10 @@ begin
       rst            => rst,
 
       -- conditional inputs
-      cond_red_led => regdata.dest = '1' and regdata.valid = '1',
-      cond_gre_led => (regdata.ydest = qpixconf.ypos and regdata.xdest = qpixconf.xpos and regdata.valid = '1') and not regdata.dest = '1',
-      cond_blu_led => false,
+      cond_red_led => (not regdata.dest = '1') and regdata.valid = '1', -- received a broadcast
+      -- received a specific regreq
+      cond_gre_led => regdata.ydest = qpixconf.ypos and regdata.xdest = qpixconf.xpos and regdata.valid = '1' and regdata.dest = '1',
+      cond_blu_led => extFifoFull = '1', -- received remote data
 
       -- outputs
       red_led => pulse_red,

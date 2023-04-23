@@ -137,6 +137,8 @@ architecture Behavioral of QDBDaqTop is
    signal daqFrameErrCnt : std_logic_vector (31 downto 0) := (others => '0');
    signal daqBreakErrCnt : std_logic_vector (31 downto 0) := (others => '0');
    
+   signal RxError      : std_logic                    := '0';
+   signal RxByteValid  : std_logic                    := '0';
    signal counter_led  : std_logic                    := '0';
    signal leds         : std_logic_vector(3 downto 0) := (others => '0');
    -- buffer daqTx / daqRx
@@ -438,6 +440,9 @@ begin
 
       trgTime     => trgTime,
       evt_fin     => status(0),
+
+      RxError     => RxError,
+      RxByteValid => RxByteValid,
 
       uartFrameCnt => daqFrameErrCnt,
       uartBreakCnt => daqBreakErrCnt,

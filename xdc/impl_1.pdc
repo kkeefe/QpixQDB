@@ -11,7 +11,7 @@ ldc_set_location -site {B1} [get_ports Rx4];# West  - Pin 1, Male
 # done and rest
 # ldc_set_location -site {D3} [get_ports CDONE];
 # ldc_set_location -site {F3} [get_ports sysRst]; # shouldn't be used..
-ldc_set_location -site {B3} [get_ports pllclk]
+#ldc_set_location -site {B3} [get_ports pllclk]
 # other I/O East/West only
 ldc_set_location -site {F2} [get_ports {IO[0]}]
 ldc_set_location -site {A1} [get_ports {IO[1]}]
@@ -19,8 +19,8 @@ ldc_set_location -site {A2} [get_ports {IO[2]}]
 ldc_set_location -site {A4} [get_ports {IO[3]}]
 # ice_spi pins North/South
 #ldc_set_location -site {C1} [get_ports ss];# ss
-#ldc_set_location -site {F1} [get_ports so];# so
-#ldc_set_location -site {E1} [get_ports si];# si
+ldc_set_location -site {F1} [get_ports so];# so
+ldc_set_location -site {E1} [get_ports si];# si
 #ldc_set_location -site {D1} [get_ports sck];# sck
 # LEDs
 ldc_set_location -site {A5} [get_ports blu_led]
@@ -35,11 +35,8 @@ ldc_set_location -site {C5} [get_ports red_led]
 #ldc_set_location -site {D5} [get_ports JTAG_TDO];# Rx1, port 3, brown wire
 #ldc_set_location -site {E4} [get_ports JTAG_TMS];# Rx2, port 3, yellow wire
 #ldc_set_location -site {F5} [get_ports JTAG_TCK];# Tx2, port 1, white wire
-create_clock -name {pllclk} -period 83.3333 [get_ports pllclk]
 #create_clock -name {JTAG_TCK} -period 33.333333 [get_ports JTAG_TCK]
 #-- lattice LSE
 #create_clock -name {mytck} -period 100 [get_ports JTAG_TCK]
 #create_clock -name {oclk} -period 40 [get_pins OSCInst0/CLKHF]
-#set_false_path -from {mytck} -to {oclk}
-#set_false_path -from {oclk} -to {mytck}
-ldc_set_port -iobuf {DRIVE=NA PULLMODE=100K} [get_ports Rx1]
+

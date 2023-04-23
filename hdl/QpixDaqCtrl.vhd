@@ -38,6 +38,10 @@ entity QpixDaqCtrl is
       --asicY      : in std_logic_vector(G_POS_BITS-1 downto 0);
       --asicAddr   : in std_logic_vector(G_REG_ADDR_BITS-1 downto 0);
       --qpixReq    : QpixRegReqType;
+
+      -- Debug
+      RxError : out std_logic;
+      RxByteValid : out std_logic;
       
       -- event memory ports
       memEvtSize : out std_logic_vector(31 downto 0);
@@ -151,6 +155,7 @@ begin
          rxByteAck   => '1', -- tuned within cocotb to always be 1
          rxGapErr    => open,
          rxState     => open,
+         RxError     => RxError,
 
          Tx          => daqTx,
          Rx          => daqRx
@@ -215,6 +220,8 @@ begin
          end if;
       end if;
    end process;
+
+   RxByteValid <= daqRxByteValid;
 
 
    ------------------------------------------------------------
