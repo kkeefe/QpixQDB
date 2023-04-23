@@ -66,10 +66,6 @@ architecture Behavioral of QDBAsicTop is
   signal pulse_red    : std_logic              := '0';
   signal pulse_blu    : std_logic              := '0';
   signal pulse_gre    : std_logic              := '0';
-  signal pulse_red_buf    : std_logic              := '0';
-  signal pulse_blu_buf    : std_logic              := '0';
-  signal pulse_gre_buf    : std_logic              := '0';
-  signal slv_led_buf   : std_logic_vector(2 downto 0);
 
   -- extra debugs
   --signal rxByteValid : std_logic := '0';

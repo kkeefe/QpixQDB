@@ -121,7 +121,7 @@ begin
       generic map(
          DATA_WIDTH => G_N_ANALOG_CHAN + G_TIMESTAMP_BITS, -- 16 + 32 = 48
          DEPTH      => 9,
-         RAM_TYPE   => "Lattice_loc"
+         RAM_TYPE   => "Lattice_fifo_loc"
       )
       port map(
          clk   => clk,
@@ -163,7 +163,7 @@ begin
       generic map(
          DATA_WIDTH => G_DATA_BITS, -- 64
          DEPTH      => 9,
-         RAM_TYPE   => "Lattice_ext"
+         RAM_TYPE   => "Lattice_fifo_ext"
       )
       port map(
          clk   => clk,
@@ -202,6 +202,7 @@ begin
    ---------------------------------------------------
    process (curReg, qpixReq, qpixConf, extFifoEmpty, extFull, locFull,
             locFifoDout, txReady, extFifoDout, locFifoEmpty, clkCnt)
+      variable read_fifo : boolean := false;
    begin
       nxtReg <= curReg;
       nxtReg.txData.DataValid <= '0';
@@ -239,6 +240,7 @@ begin
                   nxtReg.intTime    <= clkCnt;
                   nxtReg.reqID      <= qpixReq.ReqID;
                   nxtReg.intrNum    <= curReg.intrNum + 1;
+				  read_fifo := false;
             end if;
 
             nxtReg.locFifoRen <= '0';
@@ -246,6 +248,7 @@ begin
 
             -- this should probably be above the interrogationS/H check
             if extFifoEmpty = '0' then
+               read_fifo := false;
                if fQpixGetWordType(extFifoDout) = REGRSP_W then
                   nxtReg.state <= ROUTE_REGRSP_S;
                else 
@@ -253,30 +256,41 @@ begin
                end if;
             end if;
 
-         when ROUTE_REGRSP_S => 
+         when ROUTE_REGRSP_S =>
             nxtReg.extFifoRen <= '0';
             nxtReg.stateCnt <= curReg.stateCnt + 1;
-            if extFifoEmpty = '0' then 
-               if txReady = '1' then
+            if extFifoEmpty = '0' or read_fifo then
+
+               if txReady = '1' and read_fifo then
                   if curReg.extFifoRen = '0' and curReg.stateCnt(1) = '1' then
                      nxtReg.txData.DataValid <= '1';
                      nxtReg.txData.WordType  <= G_WORD_TYPE_REGRSP;
                      nxtReg.txData.Data      <= extFifoDout;
                      nxtReg.txData.DirMask   <= curReg.respDir;
-                     nxtReg.extFifoRen <= '1';
+                     read_fifo := false;
                   end if;
+
+               -- buffer for FIFOs with no fall-through word
+               elsif not read_fifo then
+                  nxtReg.extFifoRen <= '1';
+                  read_fifo := true;
+                  nxtReg.stateCnt  <= (others => '0');
+
                end if;
-            else 
+
+            else
                nxtReg.state <= IDLE_S;
+               read_fifo := false;
             end if;
 
          -- report local hits
          when REP_LOCAL_S  =>
             nxtReg.stateCnt <= curReg.stateCnt + 1;
-            if locFifoEmpty = '0' then 
-               if txReady = '1' then
+            nxtReg.locFifoRen <= '0';
+            if locFifoEmpty = '0' or read_fifo then
+
+               if txReady = '1' and read_fifo then
                   if curReg.locFifoRen = '0' and curReg.stateCnt(1) = '1' then
-                     nxtReg.locFifoRen <= '1';
                      nxtReg.txData.DataValid <= '1';
                      nxtReg.txData.XPos      <= qpixConf.XPos;
                      nxtReg.txData.YPos      <= qpixConf.YPos;
@@ -284,19 +298,28 @@ begin
                      nxtReg.txData.ChanMask  <= locFifoDout(G_N_ANALOG_CHAN + G_TIMESTAMP_BITS - 1 downto G_TIMESTAMP_BITS);
                      nxtReg.txData.DirMask   <= curReg.respDir;
                      nxtReg.txData.WordType  <= G_WORD_TYPE_DATA;
-                  else
-                     nxtReg.locFifoRen <= '0';
+                     read_fifo := false;
                   end if;
+
+               -- buffer for FIFOs with no fall-through word
+               elsif not read_fifo then
+                  nxtReg.locFifoRen <= '1';
+                  read_fifo := true;
+                  nxtReg.stateCnt  <= (others => '0');
                end if;
+
             else
                nxtReg.locFifoRen <= '0';
                if curReg.softInterr = '1' then
-                  nxtReg.state            <= REP_REMOTE_S;
+                  nxtReg.state <= REP_REMOTE_S;
+                  read_fifo    := false;
                else
                   nxtReg.state            <= REP_FINISH_S;
                end if;
                nxtReg.stateCnt         <= (others => '0');
             end if;
+
+         -- evt end packet
          when REP_FINISH_S => 
             -- all hits are done, send the packet which indicates that
             nxtReg.stateCnt <= curReg.stateCnt + 1;
@@ -315,6 +338,7 @@ begin
 
                   nxtReg.extFull <= '0';
                   nxtReg.locFull <= '0';
+                  read_fifo      := false;
                end if;
             end if;
 
@@ -323,35 +347,30 @@ begin
 
             nxtReg.stateCnt <= curReg.stateCnt + 1;
             nxtReg.extFifoRen <= '0';
-            if extFifoEmpty = '0' then
-               if txReady = '1' then 
+            nxtReg.txData.DataValid <= '0';
+
+            if extFifoEmpty = '0' or read_fifo then
+
+               if txReady = '1' and read_fifo then
                   if curReg.extFifoRen = '0' and curReg.stateCnt(1) = '1' then
-                     nxtReg.extFifoRen <= '1';
                      nxtReg.txData           <= fQpixByteToRecord(extFifoDout);
                      nxtReg.txData.DataValid <= '1';
                      nxtReg.txData.DirMask   <= curReg.respDir;
-                  else
-                     nxtReg.extFifoRen <= '0';
+                     read_fifo := false;
                   end if;
-               else 
-                  nxtReg.extFifoRen <= '0';
-                  nxtReg.txData.DataValid <= '0';
+
+               -- buffer for FIFOs with no fall-through word
+               elsif not read_fifo then
+                  nxtReg.extFifoRen <= '1';
+                  read_fifo := true;
+                  nxtReg.stateCnt  <= (others => '0');
+
                end if;
+
             else
                nxtReg.state <= IDLE_S;
-               --nxtReg.txData <= QpixDataZero_C;
             end if;
             
-            --if curReg.timeout /= timeoutZero_C then 
-               --if curReg.stateCnt(curReg.timeout'range) = curReg.timeout then
-                  --nxtReg.state <= IDLE_S;
-               --end if;
-            --else
-               --if qpixReq.ResetState = '1' then
-                  --nxtReg.state <= IDLE_S;
-               --end if;
-            --end if;
-
          when others =>
             nxtReg.state <= IDLE_S;
 
