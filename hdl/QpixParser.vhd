@@ -44,10 +44,10 @@ architecture behav of QpixParser is
 
    signal thisReqID        : std_logic_vector(regDataR.ReqID'range) := (others => '0');
 
-   signal inBytesMux       : std_logic_vector(G_DATA_BITS+1 downto 0) := (others => '0'); -- two LSB for Rx line index
-   signal inBytesMuxValidOr : std_logic                    := '0';
-   signal inBytesMuxValid  : std_logic_vector(3 downto 0) := (others => '0');
-   signal inBytesMuxValidR : std_logic_vector(3 downto 0) := (others => '0');
+   signal inBytesMux        : std_logic_vector(G_DATA_BITS+1 downto 0) := (others => '0');  -- two LSB for Rx line index
+   signal inBytesMuxValidOr : std_logic                                := '0';
+   signal inBytesMuxValid   : std_logic_vector(3 downto 0)             := (others => '0');
+   signal inBytesMuxValidR  : std_logic_vector(3 downto 0)             := (others => '0');
 
    signal regDirResp       : std_logic_vector(3 downto 0) := (others => '0');
    signal fifoRen          : std_logic_vector(3 downto 0) := (others => '0');

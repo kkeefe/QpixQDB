@@ -131,9 +131,9 @@ begin
     Tx3 <= TxportsArr(2);
     Tx4 <= TxPortsArr(3);
 
-	-- scope probes
-	so <= TxPortsArr(1); -- pin 4 A | pin 4 B 
-	si <= TxPortsArr(3); -- pin 6 A | pin 2 B
+    -- scope probes
+    so <= TxPortsArr(1); -- pin 4 A | pin 4 B
+    si <= TxPortsArr(3); -- pin 6 A | pin 2 B
 
     --connect Tx/Rx to the signals
     --Tx3 <= TxPortsArr(2);
@@ -180,11 +180,12 @@ begin
       rst            => rst,
 
       -- conditional inputs
-       cond_red_led => (not regdata.dest = '1') and regdata.valid = '1', -- received a broadcast
+      --cond_red_led => (not regdata.dest = '1') and regdata.valid = '1', -- received a broadcast
       -- received a specific regreq
-       cond_gre_led => regdata.ydest = qpixconf.ypos and regdata.xdest = qpixconf.xpos and regdata.valid = '1' and regdata.dest = '1',
-      -- cond_blu_led => rxData.datavalid = '1', -- reading new input data
-       cond_blu_led => txData.datavalid = '1', -- busy is always read
+      cond_gre_led => regdata.ydest = qpixconf.ypos and regdata.xdest = qpixconf.xpos and regdata.valid = '1' and regdata.dest = '1',
+      -- cond_gre_led => extFifoEmpty = '0',
+      cond_red_led => rxData.datavalid = '1', -- reading new input data
+      cond_blu_led => txData.datavalid = '1', -- busy is always read
 
       -- outputs
       red_led => pulse_red,
@@ -250,7 +251,7 @@ begin
       clk      => clk,
       rst      => rst,
 
-	  clkCnt   => clkCnt,
+      clkCnt   => clkCnt,
       -- comm connections
       regData  => regData,  -- input record regData type, from parser
       regResp  => regResp,  -- output record regData type, to parser
@@ -259,7 +260,7 @@ begin
       extinterh => '0',
       extinters => '0',
       clkcntrst => '0',
-	  
+
       -- route connections
       qpixconf => qpixconf, -- record qpixConfigType
       qpixreq  => qpixreq   -- record qpixRequestType
@@ -316,10 +317,9 @@ begin
       clkCnt         => clkCnt,
       fifoFull       => locFifoFull,
 
-      testEna => '0',
+      testEna       => '0',
       qpixRstPulses => x"000" & IO,
-      outData => inData
-
+      outData       => inData
    );
 
 end Behavioral;

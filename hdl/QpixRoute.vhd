@@ -227,11 +227,11 @@ begin
          -- waiting for interrogation
          when IDLE_S       =>
             fsmState <= "000";
-            nxtReg.stateCnt <= (others => '0');
+            nxtReg.stateCnt         <= (others => '0');
             nxtReg.txData.DataValid <= '0';
-            nxtReg.locFifoRen <= '0';
-            nxtReg.extFifoRen <= '0';
-            read_fifo      <= false;
+            nxtReg.locFifoRen       <= '0';
+            nxtReg.extFifoRen       <= '0';
+            read_fifo               <= false;
 
             -- -- possible mismatch on softInterr behavior
             -- if qpixReq.InterrogationSoft = '1' then
@@ -255,7 +255,6 @@ begin
          -- report local hits
          when REP_LOCAL_S  =>
             fsmState <= "010";
-            nxtReg.stateCnt   <= curReg.stateCnt + 1;
             nxtReg.locFifoRen <= '0';
             if s_locFifoEmpty = '0' or read_fifo then
 
@@ -265,6 +264,7 @@ begin
                   read_fifo         <= true;
 
                elsif txReady = '1' then
+                  nxtReg.stateCnt   <= curReg.stateCnt + 1;
                   if curReg.locFifoRen = '0' and curReg.stateCnt(1) = '1' then
                      nxtReg.txData.DataValid <= '1';
                      nxtReg.txData.XPos      <= qpixConf.XPos;
@@ -279,8 +279,8 @@ begin
 
             else
                nxtReg.locFifoRen <= '0';
-               nxtReg.state            <= REP_FINISH_S;
-               nxtReg.stateCnt         <= (others => '0');
+               nxtReg.state      <= REP_FINISH_S;
+               nxtReg.stateCnt   <= (others => '0');
             end if;
 
          -- evt end packet
@@ -310,7 +310,6 @@ begin
          --report external hits being received from neighbour ASICs
          when REP_REMOTE_S =>
             fsmState <= "100";
-            nxtReg.stateCnt         <= curReg.stateCnt + 1;
             nxtReg.extFifoRen       <= '0';
             nxtReg.txData.DataValid <= '0';
 
@@ -322,6 +321,7 @@ begin
                   read_fifo         <= true;
 
                elsif txReady = '1' then
+                  nxtReg.stateCnt         <= curReg.stateCnt + 1;
                   if curReg.extFifoRen = '0' and curReg.stateCnt(1) = '1' then
                      nxtReg.txData           <= fQpixByteToRecord(extFifoDout);
                      nxtReg.txData.DataValid <= '1';
@@ -336,7 +336,7 @@ begin
             end if;
             
          when others =>
-            fsmState <= "111";
+            fsmState     <= "111";
             nxtReg.state <= IDLE_S;
 
       end case;
@@ -360,9 +360,9 @@ begin
    ---------------------------------------------------
 
    
-   txData     <= curReg.txData;
-   intrNum    <= std_logic_vector(curReg.intrNum);
-   busy <= '0' when curReg.state = IDLE_S else '1';
+   txData  <= curReg.txData;
+   intrNum <= std_logic_vector(curReg.intrNum);
+   busy    <= '0' when curReg.state = IDLE_S else '1';
 
    extFifoFull <= extFull;
    locFifoFull <= locFull;
