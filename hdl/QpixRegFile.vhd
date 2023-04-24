@@ -198,6 +198,8 @@ begin
                      qpixConf_r.YPos <= regData.YHops;
                      regResp_r.XDest <= qpixConf_r.XPos;
                      regResp_r.YDest <= qpixConf_r.YPos;
+					 regResp_r.XHops <= regData.XHops;
+                     regResp_r.YHops <= regData.YHops;
 
                      if regData.OpRead = '1' then
                         regResp_r.Data <= x"add5";

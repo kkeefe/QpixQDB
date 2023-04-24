@@ -182,7 +182,8 @@ begin
       -- conditional inputs
       cond_red_led => (not regdata.dest = '1') and regdata.valid = '1', -- received a broadcast
       -- received a specific regreq
-      cond_gre_led => regdata.ydest = qpixconf.ypos and regdata.xdest = qpixconf.xpos and regdata.valid = '1' and regdata.dest = '1',
+      -- cond_gre_led => regdata.ydest = qpixconf.ypos and regdata.xdest = qpixconf.xpos and regdata.valid = '1' and regdata.dest = '1',
+      cond_gre_led => rxData.datavalid = '1',
       cond_blu_led => extFifoEmpty = '0', -- received remote data
 
       -- outputs
@@ -307,7 +308,7 @@ begin
    QpixDataProc_U : entity work.QpixDataProc
    port map(
       clk            => clk,
-      rst            => rst,
+      rst            => routeRst,
 
       disIfRouteBusy => qpixConf.disIfBusy,
       routeBusy      => routeBusy,

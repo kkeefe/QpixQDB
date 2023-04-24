@@ -96,13 +96,13 @@ architecture behav of QpixRoute is
    signal curReg : RegType := REG_INIT_C;
    signal nxtReg : RegType := REG_INIT_C;
 
-   --signal locFifoEmpty   : std_logic := '0';
+   signal s_locFifoEmpty   : std_logic := '0';
    signal locFifoDin     : std_logic_vector (G_N_ANALOG_CHAN+G_TIMESTAMP_BITS-1 downto 0);
    signal locFifoDout    : std_logic_vector (G_N_ANALOG_CHAN+G_TIMESTAMP_BITS-1 downto 0);
    signal locFull        : std_logic := '0';
 
-   --signal extFifoEmpty   : std_logic := '0';
-   -- signal extFifoRen     : std_logic := '0';
+   signal s_extFifoEmpty   : std_logic := '0';
+   signal extFifoRen     : std_logic := '0';
    signal extFifoDout    : std_logic_vector (G_DATA_BITS-1 downto 0);
    signal extFull        : std_logic := '0';
 
@@ -112,6 +112,9 @@ architecture behav of QpixRoute is
    ---------------------------------------------------
 
 begin
+
+   extFifoEmpty <= s_extFifoEmpty;
+   locFifoEmpty <= s_locFifoEmpty;
 
    ---------------------------------------------------
    -- FIFO for local data
@@ -130,7 +133,7 @@ begin
          wen   => inData.DataValid,
          ren   => curReg.locFifoRen,
          dout  => locFifoDout,
-         empty => locFifoEmpty,
+         empty => s_locFifoEmpty,
          full  => locFull
       );
    end generate;
@@ -148,7 +151,7 @@ begin
          wen   => inData.DataValid,
          ren   => curReg.locFifoRen,
          dout  => locFifoDout,
-         empty => locFifoEmpty,
+         empty => s_locFifoEmpty,
          full  => locFull
       );
    end generate;
@@ -172,7 +175,7 @@ begin
          wen   => rxData.DataValid,
          ren   => curReg.extFifoRen,
          dout  => extFifoDout,
-         empty => extFifoEmpty,
+         empty => s_extFifoEmpty,
          full  => extFull
       );
    end generate;
@@ -190,7 +193,7 @@ begin
       wen   => rxData.DataValid,
       ren   => curReg.extFifoRen,
       dout  => extFifoDout, 
-      empty => extFifoEmpty,
+      empty => s_extFifoEmpty,
       full  => extFull
    );
    end generate;
@@ -200,8 +203,8 @@ begin
    ---------------------------------------------------
    -- Combinational logic
    ---------------------------------------------------
-   process (curReg, qpixReq, qpixConf, extFifoEmpty, extFull, locFull,
-            locFifoDout, txReady, extFifoDout, locFifoEmpty, clkCnt)
+   process (curReg, qpixReq, qpixConf, s_extFifoEmpty, extFull, locFull,
+            locFifoDout, txReady, extFifoDout, s_locFifoEmpty, clkCnt)
       variable read_fifo : boolean := false;
    begin
       nxtReg <= curReg;
@@ -240,14 +243,14 @@ begin
                   nxtReg.intTime    <= clkCnt;
                   nxtReg.reqID      <= qpixReq.ReqID;
                   nxtReg.intrNum    <= curReg.intrNum + 1;
-				  read_fifo := false;
+                  read_fifo := false;
             end if;
 
             nxtReg.locFifoRen <= '0';
             nxtReg.extFifoRen <= '0';
 
             -- this should probably be above the interrogationS/H check
-            if extFifoEmpty = '0' then
+            if s_extFifoEmpty = '0' then
                read_fifo := false;
                if fQpixGetWordType(extFifoDout) = REGRSP_W then
                   nxtReg.state <= ROUTE_REGRSP_S;
@@ -259,7 +262,7 @@ begin
          when ROUTE_REGRSP_S =>
             nxtReg.extFifoRen <= '0';
             nxtReg.stateCnt <= curReg.stateCnt + 1;
-            if extFifoEmpty = '0' or read_fifo then
+            if s_extFifoEmpty = '0' or read_fifo then
 
                if txReady = '1' and read_fifo then
                   if curReg.extFifoRen = '0' and curReg.stateCnt(1) = '1' then
@@ -287,7 +290,7 @@ begin
          when REP_LOCAL_S  =>
             nxtReg.stateCnt <= curReg.stateCnt + 1;
             nxtReg.locFifoRen <= '0';
-            if locFifoEmpty = '0' or read_fifo then
+            if s_locFifoEmpty = '0' or read_fifo then
 
                if txReady = '1' and read_fifo then
                   if curReg.locFifoRen = '0' and curReg.stateCnt(1) = '1' then
@@ -349,7 +352,7 @@ begin
             nxtReg.extFifoRen <= '0';
             nxtReg.txData.DataValid <= '0';
 
-            if extFifoEmpty = '0' or read_fifo then
+            if s_extFifoEmpty = '0' or read_fifo then
 
                if txReady = '1' and read_fifo then
                   if curReg.extFifoRen = '0' and curReg.stateCnt(1) = '1' then
