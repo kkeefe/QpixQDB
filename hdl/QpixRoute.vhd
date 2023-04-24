@@ -46,7 +46,7 @@ end entity QpixRoute;
 
 architecture behav of QpixRoute is
 
-   type RouteStatesType is (IDLE_S, REP_LOCAL_S, REP_REMOTE_S, REP_FINISH_S, ROUTE_REGRSP_S); 
+   type RouteStatesType is (IDLE_S, REP_LOCAL_S, REP_REMOTE_S, REP_FINISH_S);
 
    ---------------------------------------------------
    -- Types defenitions
@@ -226,8 +226,11 @@ begin
 
          -- waiting for interrogation
          when IDLE_S       =>
+            fsmState <= "000";
             nxtReg.stateCnt <= (others => '0');
             nxtReg.txData.DataValid <= '0';
+            nxtReg.locFifoRen <= '0';
+            nxtReg.extFifoRen <= '0';
 
             -- -- possible mismatch on softInterr behavior
             -- if qpixReq.InterrogationSoft = '1' then
@@ -245,51 +248,15 @@ begin
                   nxtReg.reqID   <= qpixReq.ReqID;
                   nxtReg.intrNum <= curReg.intrNum + 1;
                   read_fifo      := false;
-            end if;
-
-            nxtReg.locFifoRen <= '0';
-            nxtReg.extFifoRen <= '0';
-
-            -- this should probably be above the interrogationS/H check
-            if s_extFifoEmpty = '0' then
+            elsif s_extFifoEmpty = '0' then
                read_fifo := false;
-               if fQpixGetWordType(extFifoDout) = REGRSP_W then
-                  nxtReg.state <= ROUTE_REGRSP_S;
-               else 
-                  nxtReg.state <= REP_REMOTE_S;
-               end if;
-            end if;
-
-         when ROUTE_REGRSP_S =>
-            nxtReg.extFifoRen <= '0';
-            nxtReg.stateCnt <= curReg.stateCnt + 1;
-            if s_extFifoEmpty = '0' or read_fifo then
-
-               if txReady = '1' and read_fifo then
-                  if curReg.extFifoRen = '0' and curReg.stateCnt(1) = '1' then
-                     nxtReg.txData.DataValid <= '1';
-                     nxtReg.txData.WordType  <= G_WORD_TYPE_REGRSP;
-                     nxtReg.txData.Data      <= extFifoDout;
-                     nxtReg.txData.DirMask   <= curReg.respDir;
-                     read_fifo := false;
-                  end if;
-
-               -- buffer for FIFOs with no fall-through word
-               elsif not read_fifo then
-                  nxtReg.extFifoRen <= '1';
-                  read_fifo := true;
-                  nxtReg.stateCnt  <= (others => '0');
-
-               end if;
-
-            else
-               nxtReg.state <= IDLE_S;
-               read_fifo := false;
+               nxtReg.state <= REP_REMOTE_S;
             end if;
 
          -- report local hits
          when REP_LOCAL_S  =>
-            nxtReg.stateCnt <= curReg.stateCnt + 1;
+            fsmState <= "010";
+            nxtReg.stateCnt   <= curReg.stateCnt + 1;
             nxtReg.locFifoRen <= '0';
             if s_locFifoEmpty = '0' or read_fifo then
 
@@ -325,7 +292,8 @@ begin
             end if;
 
          -- evt end packet
-         when REP_FINISH_S => 
+         when REP_FINISH_S =>
+            fsmState <= "011";
             -- all hits are done, send the packet which indicates that
             nxtReg.stateCnt <= curReg.stateCnt + 1;
             if txReady = '1' then
@@ -349,9 +317,9 @@ begin
 
          --report external hits being received from neighbour ASICs
          when REP_REMOTE_S =>
-
-            nxtReg.stateCnt <= curReg.stateCnt + 1;
-            nxtReg.extFifoRen <= '0';
+            fsmState <= "100";
+            nxtReg.stateCnt         <= curReg.stateCnt + 1;
+            nxtReg.extFifoRen       <= '0';
             nxtReg.txData.DataValid <= '0';
 
             if s_extFifoEmpty = '0' or read_fifo then
@@ -361,7 +329,7 @@ begin
                      nxtReg.txData           <= fQpixByteToRecord(extFifoDout);
                      nxtReg.txData.DataValid <= '1';
                      nxtReg.txData.DirMask   <= curReg.respDir;
-                     read_fifo := false;
+                     read_fifo               := false;
                   end if;
 
                -- buffer for FIFOs with no fall-through word
@@ -377,6 +345,7 @@ begin
             end if;
             
          when others =>
+            fsmState <= "111";
             nxtReg.state <= IDLE_S;
 
       end case;
@@ -402,15 +371,6 @@ begin
    
    txData     <= curReg.txData;
    intrNum    <= std_logic_vector(curReg.intrNum);
-   
-   with nxtReg.state select fsmState <= 
-   "000" when IDLE_S,
-   "001" when ROUTE_REGRSP_S,
-   "010" when REP_LOCAL_S,
-   "011" when REP_FINISH_S,
-   "100" when REP_REMOTE_S,
-   "111" when others;
-
    busy <= '0' when curReg.state = IDLE_S else '1';
 
    extFifoFull <= extFull;
