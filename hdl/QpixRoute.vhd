@@ -62,7 +62,7 @@ architecture behav of QpixRoute is
       manRoute     :  std_logic;
       locFifoRen   :  std_logic;
       extFifoRen   :  std_logic;
-      softInterr   :  std_logic;
+      -- softInterr   :  std_logic;
       intrNum      :  unsigned(15 downto 0);
       extFull      :  std_logic;
       locFull      :  std_logic;
@@ -83,7 +83,7 @@ architecture behav of QpixRoute is
       manRoute     => '0',
       locFifoRen   => '0',
       extFifoRen   => '0',
-      softInterr   => '0',
+      -- softInterr   => '0',
       intrNum      => (others => '0'),
       extFull      => '0',
       locFull      => '0'
@@ -229,21 +229,22 @@ begin
             nxtReg.stateCnt <= (others => '0');
             nxtReg.txData.DataValid <= '0';
 
-            if qpixReq.InterrogationSoft = '1' then
-               nxtReg.softInterr <= '1';
-            end if;
+            -- -- possible mismatch on softInterr behavior
+            -- if qpixReq.InterrogationSoft = '1' then
+            --    nxtReg.softInterr <= '1';
+            -- end if;
 
-            if qpixReq.InterrogationHard = '1' then
-               nxtReg.softInterr <= '0';
-            end if;
+            -- if qpixReq.InterrogationHard = '1' then
+            --    nxtReg.softInterr <= '0';
+            -- end if;
 
-            if qpixReq.InterrogationSoft = '1' or 
+            if (qpixReq.InterrogationSoft = '1' and s_locFifoEmpty = '0') or
                qpixReq.InterrogationHard = '1' then
-                  nxtReg.state      <= REP_LOCAL_S;
-                  nxtReg.intTime    <= clkCnt;
-                  nxtReg.reqID      <= qpixReq.ReqID;
-                  nxtReg.intrNum    <= curReg.intrNum + 1;
-                  read_fifo := false;
+                  nxtReg.state   <= REP_LOCAL_S;
+                  nxtReg.intTime <= clkCnt;
+                  nxtReg.reqID   <= qpixReq.ReqID;
+                  nxtReg.intrNum <= curReg.intrNum + 1;
+                  read_fifo      := false;
             end if;
 
             nxtReg.locFifoRen <= '0';
@@ -313,12 +314,13 @@ begin
 
             else
                nxtReg.locFifoRen <= '0';
-               if curReg.softInterr = '1' then
-                  nxtReg.state <= REP_REMOTE_S;
-                  read_fifo    := false;
-               else
+               -- -- always send rep_finish if entering rep_local_s state
+               -- if curReg.softInterr = '1' then
+               --    nxtReg.state <= REP_REMOTE_S;
+               --    read_fifo    := false;
+               -- else
                   nxtReg.state            <= REP_FINISH_S;
-               end if;
+               -- end if;
                nxtReg.stateCnt         <= (others => '0');
             end if;
 
@@ -401,12 +403,13 @@ begin
    txData     <= curReg.txData;
    intrNum    <= std_logic_vector(curReg.intrNum);
    
-   with curReg.state select fsmState <= 
+   with nxtReg.state select fsmState <= 
    "000" when IDLE_S,
    "001" when ROUTE_REGRSP_S,
    "010" when REP_LOCAL_S,
-   "010" when REP_FINISH_S,
-   "100" when REP_REMOTE_S;
+   "011" when REP_FINISH_S,
+   "100" when REP_REMOTE_S,
+   "111" when others;
 
    busy <= '0' when curReg.state = IDLE_S else '1';
 
