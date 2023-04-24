@@ -184,11 +184,7 @@ begin
       -- received a specific regreq
        cond_gre_led => regdata.ydest = qpixconf.ypos and regdata.xdest = qpixconf.xpos and regdata.valid = '1' and regdata.dest = '1',
       -- cond_blu_led => rxData.datavalid = '1', -- reading new input data
-       cond_blu_led => extFifoEmpty = '0', -- busy is always read
-
-      --cond_red_led => fsmState = "001", -- repResp
-      --cond_gre_led => fsmState = "100", -- repRemote
-      --cond_blu_led => fsmState /= "000", -- note idle
+       cond_blu_led => txData.datavalid = '1', -- busy is always read
 
       -- outputs
       red_led => pulse_red,

@@ -113,7 +113,9 @@ begin
                   reg         := fQpixByteToReg(inBytesMux(63 downto 0));
                   regDataR    <= reg;
 
-                  if reg.reqID > thisReqID or (reg.reqID = x"0" and reg.reqID /= thisReqID) then
+                  -- this can cause hanging remote IDs the the GT check
+                  -- if reg.reqID > thisReqID or (reg.reqID = x"0" and reg.reqID /= thisReqID) then
+                  if reg.reqID /= thisReqID then
                      thisReqID       <= reg.ReqID;
                      regDataR.Valid  <= '1';
                   end if;

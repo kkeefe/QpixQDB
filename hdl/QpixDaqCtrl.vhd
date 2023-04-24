@@ -180,8 +180,8 @@ begin
    mem_U : entity work.bram_sdp_cc
    generic map (
       DATA     => daqRxByte'length + 64,
-      ADDR     => MEM_DEPTH,
-      RAM_TYPE => "block"
+      ADDR     => MEM_DEPTH
+--      RAM_TYPE => "block"
    )
    port map (
       clk   => clk,

@@ -362,9 +362,9 @@ begin
    generic map (
       X_NUM_G        => X_NUM_G,
       Y_NUM_G        => Y_NUM_G,
-      Version        => x"2000_003f",
-      N_SAQ_PORTS    => N_SAQ_PORTS,
-      TIMESTAMP_BITS => TIMESTAMP_BITS
+      Version        => x"3000_003f"
+--      N_SAQ_PORTS    => N_SAQ_PORTS,
+--      TIMESTAMP_BITS => TIMESTAMP_BITS
    )
    port map(
       clk          => fclk,
