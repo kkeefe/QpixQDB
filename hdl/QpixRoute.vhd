@@ -105,6 +105,7 @@ architecture behav of QpixRoute is
    signal extFifoRen     : std_logic := '0';
    signal extFifoDout    : std_logic_vector (G_DATA_BITS-1 downto 0);
    signal extFull        : std_logic := '0';
+   signal read_fifo      : boolean := false;
 
 
    -- signal respDir        : std_logic_vector(3 downto 0) := (others => '0');
@@ -205,7 +206,6 @@ begin
    ---------------------------------------------------
    process (curReg, qpixReq, qpixConf, s_extFifoEmpty, extFull, locFull,
             locFifoDout, txReady, extFifoDout, s_locFifoEmpty, clkCnt)
-      variable read_fifo : boolean := false;
    begin
       nxtReg <= curReg;
       nxtReg.txData.DataValid <= '0';
@@ -231,7 +231,7 @@ begin
             nxtReg.txData.DataValid <= '0';
             nxtReg.locFifoRen <= '0';
             nxtReg.extFifoRen <= '0';
-            read_fifo      := false;
+            read_fifo      <= false;
 
             -- -- possible mismatch on softInterr behavior
             -- if qpixReq.InterrogationSoft = '1' then
@@ -259,7 +259,12 @@ begin
             nxtReg.locFifoRen <= '0';
             if s_locFifoEmpty = '0' or read_fifo then
 
-               if txReady = '1' and read_fifo then
+               -- buffer for FIFOs with no fall-through word
+               if not read_fifo then
+                  nxtReg.locFifoRen <= '1';
+                  read_fifo         <= true;
+
+               elsif txReady = '1' then
                   if curReg.locFifoRen = '0' and curReg.stateCnt(1) = '1' then
                      nxtReg.txData.DataValid <= '1';
                      nxtReg.txData.XPos      <= qpixConf.XPos;
@@ -268,25 +273,13 @@ begin
                      nxtReg.txData.ChanMask  <= locFifoDout(G_N_ANALOG_CHAN + G_TIMESTAMP_BITS - 1 downto G_TIMESTAMP_BITS);
                      nxtReg.txData.DirMask   <= curReg.respDir;
                      nxtReg.txData.WordType  <= G_WORD_TYPE_DATA;
-                     read_fifo := false;
+                     read_fifo <= false;
                   end if;
-
-               -- buffer for FIFOs with no fall-through word
-               elsif not read_fifo then
-                  nxtReg.locFifoRen <= '1';
-                  read_fifo := true;
-                  nxtReg.stateCnt  <= (others => '0');
                end if;
 
             else
                nxtReg.locFifoRen <= '0';
-               -- -- always send rep_finish if entering rep_local_s state
-               -- if curReg.softInterr = '1' then
-               --    nxtReg.state <= REP_REMOTE_S;
-               --    read_fifo    := false;
-               -- else
-                  nxtReg.state            <= REP_FINISH_S;
-               -- end if;
+               nxtReg.state            <= REP_FINISH_S;
                nxtReg.stateCnt         <= (others => '0');
             end if;
 
@@ -310,7 +303,7 @@ begin
 
                   nxtReg.extFull <= '0';
                   nxtReg.locFull <= '0';
-                  read_fifo      := false;
+                  read_fifo      <= false;
                end if;
             end if;
 
@@ -323,19 +316,18 @@ begin
 
             if s_extFifoEmpty = '0' or read_fifo then
 
-               if txReady = '1' and read_fifo then
+               -- buffer for FIFOs with no fall-through word
+               if not read_fifo then
+                  nxtReg.extFifoRen <= '1';
+                  read_fifo         <= true;
+
+               elsif txReady = '1' then
                   if curReg.extFifoRen = '0' and curReg.stateCnt(1) = '1' then
                      nxtReg.txData           <= fQpixByteToRecord(extFifoDout);
                      nxtReg.txData.DataValid <= '1';
                      nxtReg.txData.DirMask   <= curReg.respDir;
-                     read_fifo               := false;
+                     read_fifo               <= false;
                   end if;
-
-               -- buffer for FIFOs with no fall-through word
-               elsif not read_fifo then
-                  nxtReg.extFifoRen <= '1';
-                  read_fifo := true;
-                  nxtReg.stateCnt  <= (others => '0');
 
                end if;
 
