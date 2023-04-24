@@ -90,7 +90,7 @@ architecture Behavioral of QDBAsicTop is
   signal qpixreq      : QpixRequestType    := QpixRequestZero_C;
   signal TxReady      : std_logic          := '0';
   signal TxReadyMaskV : std_logic_vector(3 downto 0);
-  --signal fsmState           : std_logic_vector(2 downto 0);
+  signal fsmState           : std_logic_vector(2 downto 0);
 
   signal locFifoFull  : std_logic := '0';
   signal extFifoFull  : std_logic := '0';
@@ -180,11 +180,15 @@ begin
       rst            => rst,
 
       -- conditional inputs
-      cond_red_led => (not regdata.dest = '1') and regdata.valid = '1', -- received a broadcast
+       cond_red_led => (not regdata.dest = '1') and regdata.valid = '1', -- received a broadcast
       -- received a specific regreq
-      -- cond_gre_led => regdata.ydest = qpixconf.ypos and regdata.xdest = qpixconf.xpos and regdata.valid = '1' and regdata.dest = '1',
-      cond_gre_led => rxData.datavalid = '1',
-      cond_blu_led => extFifoEmpty = '0', -- received remote data
+       cond_gre_led => regdata.ydest = qpixconf.ypos and regdata.xdest = qpixconf.xpos and regdata.valid = '1' and regdata.dest = '1',
+      -- cond_blu_led => rxData.datavalid = '1', -- reading new input data
+       cond_blu_led => extFifoEmpty = '0', -- busy is always read
+
+      --cond_red_led => fsmState = "001", -- repResp
+      --cond_gre_led => fsmState = "100", -- repRemote
+      --cond_blu_led => fsmState /= "000", -- note idle
 
       -- outputs
       red_led => pulse_red,
@@ -296,7 +300,7 @@ begin
       extfifoempty => extfifoempty,
       locfifoempty => locfifoempty,
       busy         => routebusy,
-      fsmState     => open
+      fsmState     => fsmState
         -- state         => route_state,
         -- routeStateInt => open
      );

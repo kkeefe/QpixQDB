@@ -231,6 +231,7 @@ begin
             nxtReg.txData.DataValid <= '0';
             nxtReg.locFifoRen <= '0';
             nxtReg.extFifoRen <= '0';
+            read_fifo      := false;
 
             -- -- possible mismatch on softInterr behavior
             -- if qpixReq.InterrogationSoft = '1' then
@@ -247,9 +248,7 @@ begin
                   nxtReg.intTime <= clkCnt;
                   nxtReg.reqID   <= qpixReq.ReqID;
                   nxtReg.intrNum <= curReg.intrNum + 1;
-                  read_fifo      := false;
             elsif s_extFifoEmpty = '0' then
-               read_fifo := false;
                nxtReg.state <= REP_REMOTE_S;
             end if;
 

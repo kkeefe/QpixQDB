@@ -159,8 +159,8 @@ begin
                      
                      -- this forces a dynamic position update on every cmd broadcast
                      -- reserve this feature for cmd 5
-                     -- qpixConf_r.XPos <= regData.XHops;
-                     -- qpixConf_r.YPos <= regData.YHops;
+                     qpixConf_r.XPos <= regData.XHops;
+                     qpixConf_r.YPos <= regData.YHops;
 
                   -- time reg
                   when x"0002" =>
@@ -198,7 +198,7 @@ begin
                      qpixConf_r.YPos <= regData.YHops;
                      regResp_r.XDest <= qpixConf_r.XPos;
                      regResp_r.YDest <= qpixConf_r.YPos;
-					 regResp_r.XHops <= regData.XHops;
+                     regResp_r.XHops <= regData.XHops;
                      regResp_r.YHops <= regData.YHops;
 
                      if regData.OpRead = '1' then
@@ -231,7 +231,6 @@ begin
                   -- Read interrogation number
                   when x"0008" =>
                      if regData.OpRead = '1' then
-                        regResp_r.Data <= (others => '0');
                         regResp_r.Data <= intrNum;
                         regResp_r.Addr <= regData.Addr;
                      end if;
