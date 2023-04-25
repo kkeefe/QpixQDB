@@ -134,7 +134,7 @@ begin
 
                else
                   if RxDisable(to_integer(unsigned(rx_ind))) = '0' then
-                     inDataR           <= fQpixByteToRecord(inBytesMux(63 downto 0));
+                     -- inDataR           <= fQpixByteToRecord(inBytesMux(63 downto 0));
                      inDataR.Data      <= inBytesMux(inDataR.Data'range);
                      inDataR.DataValid <= not fifoFull;
                   end if;

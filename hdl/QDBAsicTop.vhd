@@ -163,8 +163,8 @@ begin
   u_pll : qdb_pll port map(
     ref_clk_i   =>  pllclk,
     rst_n_i     =>  '1', -- active low
-    outcore_o   =>  open,
-    outglobal_o =>  clk
+    outcore_o   =>  clk,
+    outglobal_o =>  open
   );
 
 

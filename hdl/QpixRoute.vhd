@@ -12,7 +12,7 @@ use work.QpixPkg.all;
 entity QpixRoute is
    generic (
       GATE_DELAY_G    : time    := 1 ns;
-      RAM_TYPE        : string  := "block"; -- lattice hardcodes BRAM for lattice, or distributed / block
+      RAM_TYPE        : string  := "Lattice"; -- lattice hardcodes BRAM for lattice, or distributed / block
       X_POS_G         : natural := 0;
       Y_POS_G         : natural := 0
    );

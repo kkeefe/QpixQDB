@@ -133,7 +133,11 @@ begin
       wait for 2.0 ns;
         rxdata.datavalid <= '1';
         rxdata.data <= x"12345678_abcdabcd";
+      wait for 50 ns;
+        rxdata.datavalid <= '0';
 
+      wait for 350 ns;
+        rxdata.datavalid <= '1';
       wait for 50 ns;
         rxdata.datavalid <= '0';
 
