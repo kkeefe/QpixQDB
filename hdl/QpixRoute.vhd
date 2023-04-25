@@ -324,6 +324,7 @@ begin
                   nxtReg.stateCnt         <= curReg.stateCnt + 1;
                   if curReg.extFifoRen = '0' and curReg.stateCnt(1) = '1' then
                      nxtReg.txData           <= fQpixByteToRecord(extFifoDout);
+                     -- nxtReg.txData.Data      <= extFifoDout;
                      nxtReg.txData.DataValid <= '1';
                      nxtReg.txData.DirMask   <= curReg.respDir;
                      read_fifo               <= false;

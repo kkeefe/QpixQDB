@@ -162,11 +162,11 @@ begin
               -- construction of DirMask happens here and why it must be four bits
                if outData.DirMask(i) = '1' then
                   -- temporary send either d.Data of convert record FIXME
-                  if outData.WordType = G_WORD_TYPE_REGRSP then
-                     outBytesArr(i) <= outData.Data;
-                  else
+                  -- if outData.WordType = G_WORD_TYPE_REGRSP then
+                  --    outBytesArr(i) <= outData.Data;
+                  -- else
                      outBytesArr(i) <= fQpixRecordToByte(outData);
-                  end if;
+                  -- end if;
                   outBytesValidArr(i)  <= '1';
                end if;
 

@@ -182,8 +182,8 @@ begin
       -- conditional inputs
       --cond_red_led => (not regdata.dest = '1') and regdata.valid = '1', -- received a broadcast
       -- received a specific regreq
-      cond_gre_led => regdata.ydest = qpixconf.ypos and regdata.xdest = qpixconf.xpos and regdata.valid = '1' and regdata.dest = '1',
-      -- cond_gre_led => extFifoEmpty = '0',
+      -- cond_gre_led => regdata.ydest = qpixconf.ypos and regdata.xdest = qpixconf.xpos and regdata.valid = '1' and regdata.dest = '1',
+      cond_gre_led => extFifoEmpty = '0',
       cond_red_led => rxData.datavalid = '1', -- reading new input data
       cond_blu_led => txData.datavalid = '1', -- busy is always read
 
