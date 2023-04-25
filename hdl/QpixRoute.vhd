@@ -256,6 +256,7 @@ begin
          when REP_LOCAL_S  =>
             fsmState <= "010";
             nxtReg.locFifoRen <= '0';
+            nxtReg.stateCnt   <= curReg.stateCnt + 1;
             if s_locFifoEmpty = '0' or read_fifo then
 
                -- buffer for FIFOs with no fall-through word
@@ -264,7 +265,6 @@ begin
                   read_fifo         <= true;
 
                elsif txReady = '1' then
-                  nxtReg.stateCnt   <= curReg.stateCnt + 1;
                   if curReg.locFifoRen = '0' and curReg.stateCnt(1) = '1' then
                      nxtReg.txData.DataValid <= '1';
                      nxtReg.txData.XPos      <= qpixConf.XPos;
@@ -312,6 +312,7 @@ begin
             fsmState <= "100";
             nxtReg.extFifoRen       <= '0';
             nxtReg.txData.DataValid <= '0';
+            nxtReg.stateCnt         <= curReg.stateCnt + 1;
 
             if s_extFifoEmpty = '0' or read_fifo then
 
@@ -321,7 +322,6 @@ begin
                   read_fifo         <= true;
 
                elsif txReady = '1' then
-                  nxtReg.stateCnt         <= curReg.stateCnt + 1;
                   if curReg.extFifoRen = '0' and curReg.stateCnt(1) = '1' then
                      nxtReg.txData           <= fQpixByteToRecord(extFifoDout);
                      -- nxtReg.txData.Data      <= extFifoDout;

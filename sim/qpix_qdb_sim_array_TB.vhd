@@ -22,15 +22,13 @@ end qpix_qdb_sim_array_TB;
 architecture Behavioral of qpix_qdb_sim_array_TB is
 
   -- constants for clocks and simulation
-   constant CLK_PERIOD_NOMINAL_C           : time := 20833.0 ps; -- 48 MHz
-   constant Zynq_CLK_PERIOD_NOMINAL_C      : time := 8000.0 ps;  -- 125 MHz
-   constant Asic_CLK_PERIOD_NOMINAL_C      : time := 83333.0 ps; -- 12 MHz
+   constant CLK_PERIOD_NOMINAL_C      : time := 33333.0 ps; -- 12 MHz
    constant CLK_PERIOD_SPREAD_FRACTIONAL_C : real := 0.05;
    constant GATE_DELAY_C : time := 1 ns;
    constant MEM_DEPTH : natural := 12;
 
    -- ZyboRegisters
-   signal clk48          : std_logic;
+   signal clk            : std_logic;
    signal rst            : std_logic;
    signal addr           : std_logic_vector(31 downto 0);
    signal rdata          : std_logic_vector(31 downto 0);
@@ -60,7 +58,6 @@ architecture Behavioral of qpix_qdb_sim_array_TB is
    signal memAddr        : std_logic_vector(G_QPIX_PROTO_MEM_DEPTH-1+2 downto 0);
 
    -- ZybDaq Node
-   signal clk12        : std_logic;
    signal DaqTx        : QpixTxRxPortType;
    signal DaqRx        : QpixTxRxPortType;
    signal evt_fin      : std_logic;
@@ -77,7 +74,6 @@ architecture Behavioral of qpix_qdb_sim_array_TB is
 --  type IOports is array (0 to 3) of std_logic_vector(3 downto 0);
 --  signal IO : IOports;
 
-  constant fake_trg_cnt : natural := 200*12;-- try to get ~200 us fake trigger rate;
    -- all ASIC TxRx ports
  signal A_Tx1 : std_logic;
  signal A_Rx1 : std_logic;
@@ -145,7 +141,7 @@ begin
         X_NUM_G => 1,
         Y_NUM_G => 1)
       port map(
-        clk            => clk12,
+        clk            => clk,
         rst            => rst,
         -- axi protocol information
         addr           => addr,
@@ -166,6 +162,21 @@ begin
         timestamp      => timestamp,
         chanMask       => chanMask,
         trg            => trg, -- trg
+        -- saq placeholders for qdb-sim
+        -- saq open outputs
+        saqMask         => open,
+        saqEnable       => open,
+        saqForce        => open,
+        saqRst          => open,
+        saqDiv          => open,
+        saqPacketLength => open,
+        saq_fifo_ren    => open,
+        --saq_fifo_valid  : in  std_logic;
+        saq_fifo_empty  => '1',
+        saq_fifo_full   => '0',
+        saq_fifo_hits   => (others => '0'),
+        saq_fifo_data   => (others => '0'),
+
         -- asic outputs to QpixDaqCtrl
         asicReq        => asicReq,
         asicOpWrite    => asicOpWrite,
@@ -184,7 +195,7 @@ begin
         TXRX_TYPE => "ENDEAVOR" -- "DUMMY"/"UART"/"ENDEAVOR"
       )
       port map(
-        clk          => clk12,
+        clk          => clk,
         rst          => rst,
         daqTx        => daqTx,
         daqRx        => daqRx,
@@ -213,17 +224,9 @@ begin
 
    -- ASIC-A, "main" ASIC that speaks with DaqNode
    U_QDBAsicA : entity work.QDBAsicTop
-   generic map(
-      X_POS_G      => 0,
-      Y_POS_G      => 1,
-      pulse_time  => 2,
-      fake_trg_cnt => fake_trg_cnt,
-      TXRX_TYPE    => "ENDEAVOR"       -- "DUMMY"/"UART"/"ENDEAVOR"
-   )
    port map(
        -- internal clock
-       clk     => clk12,
-        rst => rst,
+       pllclk     => clk,
        Tx1     => A_Tx1,
        Rx1     => A_Rx1,
        Tx2     => A_Tx2,
@@ -232,6 +235,9 @@ begin
        Rx3     => A_Rx3,
        Tx4     => A_Tx4,
        Rx4     => A_Rx4,
+       IO => (others => '0'),
+       so => open,
+       si => open,
        -- outputs
        red_led => red_led(0),
        blu_led => blu_led(0),
@@ -240,17 +246,9 @@ begin
 
    -- ASIC-B
    U_QDBAsicB : entity work.QDBAsicTop
-   generic map(
-      X_POS_G      => 1,
-      Y_POS_G      => 1,
-      pulse_time  => 2,
-      fake_trg_cnt => fake_trg_cnt,
-      TXRX_TYPE    => "ENDEAVOR"       -- "DUMMY"/"UART"/"ENDEAVOR"
-   )
    port map(
        -- internal clock
-       clk => clk12,
-        rst => rst,
+       pllclk => clk,
        Tx1 => B_Tx1,
        Rx1 => B_Rx1,
        Tx2 => B_Tx2,
@@ -259,6 +257,9 @@ begin
        Rx3 => B_Rx3,
        Tx4 => B_Tx4,
        Rx4 => B_Rx4,
+       IO => (others => '0'),
+       so => open,
+       si => open,
        -- outputs
        red_led => red_led(1),
        blu_led => blu_led(1),
@@ -267,18 +268,9 @@ begin
 
     -- ASIC-C, "main" ASIC that speaks with DaqNode
     U_QDBAsicC : entity work.QDBAsicTop
-    generic map(
-        X_POS_G      => 0,
-        Y_POS_G      => 0,
-        pulse_time   => 2,
-        fake_trg_cnt => fake_trg_cnt,
-        RAM_TYPE => "distributed",
-        TXRX_TYPE => "ENDEAVOR" -- "DUMMY"/"UART"/"ENDEAVOR"
-    )
     port map(
         -- internal clock
-       clk => clk12,
-       rst => rst,
+       pllclk => clk,
        Tx1 => C_Tx1,
        Rx1 => C_Rx1,
        Tx2 => C_Tx2,
@@ -287,6 +279,9 @@ begin
        Rx3 => C_Rx3,
        Tx4 => C_Tx4,
        Rx4 => C_Rx4,
+       IO => (others => '0'),
+       so => open,
+       si => open,
         -- outputs
         red_led => red_led(2),
         blu_led => blu_led(2),
@@ -295,17 +290,9 @@ begin
 
    -- ASIC-D
    U_QDBAsicD : entity work.QDBAsicTop
-   generic map(
-       X_POS_G   => 1,
-       Y_POS_G   => 0,
-       pulse_time  => 2,
-       fake_trg_cnt => fake_trg_cnt,
-       TXRX_TYPE => "ENDEAVOR" -- "DUMMY"/"UART"/"ENDEAVOR"
-   )
    port map(
        -- internal clock
-       clk => clk12,
-       rst => rst,
+       pllclk => clk,
        Tx1 => D_Tx1,
        Rx1 => D_Rx1,
        Tx2 => D_Tx2,
@@ -314,6 +301,9 @@ begin
        Rx3 => D_Rx3,
        Tx4 => D_Tx4,
        Rx4 => D_Rx4,
+       IO => (others => '0'),
+       so => open,
+       si => open,
        -- outputs
        red_led => red_led(3),
        blu_led => blu_led(3),
@@ -330,20 +320,10 @@ begin
       port map (
          CLK_PERIOD_G => CLK_PERIOD_NOMINAL_C, -- : time    := 10 ns;
          CLK_DELAY_G  => 1 ns,   -- : time    := 1 ns;  -- Wait this long into simulation before asserting reset
-         clkP         => clk48, -- : out sl := '0';
+         clkP         => clk, -- : out sl := '0';
          rst          => open  -- : out sl := '1';
       );
 
-    U_QDBAsicClk12 : entity work.ClkRst
-      generic map (
-         RST_HOLD_TIME_G   => 1 us -- : time    := 6 us;  -- Hold reset for this long
-      )
-      port map (
-         CLK_PERIOD_G => Asic_CLK_PERIOD_NOMINAL_C, -- : time    := 10 ns;
-         CLK_DELAY_G  => 1 ns,   -- : time    := 1 ns;  -- Wait this long into simulation before asserting reset
-         clkP         => clk12, -- : out sl := '0';
-         rst          => open  -- : out sl := '1';
-      );
 
    ----------------------------
    -- Generate random resets --
@@ -362,7 +342,7 @@ begin
       wait for 2.0 ns;
         status   <= x"beefcafe";
         addr     <= (others => '0');
-        wdata    <= 0x"1234abcd";
+        wdata    <= x"1234abcd";
         rst <= '0';
         -- turn off reception from un-connected directions
         A_Rx1 <= '0';
@@ -386,7 +366,7 @@ begin
 --        addr <= x"000" & x"0" & x"0004";
 --        wen  <= '1';
 --        req  <= '1';
---      wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
+--      wait for CLK_PERIOD_NOMINAL_C * 2;
 --        req <= '0';
 --        wen <= '0';    
        
@@ -397,16 +377,16 @@ begin
         wdata <= x"0000001" & b"0100";    -- set ManRoute '1' and DirMask "DirDown" from QPixPkg.vhd 
         wen <= '1';                       -- opWrite
         addr  <= x"000" & x"c" & x"080c"; -- C for remote, 100 for dest & X/Y, c=3<<2 for dir mask
-      wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
+      wait for CLK_PERIOD_NOMINAL_C * 2;
         req <= '0';
 
       -- Testing a register read from ASIC-C -> read back the dirMask that we set above 
-      -- Asic_Reg_Request Read 3, look for DaqNode to receive something back          
+      -- Reg_Request Read 3, look for DaqNode to receive something back
       wait for 200 us;
         wen  <= '0';                      -- opRead
         addr  <= x"000" & x"c" & x"080c"; -- C for remote, 100 for dest & X/Y, c=3<<2 for dir mask        
         req  <= '1';   -- required to set ack ..
-      wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
+      wait for CLK_PERIOD_NOMINAL_C * 2;
         req <= '0';
       
       -- Not yet configuring any valid pulses on ASICs B/D
@@ -421,7 +401,7 @@ begin
           wdata <= x"0000001" & b"0010";    -- set ManRoute '1' and DirMask "DirDown" from QPixPkg.vhd 
           wen <= '1';                       -- opWrite
           addr  <= x"000" & x"c" & x"082c"; -- C for remote, 002 for X/Y, c=3<<2 for dir mask
-        wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
+        wait for CLK_PERIOD_NOMINAL_C * 2;
           req <= '0';
          
       wait for 500 us; -- (sets B manual routing, successfully?)
@@ -429,7 +409,7 @@ begin
               wdata <= x"0000001" & b"0100";    -- set ManRoute '1' and DirMask "DirDown" from QPixPkg.vhd 
               wen <= '1';                       -- opWrite
               addr  <= x"000" & x"c" & x"092c"; -- C for remote, 002 for X/Y, c=3<<2 for dir mask
-            wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
+            wait for CLK_PERIOD_NOMINAL_C * 2;
               req <= '0';
 
       wait for 500 us; -- (sets D manual routing, successfully?)
@@ -437,7 +417,7 @@ begin
               wdata <= x"0000001" & b"1000";    -- set ManRoute '1' and DirMask "DirDown" from QPixPkg.vhd 
               wen <= '1';                       -- opWrite
               addr  <= x"000" & x"c" & x"090c"; -- C for remote, 002 for X/Y, c=3<<2 for dir mask
-            wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
+            wait for CLK_PERIOD_NOMINAL_C * 2;
               req <= '0';
    
       -- interrogate fifos after setting the dirMask with trigger
@@ -446,7 +426,7 @@ begin
               wdata <= x"00000001";             -- set interrogation
               wen <= '1';                       -- opRead
               addr  <= x"000" & x"0" & x"0028"; -- default trigger here
-            wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
+            wait for CLK_PERIOD_NOMINAL_C * 2;
               req <= '0';
               wen <= '0';
               
@@ -457,7 +437,7 @@ begin
 --        wdata <= x"00000001";             -- set interrogation
 --        wen <= '0';                       -- opRead
 --        addr  <= x"000" & x"c" & x"0004"; -- C for remote, 000 for X/Y, 4=1<<2 for interrogation
---      wait for Asic_CLK_PERIOD_NOMINAL_C * 2;
+--      wait for CLK_PERIOD_NOMINAL_C * 2;
 --        trg <= '0';
 --        req <= '0';
 
@@ -466,7 +446,7 @@ begin
       wait for 5 ms;
         addr  <= x"00000010"; -- read the event size from the DAQ buffer
         req   <= '1';
-      wait for Asic_CLK_PERIOD_NOMINAL_C * 2; 
+      wait for CLK_PERIOD_NOMINAL_C * 2;
         req <= '0';
 
       -- Event_Memory Read 1
@@ -475,10 +455,11 @@ begin
 --      ----------   unused & evtMmem &  addr  & mux  & unused
 --          addr  <= x"000" &   x"4"  & x"003" & "00" & "00";
 --          req   <= '1';
---      wait for Asic_CLK_PERIOD_NOMINAL_C * 10;              
+--      wait for CLK_PERIOD_NOMINAL_C * 10;
 --          req <= '0';
      
       -- End simulation stimulus by waiting forever
       wait;
    end process;
+
 end Behavioral;
