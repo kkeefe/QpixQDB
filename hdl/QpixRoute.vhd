@@ -252,11 +252,11 @@ begin
          when REP_LOCAL_S  =>
             fsmState <= "010";
             nxtReg.locFifoRen <= '0';
-            if s_locFifoEmpty = '0' then
+            if s_locFifoEmpty = '0' or curReg.stateCnt > to_unsigned(0, G_REG_DATA_BITS) then
                -- buffer for FIFOs with no fall-through word
                if txReady = '1' then
                   nxtReg.stateCnt   <= curReg.stateCnt + 1;
-                  if curReg.stateCnt = to_unsigned(1, G_REG_DATA_BITS) then
+                  if curReg.stateCnt = to_unsigned(0, G_REG_DATA_BITS) then
                      nxtReg.locFifoRen <= '1';
                   elsif curReg.locFifoRen = '0' and curReg.stateCnt = to_unsigned(2, G_REG_DATA_BITS) then
                      nxtReg.txData.DataValid <= '1';
