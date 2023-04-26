@@ -105,9 +105,6 @@ architecture behav of QpixRoute is
    signal extFifoRen     : std_logic := '0';
    signal extFifoDout    : std_logic_vector (G_DATA_BITS-1 downto 0);
    signal extFull        : std_logic := '0';
-   signal read_fifo      : boolean := false;
-
-
    -- signal respDir        : std_logic_vector(3 downto 0) := (others => '0');
 
    ---------------------------------------------------
@@ -231,7 +228,6 @@ begin
             nxtReg.txData.DataValid <= '0';
             nxtReg.locFifoRen       <= '0';
             nxtReg.extFifoRen       <= '0';
-            read_fifo               <= false;
 
             -- -- possible mismatch on softInterr behavior
             -- if qpixReq.InterrogationSoft = '1' then
@@ -256,16 +252,13 @@ begin
          when REP_LOCAL_S  =>
             fsmState <= "010";
             nxtReg.locFifoRen <= '0';
-            nxtReg.stateCnt   <= curReg.stateCnt + 1;
-            if s_locFifoEmpty = '0' or read_fifo then
-
+            if s_locFifoEmpty = '0' then
                -- buffer for FIFOs with no fall-through word
-               if not read_fifo then
-                  nxtReg.locFifoRen <= '1';
-                  read_fifo         <= true;
-
-               elsif txReady = '1' then
-                  if curReg.locFifoRen = '0' and curReg.stateCnt(1) = '1' then
+               if txReady = '1' then
+                  nxtReg.stateCnt   <= curReg.stateCnt + 1;
+                  if curReg.stateCnt = to_unsigned(1, G_REG_DATA_BITS) then
+                     nxtReg.locFifoRen <= '1';
+                  elsif curReg.locFifoRen = '0' and curReg.stateCnt = to_unsigned(2, G_REG_DATA_BITS) then
                      nxtReg.txData.DataValid <= '1';
                      nxtReg.txData.XPos      <= qpixConf.XPos;
                      nxtReg.txData.YPos      <= qpixConf.YPos;
@@ -273,12 +266,11 @@ begin
                      nxtReg.txData.ChanMask  <= locFifoDout(G_N_ANALOG_CHAN + G_TIMESTAMP_BITS - 1 downto G_TIMESTAMP_BITS);
                      nxtReg.txData.DirMask   <= curReg.respDir;
                      nxtReg.txData.WordType  <= G_WORD_TYPE_DATA;
-                     read_fifo <= false;
+                     nxtReg.stateCnt         <= (others => '0');
                   end if;
                end if;
 
             else
-               nxtReg.locFifoRen <= '0';
                nxtReg.state      <= REP_FINISH_S;
                nxtReg.stateCnt   <= (others => '0');
             end if;
@@ -289,7 +281,7 @@ begin
             -- all hits are done, send the packet which indicates that
             nxtReg.stateCnt <= curReg.stateCnt + 1;
             if txReady = '1' then
-               if curReg.stateCnt(1) = '1' then
+               if curReg.stateCnt = to_unsigned(2, G_REG_DATA_BITS) then
                   nxtReg.txData.DataValid <= '1';
                   nxtReg.txData.ChanMask  <= '0' & curReg.locFull & curReg.extFull & curReg.reqID & 
                                              std_logic_vector(curReg.intrNum(8 downto 0));
@@ -303,7 +295,6 @@ begin
 
                   nxtReg.extFull <= '0';
                   nxtReg.locFull <= '0';
-                  read_fifo      <= false;
                end if;
             end if;
 
@@ -312,24 +303,19 @@ begin
             fsmState <= "100";
             nxtReg.extFifoRen       <= '0';
             nxtReg.txData.DataValid <= '0';
-            nxtReg.stateCnt         <= curReg.stateCnt + 1;
 
-            if s_extFifoEmpty = '0' or read_fifo then
-
-               -- buffer for FIFOs with no fall-through word
-               if not read_fifo then
-                  nxtReg.extFifoRen <= '1';
-                  read_fifo         <= true;
-
-               elsif txReady = '1' then
-                  if curReg.extFifoRen = '0' and curReg.stateCnt(1) = '1' then
+            if s_extFifoEmpty = '0' or curReg.stateCnt > to_unsigned(0, G_REG_DATA_BITS) then
+               if txReady = '1' then
+                  nxtReg.stateCnt   <= curReg.stateCnt + 1;
+                  if curReg.stateCnt = to_unsigned(0, G_REG_DATA_BITS) then
+                     nxtReg.extFifoRen <= '1';
+                  elsif curReg.stateCnt = to_unsigned(2, G_REG_DATA_BITS) then
                      nxtReg.txData           <= fQpixByteToRecord(extFifoDout);
                      -- nxtReg.txData.Data      <= extFifoDout;
                      nxtReg.txData.DataValid <= '1';
                      nxtReg.txData.DirMask   <= curReg.respDir;
-                     read_fifo               <= false;
+					 nxtReg.stateCnt         <= (others => '0');
                   end if;
-
                end if;
 
             else
