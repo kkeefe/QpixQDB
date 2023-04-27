@@ -249,6 +249,7 @@ type QpixInPortsArrType is array(natural range <>, natural range <>) of QpixInPo
       ReqID             : std_logic_vector(3 downto 0);
       InterrogationHard : std_logic;
       InterrogationSoft : std_logic;
+      RequestTimestamp  : std_logic_vector(G_TIMESTAMP_BITS-1 downto 0);
       ResetState        : std_logic;
       AsicReset         : std_logic;
    end record;
@@ -257,6 +258,7 @@ type QpixInPortsArrType is array(natural range <>, natural range <>) of QpixInPo
       ReqID             => (others => '0'),
       InterrogationSoft => '0',
       InterrogationHard => '0',
+      RequestTimestamp  => (others => '0'),
       ResetState    => '0',
       AsicReset     => '0'
    );

@@ -156,6 +156,7 @@ begin
                      qpixReq_r.AsicReset         <= regData.Data(2);
                      qpixReq_r.ResetState        <= regData.Data(3);
                      qpixReq_r.ReqID             <= regData.ReqID;
+                     qpixReq_r.RequestTimestamp  <= std_logic_vector(cnt);
                      
                      -- this forces a dynamic position update on every cmd broadcast
                      -- reserve this feature for cmd 5

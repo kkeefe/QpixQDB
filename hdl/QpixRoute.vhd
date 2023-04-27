@@ -241,7 +241,7 @@ begin
             if (qpixReq.InterrogationSoft = '1' and s_locFifoEmpty = '0') or
                qpixReq.InterrogationHard = '1' then
                   nxtReg.state   <= REP_LOCAL_S;
-                  nxtReg.intTime <= clkCnt;
+                  nxtReg.intTime <= qpixReq.RequestTimestamp;
                   nxtReg.reqID   <= qpixReq.ReqID;
                   nxtReg.intrNum <= curReg.intrNum + 1;
             elsif s_extFifoEmpty = '0' then
