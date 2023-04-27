@@ -39,6 +39,8 @@ port (
 
     -- extra IO, hardcode IO for now
     IO : in STD_LOGIC_VECTOR(3 downto 0);
+	
+	pllClkOut : out std_logic;
 
     -- optional ss pins -- south Top
     --ss  : in  std_logic;  -- south 8   /  north 6
@@ -163,8 +165,8 @@ begin
   u_pll : qdb_pll port map(
     ref_clk_i   =>  pllclk,
     rst_n_i     =>  '1', -- active low
-    outcore_o   =>  clk,
-    outglobal_o =>  open
+    outcore_o   =>  pllClkOut,
+    outglobal_o =>  clk
   );
 
 
@@ -182,8 +184,9 @@ begin
       -- conditional inputs
       --cond_red_led => (not regdata.dest = '1') and regdata.valid = '1', -- received a broadcast
       -- received a specific regreq
-      -- cond_gre_led => regdata.ydest = qpixconf.ypos and regdata.xdest = qpixconf.xpos and regdata.valid = '1' and regdata.dest = '1',
-      cond_gre_led => extFifoEmpty = '0',
+      --cond_gre_led => regdata.ydest = qpixconf.ypos and regdata.xdest = qpixconf.xpos and regdata.valid = '1' and regdata.dest = '1',
+      cond_gre_led => locFifoEmpty = '0',
+	  --cond_gre_led => extFifoEmpty = '0',
       cond_red_led => rxData.datavalid = '1', -- reading new input data
       cond_blu_led => txData.datavalid = '1', -- busy is always read
 

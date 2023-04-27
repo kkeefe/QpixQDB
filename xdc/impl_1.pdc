@@ -9,7 +9,8 @@ ldc_set_location -site {F4} [get_ports Rx3];# South - Pin 1, Female
 ldc_set_location -site {E3} [get_ports Tx4];# West  - Pin 3, Male
 ldc_set_location -site {B1} [get_ports Rx4];# West  - Pin 1, Male
 # done and rest
-# ldc_set_location -site {D3} [get_ports CDONE];
+ldc_set_location -site {D3} [get_ports pllClkOut];
+#ldc_set_location -site {D3} [get_ports CDONE];
 # ldc_set_location -site {F3} [get_ports sysRst]; # shouldn't be used..
 #ldc_set_location -site {B3} [get_ports pllclk]
 # other I/O East/West only
