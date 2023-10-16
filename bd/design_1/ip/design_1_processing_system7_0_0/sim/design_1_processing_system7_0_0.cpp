@@ -155,7 +155,7 @@ void design_1_processing_system7_0_0::before_end_of_elaboration()
     M_AXI_GP0_transactor_param_props.addLong("WUSER_BITS_PER_BYTE", "0");
     M_AXI_GP0_transactor_param_props.addLong("HAS_SIZE", "1");
     M_AXI_GP0_transactor_param_props.addLong("HAS_RESET", "0");
-    M_AXI_GP0_transactor_param_props.addFloat("PHASE", "0.000");
+    M_AXI_GP0_transactor_param_props.addFloat("PHASE", "0.0");
     M_AXI_GP0_transactor_param_props.addString("PROTOCOL", "AXI3");
     M_AXI_GP0_transactor_param_props.addString("READ_WRITE_MODE", "READ_WRITE");
     M_AXI_GP0_transactor_param_props.addString("CLK_DOMAIN", "design_1_processing_system7_0_0_FCLK_CLK0");
@@ -262,7 +262,7 @@ void design_1_processing_system7_0_0::before_end_of_elaboration()
     S_AXI_HP0_transactor_param_props.addLong("WUSER_BITS_PER_BYTE", "0");
     S_AXI_HP0_transactor_param_props.addLong("HAS_SIZE", "1");
     S_AXI_HP0_transactor_param_props.addLong("HAS_RESET", "0");
-    S_AXI_HP0_transactor_param_props.addFloat("PHASE", "0.000");
+    S_AXI_HP0_transactor_param_props.addFloat("PHASE", "0.0");
     S_AXI_HP0_transactor_param_props.addString("PROTOCOL", "AXI3");
     S_AXI_HP0_transactor_param_props.addString("READ_WRITE_MODE", "READ_WRITE");
     S_AXI_HP0_transactor_param_props.addString("CLK_DOMAIN", "design_1_processing_system7_0_0_FCLK_CLK0");
@@ -435,7 +435,7 @@ void design_1_processing_system7_0_0::before_end_of_elaboration()
     M_AXI_GP0_transactor_param_props.addLong("WUSER_BITS_PER_BYTE", "0");
     M_AXI_GP0_transactor_param_props.addLong("HAS_SIZE", "1");
     M_AXI_GP0_transactor_param_props.addLong("HAS_RESET", "0");
-    M_AXI_GP0_transactor_param_props.addFloat("PHASE", "0.000");
+    M_AXI_GP0_transactor_param_props.addFloat("PHASE", "0.0");
     M_AXI_GP0_transactor_param_props.addString("PROTOCOL", "AXI3");
     M_AXI_GP0_transactor_param_props.addString("READ_WRITE_MODE", "READ_WRITE");
     M_AXI_GP0_transactor_param_props.addString("CLK_DOMAIN", "design_1_processing_system7_0_0_FCLK_CLK0");
@@ -542,7 +542,7 @@ void design_1_processing_system7_0_0::before_end_of_elaboration()
     S_AXI_HP0_transactor_param_props.addLong("WUSER_BITS_PER_BYTE", "0");
     S_AXI_HP0_transactor_param_props.addLong("HAS_SIZE", "1");
     S_AXI_HP0_transactor_param_props.addLong("HAS_RESET", "0");
-    S_AXI_HP0_transactor_param_props.addFloat("PHASE", "0.000");
+    S_AXI_HP0_transactor_param_props.addFloat("PHASE", "0.0");
     S_AXI_HP0_transactor_param_props.addString("PROTOCOL", "AXI3");
     S_AXI_HP0_transactor_param_props.addString("READ_WRITE_MODE", "READ_WRITE");
     S_AXI_HP0_transactor_param_props.addString("CLK_DOMAIN", "design_1_processing_system7_0_0_FCLK_CLK0");
@@ -715,7 +715,7 @@ void design_1_processing_system7_0_0::before_end_of_elaboration()
     M_AXI_GP0_transactor_param_props.addLong("WUSER_BITS_PER_BYTE", "0");
     M_AXI_GP0_transactor_param_props.addLong("HAS_SIZE", "1");
     M_AXI_GP0_transactor_param_props.addLong("HAS_RESET", "0");
-    M_AXI_GP0_transactor_param_props.addFloat("PHASE", "0.000");
+    M_AXI_GP0_transactor_param_props.addFloat("PHASE", "0.0");
     M_AXI_GP0_transactor_param_props.addString("PROTOCOL", "AXI3");
     M_AXI_GP0_transactor_param_props.addString("READ_WRITE_MODE", "READ_WRITE");
     M_AXI_GP0_transactor_param_props.addString("CLK_DOMAIN", "design_1_processing_system7_0_0_FCLK_CLK0");
@@ -822,7 +822,7 @@ void design_1_processing_system7_0_0::before_end_of_elaboration()
     S_AXI_HP0_transactor_param_props.addLong("WUSER_BITS_PER_BYTE", "0");
     S_AXI_HP0_transactor_param_props.addLong("HAS_SIZE", "1");
     S_AXI_HP0_transactor_param_props.addLong("HAS_RESET", "0");
-    S_AXI_HP0_transactor_param_props.addFloat("PHASE", "0.000");
+    S_AXI_HP0_transactor_param_props.addFloat("PHASE", "0.0");
     S_AXI_HP0_transactor_param_props.addString("PROTOCOL", "AXI3");
     S_AXI_HP0_transactor_param_props.addString("READ_WRITE_MODE", "READ_WRITE");
     S_AXI_HP0_transactor_param_props.addString("CLK_DOMAIN", "design_1_processing_system7_0_0_FCLK_CLK0");
@@ -984,7 +984,7 @@ design_1_processing_system7_0_0::design_1_processing_system7_0_0(const sc_core::
     M_AXI_GP0_transactor_param_props.addLong("WUSER_BITS_PER_BYTE", "0");
     M_AXI_GP0_transactor_param_props.addLong("HAS_SIZE", "1");
     M_AXI_GP0_transactor_param_props.addLong("HAS_RESET", "0");
-    M_AXI_GP0_transactor_param_props.addFloat("PHASE", "0.000");
+    M_AXI_GP0_transactor_param_props.addFloat("PHASE", "0.0");
     M_AXI_GP0_transactor_param_props.addString("PROTOCOL", "AXI3");
     M_AXI_GP0_transactor_param_props.addString("READ_WRITE_MODE", "READ_WRITE");
     M_AXI_GP0_transactor_param_props.addString("CLK_DOMAIN", "design_1_processing_system7_0_0_FCLK_CLK0");
@@ -1072,7 +1072,7 @@ design_1_processing_system7_0_0::design_1_processing_system7_0_0(const sc_core::
     S_AXI_HP0_transactor_param_props.addLong("WUSER_BITS_PER_BYTE", "0");
     S_AXI_HP0_transactor_param_props.addLong("HAS_SIZE", "1");
     S_AXI_HP0_transactor_param_props.addLong("HAS_RESET", "0");
-    S_AXI_HP0_transactor_param_props.addFloat("PHASE", "0.000");
+    S_AXI_HP0_transactor_param_props.addFloat("PHASE", "0.0");
     S_AXI_HP0_transactor_param_props.addString("PROTOCOL", "AXI3");
     S_AXI_HP0_transactor_param_props.addString("READ_WRITE_MODE", "READ_WRITE");
     S_AXI_HP0_transactor_param_props.addString("CLK_DOMAIN", "design_1_processing_system7_0_0_FCLK_CLK0");
@@ -1264,7 +1264,7 @@ design_1_processing_system7_0_0::design_1_processing_system7_0_0(const sc_core::
     M_AXI_GP0_transactor_param_props.addLong("WUSER_BITS_PER_BYTE", "0");
     M_AXI_GP0_transactor_param_props.addLong("HAS_SIZE", "1");
     M_AXI_GP0_transactor_param_props.addLong("HAS_RESET", "0");
-    M_AXI_GP0_transactor_param_props.addFloat("PHASE", "0.000");
+    M_AXI_GP0_transactor_param_props.addFloat("PHASE", "0.0");
     M_AXI_GP0_transactor_param_props.addString("PROTOCOL", "AXI3");
     M_AXI_GP0_transactor_param_props.addString("READ_WRITE_MODE", "READ_WRITE");
     M_AXI_GP0_transactor_param_props.addString("CLK_DOMAIN", "design_1_processing_system7_0_0_FCLK_CLK0");
@@ -1352,7 +1352,7 @@ design_1_processing_system7_0_0::design_1_processing_system7_0_0(const sc_core::
     S_AXI_HP0_transactor_param_props.addLong("WUSER_BITS_PER_BYTE", "0");
     S_AXI_HP0_transactor_param_props.addLong("HAS_SIZE", "1");
     S_AXI_HP0_transactor_param_props.addLong("HAS_RESET", "0");
-    S_AXI_HP0_transactor_param_props.addFloat("PHASE", "0.000");
+    S_AXI_HP0_transactor_param_props.addFloat("PHASE", "0.0");
     S_AXI_HP0_transactor_param_props.addString("PROTOCOL", "AXI3");
     S_AXI_HP0_transactor_param_props.addString("READ_WRITE_MODE", "READ_WRITE");
     S_AXI_HP0_transactor_param_props.addString("CLK_DOMAIN", "design_1_processing_system7_0_0_FCLK_CLK0");

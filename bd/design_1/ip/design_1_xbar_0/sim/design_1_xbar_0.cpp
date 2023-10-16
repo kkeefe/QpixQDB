@@ -306,7 +306,7 @@ void design_1_xbar_0::before_end_of_elaboration()
     S00_AXI_transactor_param_props.addLong("WUSER_BITS_PER_BYTE", "0");
     S00_AXI_transactor_param_props.addLong("HAS_SIZE", "0");
     S00_AXI_transactor_param_props.addLong("HAS_RESET", "1");
-    S00_AXI_transactor_param_props.addFloat("PHASE", "0.000");
+    S00_AXI_transactor_param_props.addFloat("PHASE", "0.0");
     S00_AXI_transactor_param_props.addString("PROTOCOL", "AXI4LITE");
     S00_AXI_transactor_param_props.addString("READ_WRITE_MODE", "READ_WRITE");
     S00_AXI_transactor_param_props.addString("CLK_DOMAIN", "design_1_processing_system7_0_0_FCLK_CLK0");
@@ -412,7 +412,7 @@ void design_1_xbar_0::before_end_of_elaboration()
     M00_AXI_transactor_param_props.addLong("WUSER_BITS_PER_BYTE", "0");
     M00_AXI_transactor_param_props.addLong("HAS_SIZE", "0");
     M00_AXI_transactor_param_props.addLong("HAS_RESET", "1");
-    M00_AXI_transactor_param_props.addFloat("PHASE", "0.000");
+    M00_AXI_transactor_param_props.addFloat("PHASE", "0.0");
     M00_AXI_transactor_param_props.addString("PROTOCOL", "AXI4LITE");
     M00_AXI_transactor_param_props.addString("READ_WRITE_MODE", "READ_WRITE");
     M00_AXI_transactor_param_props.addString("CLK_DOMAIN", "design_1_processing_system7_0_0_FCLK_CLK0");
@@ -545,7 +545,7 @@ void design_1_xbar_0::before_end_of_elaboration()
     M01_AXI_transactor_param_props.addLong("WUSER_BITS_PER_BYTE", "0");
     M01_AXI_transactor_param_props.addLong("HAS_SIZE", "0");
     M01_AXI_transactor_param_props.addLong("HAS_RESET", "1");
-    M01_AXI_transactor_param_props.addFloat("PHASE", "0.000");
+    M01_AXI_transactor_param_props.addFloat("PHASE", "0.0");
     M01_AXI_transactor_param_props.addString("PROTOCOL", "AXI4LITE");
     M01_AXI_transactor_param_props.addString("READ_WRITE_MODE", "READ_WRITE");
     M01_AXI_transactor_param_props.addString("CLK_DOMAIN", "design_1_processing_system7_0_0_FCLK_CLK0");
@@ -895,7 +895,7 @@ void design_1_xbar_0::before_end_of_elaboration()
     S00_AXI_transactor_param_props.addLong("WUSER_BITS_PER_BYTE", "0");
     S00_AXI_transactor_param_props.addLong("HAS_SIZE", "0");
     S00_AXI_transactor_param_props.addLong("HAS_RESET", "1");
-    S00_AXI_transactor_param_props.addFloat("PHASE", "0.000");
+    S00_AXI_transactor_param_props.addFloat("PHASE", "0.0");
     S00_AXI_transactor_param_props.addString("PROTOCOL", "AXI4LITE");
     S00_AXI_transactor_param_props.addString("READ_WRITE_MODE", "READ_WRITE");
     S00_AXI_transactor_param_props.addString("CLK_DOMAIN", "design_1_processing_system7_0_0_FCLK_CLK0");
@@ -1001,7 +1001,7 @@ void design_1_xbar_0::before_end_of_elaboration()
     M00_AXI_transactor_param_props.addLong("WUSER_BITS_PER_BYTE", "0");
     M00_AXI_transactor_param_props.addLong("HAS_SIZE", "0");
     M00_AXI_transactor_param_props.addLong("HAS_RESET", "1");
-    M00_AXI_transactor_param_props.addFloat("PHASE", "0.000");
+    M00_AXI_transactor_param_props.addFloat("PHASE", "0.0");
     M00_AXI_transactor_param_props.addString("PROTOCOL", "AXI4LITE");
     M00_AXI_transactor_param_props.addString("READ_WRITE_MODE", "READ_WRITE");
     M00_AXI_transactor_param_props.addString("CLK_DOMAIN", "design_1_processing_system7_0_0_FCLK_CLK0");
@@ -1134,7 +1134,7 @@ void design_1_xbar_0::before_end_of_elaboration()
     M01_AXI_transactor_param_props.addLong("WUSER_BITS_PER_BYTE", "0");
     M01_AXI_transactor_param_props.addLong("HAS_SIZE", "0");
     M01_AXI_transactor_param_props.addLong("HAS_RESET", "1");
-    M01_AXI_transactor_param_props.addFloat("PHASE", "0.000");
+    M01_AXI_transactor_param_props.addFloat("PHASE", "0.0");
     M01_AXI_transactor_param_props.addString("PROTOCOL", "AXI4LITE");
     M01_AXI_transactor_param_props.addString("READ_WRITE_MODE", "READ_WRITE");
     M01_AXI_transactor_param_props.addString("CLK_DOMAIN", "design_1_processing_system7_0_0_FCLK_CLK0");
@@ -1484,7 +1484,7 @@ void design_1_xbar_0::before_end_of_elaboration()
     S00_AXI_transactor_param_props.addLong("WUSER_BITS_PER_BYTE", "0");
     S00_AXI_transactor_param_props.addLong("HAS_SIZE", "0");
     S00_AXI_transactor_param_props.addLong("HAS_RESET", "1");
-    S00_AXI_transactor_param_props.addFloat("PHASE", "0.000");
+    S00_AXI_transactor_param_props.addFloat("PHASE", "0.0");
     S00_AXI_transactor_param_props.addString("PROTOCOL", "AXI4LITE");
     S00_AXI_transactor_param_props.addString("READ_WRITE_MODE", "READ_WRITE");
     S00_AXI_transactor_param_props.addString("CLK_DOMAIN", "design_1_processing_system7_0_0_FCLK_CLK0");
@@ -1590,7 +1590,7 @@ void design_1_xbar_0::before_end_of_elaboration()
     M00_AXI_transactor_param_props.addLong("WUSER_BITS_PER_BYTE", "0");
     M00_AXI_transactor_param_props.addLong("HAS_SIZE", "0");
     M00_AXI_transactor_param_props.addLong("HAS_RESET", "1");
-    M00_AXI_transactor_param_props.addFloat("PHASE", "0.000");
+    M00_AXI_transactor_param_props.addFloat("PHASE", "0.0");
     M00_AXI_transactor_param_props.addString("PROTOCOL", "AXI4LITE");
     M00_AXI_transactor_param_props.addString("READ_WRITE_MODE", "READ_WRITE");
     M00_AXI_transactor_param_props.addString("CLK_DOMAIN", "design_1_processing_system7_0_0_FCLK_CLK0");
@@ -1723,7 +1723,7 @@ void design_1_xbar_0::before_end_of_elaboration()
     M01_AXI_transactor_param_props.addLong("WUSER_BITS_PER_BYTE", "0");
     M01_AXI_transactor_param_props.addLong("HAS_SIZE", "0");
     M01_AXI_transactor_param_props.addLong("HAS_RESET", "1");
-    M01_AXI_transactor_param_props.addFloat("PHASE", "0.000");
+    M01_AXI_transactor_param_props.addFloat("PHASE", "0.0");
     M01_AXI_transactor_param_props.addString("PROTOCOL", "AXI4LITE");
     M01_AXI_transactor_param_props.addString("READ_WRITE_MODE", "READ_WRITE");
     M01_AXI_transactor_param_props.addString("CLK_DOMAIN", "design_1_processing_system7_0_0_FCLK_CLK0");
@@ -1940,7 +1940,7 @@ design_1_xbar_0::design_1_xbar_0(const sc_core::sc_module_name& nm) : design_1_x
     S00_AXI_transactor_param_props.addLong("WUSER_BITS_PER_BYTE", "0");
     S00_AXI_transactor_param_props.addLong("HAS_SIZE", "0");
     S00_AXI_transactor_param_props.addLong("HAS_RESET", "1");
-    S00_AXI_transactor_param_props.addFloat("PHASE", "0.000");
+    S00_AXI_transactor_param_props.addFloat("PHASE", "0.0");
     S00_AXI_transactor_param_props.addString("PROTOCOL", "AXI4LITE");
     S00_AXI_transactor_param_props.addString("READ_WRITE_MODE", "READ_WRITE");
     S00_AXI_transactor_param_props.addString("CLK_DOMAIN", "design_1_processing_system7_0_0_FCLK_CLK0");
@@ -2027,7 +2027,7 @@ design_1_xbar_0::design_1_xbar_0(const sc_core::sc_module_name& nm) : design_1_x
     M00_AXI_transactor_param_props.addLong("WUSER_BITS_PER_BYTE", "0");
     M00_AXI_transactor_param_props.addLong("HAS_SIZE", "0");
     M00_AXI_transactor_param_props.addLong("HAS_RESET", "1");
-    M00_AXI_transactor_param_props.addFloat("PHASE", "0.000");
+    M00_AXI_transactor_param_props.addFloat("PHASE", "0.0");
     M00_AXI_transactor_param_props.addString("PROTOCOL", "AXI4LITE");
     M00_AXI_transactor_param_props.addString("READ_WRITE_MODE", "READ_WRITE");
     M00_AXI_transactor_param_props.addString("CLK_DOMAIN", "design_1_processing_system7_0_0_FCLK_CLK0");
@@ -2217,7 +2217,7 @@ design_1_xbar_0::design_1_xbar_0(const sc_core::sc_module_name& nm) : design_1_x
     M01_AXI_transactor_param_props.addLong("WUSER_BITS_PER_BYTE", "0");
     M01_AXI_transactor_param_props.addLong("HAS_SIZE", "0");
     M01_AXI_transactor_param_props.addLong("HAS_RESET", "1");
-    M01_AXI_transactor_param_props.addFloat("PHASE", "0.000");
+    M01_AXI_transactor_param_props.addFloat("PHASE", "0.0");
     M01_AXI_transactor_param_props.addString("PROTOCOL", "AXI4LITE");
     M01_AXI_transactor_param_props.addString("READ_WRITE_MODE", "READ_WRITE");
     M01_AXI_transactor_param_props.addString("CLK_DOMAIN", "design_1_processing_system7_0_0_FCLK_CLK0");
@@ -2528,7 +2528,7 @@ design_1_xbar_0::design_1_xbar_0(const sc_core::sc_module_name& nm) : design_1_x
     S00_AXI_transactor_param_props.addLong("WUSER_BITS_PER_BYTE", "0");
     S00_AXI_transactor_param_props.addLong("HAS_SIZE", "0");
     S00_AXI_transactor_param_props.addLong("HAS_RESET", "1");
-    S00_AXI_transactor_param_props.addFloat("PHASE", "0.000");
+    S00_AXI_transactor_param_props.addFloat("PHASE", "0.0");
     S00_AXI_transactor_param_props.addString("PROTOCOL", "AXI4LITE");
     S00_AXI_transactor_param_props.addString("READ_WRITE_MODE", "READ_WRITE");
     S00_AXI_transactor_param_props.addString("CLK_DOMAIN", "design_1_processing_system7_0_0_FCLK_CLK0");
@@ -2615,7 +2615,7 @@ design_1_xbar_0::design_1_xbar_0(const sc_core::sc_module_name& nm) : design_1_x
     M00_AXI_transactor_param_props.addLong("WUSER_BITS_PER_BYTE", "0");
     M00_AXI_transactor_param_props.addLong("HAS_SIZE", "0");
     M00_AXI_transactor_param_props.addLong("HAS_RESET", "1");
-    M00_AXI_transactor_param_props.addFloat("PHASE", "0.000");
+    M00_AXI_transactor_param_props.addFloat("PHASE", "0.0");
     M00_AXI_transactor_param_props.addString("PROTOCOL", "AXI4LITE");
     M00_AXI_transactor_param_props.addString("READ_WRITE_MODE", "READ_WRITE");
     M00_AXI_transactor_param_props.addString("CLK_DOMAIN", "design_1_processing_system7_0_0_FCLK_CLK0");
@@ -2805,7 +2805,7 @@ design_1_xbar_0::design_1_xbar_0(const sc_core::sc_module_name& nm) : design_1_x
     M01_AXI_transactor_param_props.addLong("WUSER_BITS_PER_BYTE", "0");
     M01_AXI_transactor_param_props.addLong("HAS_SIZE", "0");
     M01_AXI_transactor_param_props.addLong("HAS_RESET", "1");
-    M01_AXI_transactor_param_props.addFloat("PHASE", "0.000");
+    M01_AXI_transactor_param_props.addFloat("PHASE", "0.0");
     M01_AXI_transactor_param_props.addString("PROTOCOL", "AXI4LITE");
     M01_AXI_transactor_param_props.addString("READ_WRITE_MODE", "READ_WRITE");
     M01_AXI_transactor_param_props.addString("CLK_DOMAIN", "design_1_processing_system7_0_0_FCLK_CLK0");

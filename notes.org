@@ -8,3 +8,12 @@
 ** DONE - (Parser) What is this 'fixme'?
 ** DONE - (Route) What is this 'fixme'?
 ** TODO allen variance - frequency stability
+#+begin_src python :results output
+n_elec = 10**15
+d_elec = 8
+val = n_elec * d_elec / 10**9 # GB
+print(f'{val:0.2e}')
+#+end_src
+
+#+RESULTS:
+: 8.00e+06

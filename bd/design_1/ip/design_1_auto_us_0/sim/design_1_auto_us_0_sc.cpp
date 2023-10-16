@@ -77,6 +77,7 @@ design_1_auto_us_0_sc::design_1_auto_us_0_sc(const sc_core::sc_module_name& nm) 
     model_param_props.addLong("C_PACKING_LEVEL", "1");
     model_param_props.addLong("C_SYNCHRONIZER_STAGE", "3");
     model_param_props.addString("C_FAMILY", "zynq");
+    model_param_props.addString("COMPONENT_NAME", "design_1_auto_us_0");
 
   mp_impl = new axi_dwidth_converter("inst", model_param_props);
 

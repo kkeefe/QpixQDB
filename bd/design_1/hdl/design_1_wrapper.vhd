@@ -1,7 +1,7 @@
---Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
+--Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
 ----------------------------------------------------------------------------------
---Tool Version: Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
---Date        : Mon Apr  3 17:47:25 2023
+--Tool Version: Vivado v.2022.1 (win64) Build 3526262 Mon Apr 18 15:48:16 MDT 2022
+--Date        : Thu Oct 12 16:03:34 2023
 --Host        : Forerunner running 64-bit major release  (build 9200)
 --Command     : generate_target design_1_wrapper.bd
 --Design      : design_1_wrapper
@@ -65,6 +65,7 @@ entity design_1_wrapper is
     locked_0 : out STD_LOGIC;
     reset_rtl : in STD_LOGIC;
     reset_rtl_0 : in STD_LOGIC;
+    s_axis_aresetn_0 : in STD_LOGIC;
     sys_clock : in STD_LOGIC
   );
 end design_1_wrapper;
@@ -80,6 +81,12 @@ architecture STRUCTURE of design_1_wrapper is
     clk_out1_0 : out STD_LOGIC;
     locked_0 : out STD_LOGIC;
     clk_out2_0 : out STD_LOGIC;
+    s_axis_aresetn_0 : in STD_LOGIC;
+    S_AXIS_0_tdata : in STD_LOGIC_VECTOR ( 31 downto 0 );
+    S_AXIS_0_tkeep : in STD_LOGIC_VECTOR ( 3 downto 0 );
+    S_AXIS_0_tlast : in STD_LOGIC;
+    S_AXIS_0_tready : out STD_LOGIC;
+    S_AXIS_0_tvalid : in STD_LOGIC;
     M_AXI_0_awaddr : out STD_LOGIC_VECTOR ( 31 downto 0 );
     M_AXI_0_awprot : out STD_LOGIC_VECTOR ( 2 downto 0 );
     M_AXI_0_awvalid : out STD_LOGIC_VECTOR ( 0 to 0 );
@@ -99,12 +106,6 @@ architecture STRUCTURE of design_1_wrapper is
     M_AXI_0_rresp : in STD_LOGIC_VECTOR ( 1 downto 0 );
     M_AXI_0_rvalid : in STD_LOGIC_VECTOR ( 0 to 0 );
     M_AXI_0_rready : out STD_LOGIC_VECTOR ( 0 to 0 );
-    FIXED_IO_mio : inout STD_LOGIC_VECTOR ( 53 downto 0 );
-    FIXED_IO_ddr_vrn : inout STD_LOGIC;
-    FIXED_IO_ddr_vrp : inout STD_LOGIC;
-    FIXED_IO_ps_srstb : inout STD_LOGIC;
-    FIXED_IO_ps_clk : inout STD_LOGIC;
-    FIXED_IO_ps_porb : inout STD_LOGIC;
     DDR_cas_n : inout STD_LOGIC;
     DDR_cke : inout STD_LOGIC;
     DDR_ck_n : inout STD_LOGIC;
@@ -120,11 +121,12 @@ architecture STRUCTURE of design_1_wrapper is
     DDR_dq : inout STD_LOGIC_VECTOR ( 31 downto 0 );
     DDR_dqs_n : inout STD_LOGIC_VECTOR ( 3 downto 0 );
     DDR_dqs_p : inout STD_LOGIC_VECTOR ( 3 downto 0 );
-    S_AXIS_0_tdata : in STD_LOGIC_VECTOR ( 31 downto 0 );
-    S_AXIS_0_tkeep : in STD_LOGIC_VECTOR ( 3 downto 0 );
-    S_AXIS_0_tlast : in STD_LOGIC;
-    S_AXIS_0_tready : out STD_LOGIC;
-    S_AXIS_0_tvalid : in STD_LOGIC
+    FIXED_IO_mio : inout STD_LOGIC_VECTOR ( 53 downto 0 );
+    FIXED_IO_ddr_vrn : inout STD_LOGIC;
+    FIXED_IO_ddr_vrp : inout STD_LOGIC;
+    FIXED_IO_ps_srstb : inout STD_LOGIC;
+    FIXED_IO_ps_clk : inout STD_LOGIC;
+    FIXED_IO_ps_porb : inout STD_LOGIC
   );
   end component design_1;
 begin
@@ -182,6 +184,7 @@ design_1_i: component design_1
       locked_0 => locked_0,
       reset_rtl => reset_rtl,
       reset_rtl_0 => reset_rtl_0,
+      s_axis_aresetn_0 => s_axis_aresetn_0,
       sys_clock => sys_clock
     );
 end STRUCTURE;
